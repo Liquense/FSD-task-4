@@ -17,7 +17,7 @@ module.exports = {
 	},
 
 	entry: {
-		index: './src/index.js'
+		index: './src/index.ts'
 	},
 
 	output: {
@@ -55,6 +55,10 @@ module.exports = {
 				test: /\.html$/,
 				loader: "html-loader",
 			},
+			{
+				test: /\.ts$/,
+				loader: "ts-loader",
+			}
 		]
 	}
 };
