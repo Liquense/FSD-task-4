@@ -19,6 +19,11 @@ module.exports = function(config) {
 			devtool: "inline-source-map",
 		},
 
+		reporters: ["mocha"],
+		mochaReporter: {
+			output: "autoWatch",
+		},
+
 		colors: true,
 		autoWatch: true,
 		//browsers: ["Chrome"],

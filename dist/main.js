@@ -81,20 +81,31 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.ts");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/index.js":
+/***/ "./src/index.ts":
 /*!**********************!*\
-  !*** ./src/index.js ***!
+  !*** ./src/index.ts ***!
   \**********************/
 /*! exports provided: pow */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"pow\", function() { return pow; });\nfunction pow() {\r\n\treturn 8;\r\n}\r\n\r\n\r\n\n\n//# sourceURL=webpack:///./src/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"pow\", function() { return pow; });\n/* harmony import */ var _slider_ts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./slider.ts */ \"./src/slider.ts\");\n/* harmony import */ var _slider_ts__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_slider_ts__WEBPACK_IMPORTED_MODULE_0__);\n\r\nfunction pow(basis, degree) {\r\n    if (degree === 0)\r\n        return 1;\r\n    let result = basis;\r\n    for (let i = 1; i < degree; i++) {\r\n        result *= basis;\r\n    }\r\n    return result;\r\n}\r\n\n\n//# sourceURL=webpack:///./src/index.ts?");
+
+/***/ }),
+
+/***/ "./src/slider.ts":
+/*!***********************!*\
+  !*** ./src/slider.ts ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("class Slider {\r\n    constructor({ vertical, range, step, minimum, maximum, tooltip, }) {\r\n        this._class = \"liquidSlider\";\r\n        this._isVertical = false;\r\n        this._isRange = false;\r\n        this._min = 0;\r\n        this._max = 100;\r\n    }\r\n}\r\n\n\n//# sourceURL=webpack:///./src/slider.ts?");
 
 /***/ })
 

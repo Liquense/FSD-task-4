@@ -1,11 +1,11 @@
 // @ts-ignore
-import {assert} from "chai"
+import {assert, expect} from "chai"
 // @ts-ignore
 import {pow} from "./index.ts"
 
 describe("pow", function() {
 	it("При нулевой степени будет 1", function () {
-		assert.equal(pow(2, 0), 1);
+		expect(pow(2, 0)).to.equal(1);
 		assert.equal(pow(1, 0), 1);
 	});
 	it("возводит в степень n", function() {
