@@ -1,17 +1,18 @@
 const webpackConfig = require("../webpack.config");
 
-module.exports = function(config) {
+module.exports = function (config) {
 	config.set({
-		frameworks: ['mocha'],
+		files: ['../src/*.test.ts'],
+		//exclude: ["../node_modules/"],
+		frameworks: ["chai", "mocha"],
+		reporters: ["mocha", "coverage"],
+
 		client: {
 			mocha: {opts: "mocha.opts"},
 		},
 
-		files: ['../src/*.test.ts'],
-		exclude: ["../node_modules/"],
-
 		preprocessors: {
-			"../src/*.test.ts": ["webpack"],
+			"../src/*.test.ts": ["webpack", "coverage"],
 		},
 		webpack: {
 			module: webpackConfig.module,
@@ -19,7 +20,10 @@ module.exports = function(config) {
 			devtool: "inline-source-map",
 		},
 
-		reporters: ["mocha"],
+		coverageReporter: {
+			dir: "coverage/",
+			type: "html"
+		},
 		mochaReporter: {
 			output: "autoWatch",
 		},
@@ -27,6 +31,6 @@ module.exports = function(config) {
 		colors: true,
 		autoWatch: true,
 		//browsers: ["Chrome"],
-		//singleRun: true,
+		singleRun: true,
 	});
 };
