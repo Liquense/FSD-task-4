@@ -3,7 +3,7 @@ const webpackConfig = require("../webpack.config");
 module.exports = function (config) {
 	config.set({
 		files: ['../src/*.test.ts'],
-		//exclude: ["../node_modules/"],
+		exclude: ["../node_modules/"],
 		frameworks: ["chai", "mocha"],
 		reporters: ["mocha", "coverage"],
 
@@ -17,12 +17,17 @@ module.exports = function (config) {
 		webpack: {
 			module: webpackConfig.module,
 			mode: "development",
-			devtool: "inline-source-map",
+		},
+		webpackMiddleware: {
+			noInfo: true,
 		},
 
 		coverageReporter: {
 			dir: "coverage/",
-			type: "html"
+			type: "html",
+			instrumenterOptions: {
+				istanbul: {noCompact: true}
+			},
 		},
 		mochaReporter: {
 			output: "autoWatch",

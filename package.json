@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --config webpack.config.js --mode development",
+    "build": "webpack --config webpack.config.js --mode production",
     "dev-server": "webpack-dev-server --config webpack.config.js",
     "test": "karma start --browsers Chrome test/karma.conf.js"
   },
@@ -30,6 +30,7 @@
     "karma-webpack": "^4.0.2",
     "mocha": "^6.2.2",
     "nyc": "^14.1.1",
+    "source-map-loader": "^0.2.4",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.2",
     "webpack": "^4.41.2",
@@ -37,5 +38,7 @@
     "webpack-cli": "^3.3.9",
     "webpack-dev-server": "^3.8.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "source-map": "^0.7.3"
+  }
 }

@@ -16,6 +16,8 @@ module.exports = {
 		fs: "empty"
 	},
 
+	devtool: "inline-source-map",
+
 	entry: {
 		index: './src/index.ts'
 	},
@@ -23,6 +25,10 @@ module.exports = {
 	output: {
 		filename: 'main.js',
 		path: path.resolve(__dirname, 'dist'),
+	},
+
+	resolve: {
+		extensions: ['.ts', '.js', '.json']
 	},
 
 	plugins: [
@@ -52,11 +58,17 @@ module.exports = {
 	module: {
 		rules: [
 			{
+				enforce: "pre",
+				test: /\.js$/,
+				loader: "source-map-loader"
+			},
+			{
 				test: /\.html$/,
 				loader: "html-loader",
 			},
 			{
-				test: /\.ts$/,
+				test: /\.ts(x?)$/,
+				exclude: /node_modules/,
 				loader: "ts-loader",
 			}
 		]
