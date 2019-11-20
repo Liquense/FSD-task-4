@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
+    "outDir": "./dist/",
     "sourceMap": true,
     "target": "esnext",
-    "removeComments": false
+    "removeComments": false,
+    "moduleResolution": "node"
   },
   "include": ["src/*.ts"],
   "exclude": ["node_modules"],
