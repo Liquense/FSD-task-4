@@ -1,6 +1,6 @@
-import "./common.ts"
+import {defaultSliderClass} from "../../../common";
 
-export class tooltip {
+export class Tooltip {
     public htmlBody;
     private _class = defaultSliderClass + "__tooltip ";
 }

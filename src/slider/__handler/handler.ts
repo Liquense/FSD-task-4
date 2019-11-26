@@ -1,6 +1,6 @@
-import "./common.ts"
+import {defaultSliderClass} from "../../common";
 
-export class handler {
+export class Handler {
     private _class = defaultSliderClass + "__handler ";
     private _value: object;
     private _withTooltip = true;
