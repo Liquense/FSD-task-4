@@ -1,27 +1,28 @@
 const webpackConfig = require("../webpack.config");
 
-module.exports = function (config) {
+module.exports = (config) => {
 	config.set({
-		files: ['../src/*.test.ts'],
+		files: [
+			"../src/**/*.test.ts",
+			"../src/**/*.ts",
+		],
 		exclude: ["../node_modules/"],
-		frameworks: ["chai", "mocha"],
-		reporters: ["mocha", "coverage"],
+		frameworks: ["mocha"],
 
 		client: {
 			mocha: {opts: "mocha.opts"},
 		},
 
 		preprocessors: {
-			"../src/*.test.ts": ["webpack", "coverage"],
+			"../src/**/*.test.ts": ["webpack", "sourcemap"],
+			"../src/**/!(*.test).ts": ["webpack", "coverage"],
 		},
-		webpack: {
-			module: webpackConfig.module,
-			mode: "development",
-		},
+		webpack: webpackConfig,
 		webpackMiddleware: {
-			noInfo: true,
+			stats: "errors-only",
 		},
 
+		reporters: ["mocha", "coverage"],
 		coverageReporter: {
 			dir: "coverage/",
 			type: "html",
@@ -35,7 +36,7 @@ module.exports = function (config) {
 
 		colors: true,
 		autoWatch: true,
-		//browsers: ["Chrome"],
 		singleRun: true,
+		browsers: ["Chrome"],
 	});
 };
