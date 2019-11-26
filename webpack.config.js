@@ -1,15 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-
-const mainPages = ['index'].map(name => {
-	return new HtmlWebpackPlugin({
-		template: `./src/${name}.html`,
-		filename: `${name}.html`,
-		chunks: [`${name}`, 'commons', 'vendors'],
-	})
-});
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 
 module.exports = {
 	node: {
@@ -19,11 +11,12 @@ module.exports = {
 	devtool: "inline-source-map",
 
 	entry: {
-		index: './src/index.ts'
+		index: './src/demoPage/index.ts'
 	},
 
 	output: {
 		filename: 'main.js',
+		chunkFilename: "[name].bundle.js",
 		path: path.resolve(__dirname, 'dist'),
 	},
 
@@ -34,7 +27,12 @@ module.exports = {
 	plugins: [
 		new CleanWebpackPlugin(),
 		//new BundleAnalyzerPlugin(),
-	].concat(mainPages),
+		new HtmlWebpackPlugin({
+			template: `./src/demoPage/index.html`,
+			filename: `index.html`,
+			chunks: [`index`, 'commons', 'vendors'],
+		})
+	],
 
 	optimization: {
 		splitChunks: {
@@ -49,7 +47,7 @@ module.exports = {
 					test: /[\\/]node_modules[\\/]/,
 					name: 'vendors',
 					chunks: 'all',
-					priority: 1
+					priority: 1,
 				}
 			}
 		}
