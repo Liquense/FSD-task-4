@@ -1,13 +1,13 @@
 const webpackConfig = require("../webpack.config");
 
-module.exports = (config) => {
+module.exports = function(config) {
 	config.set({
 		files: [
 			"../src/**/*.test.ts",
 			"../src/**/*.ts",
 		],
 		exclude: ["../node_modules/"],
-		frameworks: ["mocha"],
+		frameworks: ["mocha", "chai"],
 
 		client: {
 			mocha: {opts: "mocha.opts"},
@@ -23,15 +23,15 @@ module.exports = (config) => {
 		},
 
 		reporters: ["mocha", "coverage"],
+		mochaReporter: {
+			output: "autoWatch",
+		},
 		coverageReporter: {
 			dir: "coverage/",
 			type: "html",
 			instrumenterOptions: {
 				istanbul: {noCompact: true}
 			},
-		},
-		mochaReporter: {
-			output: "autoWatch",
 		},
 
 		colors: true,
