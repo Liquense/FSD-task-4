@@ -11,6 +11,10 @@ export default class Handler {
         return this._isEnd;
     };
 
+    get isStart() {
+        return !this._isEnd;
+    }
+
     set isEnd(value) {
         this._isEnd = value;
     };
