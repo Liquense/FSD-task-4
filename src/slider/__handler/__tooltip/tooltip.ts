@@ -1,15 +1,36 @@
 import {defaultSliderClass} from "../../../common";
 
 export default class Tooltip {
+    public value: string;
     public bodyHTML = "<div class=\"liquidSlider__handlerData\"></div>\n";
     public additionalClass: string;
-    private _defaultClass = defaultSliderClass + "__tooltip ";
+    private readonly _defaultClass = defaultSliderClass + "__tooltip ";
     private _currentPosition: string;
-    private _positions =
-        {
-            left: {x: -1, y: 1},
-            up: {x: 1, y: -1},
-            right: {x: 1, y: 1},
-            down: {x: 1, y: 1}
+
+    constructor(sliderIsVertical: boolean, additionalClass?: string, position?: string, bodyHTML?: string) {
+        let defaultParameters = this.InitDefaultParameters(sliderIsVertical);
+        let parameters = {...defaultParameters, ...arguments};
+
+        this.additionalClass = parameters.additionalClass;
+        this._currentPosition = parameters.position;
+        this.bodyHTML = parameters.bodyHTML;
+    }
+
+    private InitDefaultParameters(sliderIsVertical: boolean) {
+        let defaultParameters = {
+            additionalClass: "",
+            bodyHTML: this.bodyHTML,
+            withTooltip: true,
+            isEnd: true,
+            position: undefined,
+        };
+
+        if (sliderIsVertical) {
+            defaultParameters.position = "left";
+        } else {
+            defaultParameters.position = "up";
         }
+
+        return defaultParameters;
+    }
 }
