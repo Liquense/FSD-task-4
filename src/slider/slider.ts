@@ -1,33 +1,81 @@
-import {Handler} from "./__handler/handler";
-import {Tooltip} from "./__handler/__tooltip/tooltip";
+import Handler from "./__handler/handler";
 
-export class Slider {
-    private _class = "liquidSlider";
-    private _isVertical = false;
-    private _isRange = false;
-    private _min = 0;
-    private _max = 100;
-    private _handlers: [Handler];
-    private _tooltip: Tooltip;
-    private _items: Enumerator;
+export default class Slider {
+    /**
+     * коллекция данных для инициализации хэндлеров
+     */
+    private _handlers: Handler[];
 
-    constructor({
-                    // vertical,
-                    // range,
-                    // step,
-                    // minimum,
-                    // maximum,
-                    // tooltip,
-                }) {
+    /**
+     * вертикальный ли слайдер (чтобы установить позицию тултипов, если она не указана)
+     */
+    private _isVertical: boolean;
+
+    /**
+     * если не передана коллекция хэндлеров, то дефолтное их количество определяется данным параметром
+     */
+    private _isRange: boolean;
+
+    /**
+     * Количество элементов, перебираемых слайдером
+     */
+    private _itemsCount: number;
+    set itemsCount(value: number) {
+        this._itemsCount = value;
+    };
+
+    /**
+     * HTML-код слайдера со внутренностями
+     */
+    private _bodyHTML: string;
+    get bodyHTML() {
+        return this._bodyHTML;
+    };
+
+    constructor(parameters: {
+                    handlers: Handler[],
+                    isVertical?: boolean,
+                    isRange?: boolean,
+                }
+    ) {
+        this.CreateHandlers();
+        this.SetBodyHTML();
     }
 
-    testEvent() {
-        return new Promise((resolve, reject) => {
-            resolve(`${this} ${this._class}`);
-        });
-    }
+    /**
+     * Генерирует HTML-код слайдера в зависимости от содержимого (количество и вид хэндлеров, вид тултипа)
+     * @constructor
+     */
+    private SetBodyHTML() {
+        let allHandlersHTML = "";
+        this._handlers.forEach((value => {
+            allHandlersHTML += "\n" + value.bodyHTML;
+        }));
 
-    changeClass(newClass: string) {
-        this._class = newClass;
-    }
+        let result =
+            "<div class=\"liquidSlider\">\n" +
+            "    <p class=\"liquidSlider__data\">Отформатированные значения слайдера</p>\n" +
+            "    <div class=\"liquidSlider__body\">\n" +
+            "        <div class=\"liquidSlider__scale\" style=\"width: 0; height: 0;\"></div>\n" +
+            allHandlersHTML +
+            "        </div>\n" +
+            "    </div>\n" +
+            "</div>";
+
+        this._bodyHTML = result;
+    };
+
+    /**
+     * Создает хэндлеры для слайдера
+     */
+    private CreateHandlers() {
+        if (this._isRange)
+            this._handlers = [new Handler("50"),];
+        else {
+            let startHandler = new Handler("10");
+            let endHandler = new Handler("90");
+            endHandler.BindWithHandler(startHandler);
+            this._handlers = [startHandler, endHandler];
+        }
+    };
 }
