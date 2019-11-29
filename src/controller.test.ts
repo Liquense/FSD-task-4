@@ -1,8 +1,8 @@
 import {assert, expect} from "chai"
 import Controller from "./controller";
 import {defaultSliderClass} from "./common";
-import {Handler} from "./slider/__handler/handler";
-import {Tooltip} from "./slider/__handler/__tooltip/tooltip";
+import Handler from "./slider/__handler/handler";
+import Tooltip from "./slider/__handler/__tooltip/tooltip";
 
 let initParameters = {
     sliderClass: defaultSliderClass,
@@ -11,7 +11,7 @@ let initParameters = {
     min: 0,
     max: 100,
     step: 5,
-    handlers: [new Handler(), new Handler()],
+    handlers: undefined,
     tooltip: new Tooltip(),
     items: [],
 };
