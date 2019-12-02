@@ -1,0 +1,70 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+$sliderWidth: 320px;
+$scaleHeight: 8px;
+$handlerSize: $scaleHeight + 6px;
+$scaleBorderWidth: 1px;
+$tooltipHeight: 15px;
+$tooltipWidth: 30px;
+$tooltipMargin: 3px;
+$tooltipBorderWidth: 1px;
+.liquidSlider {
+  margin-left: 30px;
+
+  .liquidSlider__data {
+    text-align: right;
+    margin-bottom: $tooltipHeight + $tooltipMargin + 3px;
+    max-width: $sliderWidth;
+  }
+;
+
+  .liquidSlider__body {
+
+    .liquidSlider__scale {
+      width: $sliderWidth;
+      height: $scaleHeight;
+      background-color: rgba(200, 200, 200, 0.3);
+      border: solid $scaleBorderWidth black;
+      border-radius: 5px;
+    }
+
+    .liquidSlider__handlerContainer {
+      position: relative;
+
+      .liquidSlider__handlerTooltip {
+        width: $tooltipWidth;
+        height: $tooltipHeight;
+        background-color: rgba(255, 255, 255, 0.5);
+        border: solid $tooltipBorderWidth black;
+        border-radius: 20%;
+
+        position: absolute;
+        top: -$tooltipHeight - $scaleHeight - $tooltipMargin;
+        left: -$handlerSize/2 - $tooltipBorderWidth;
+      }
+
+      .liquidSlider__handlerBody {
+        height: $handlerSize;
+        width: $handlerSize;
+        border-radius: 50%;
+        background-color: #ffb6b0;
+        border: solid 1px darkgrey;
+
+        position: absolute;
+        top: -($handlerSize)/2 - ($scaleHeight)/2;
+        left: 0;
+
+        &:hover, &:active {
+          border-color: #593832;
+        }
+
+      }
+    }
+  }
+}
+
+;
