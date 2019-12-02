@@ -2,7 +2,7 @@ import {defaultSliderClass} from "../../../common";
 
 export default class Tooltip {
     public value: string;
-    public bodyHTML = "<div class=\"liquidSlider__handlerData\"></div>\n";
+    public bodyHTML = "<span class=\"liquidSlider__handlerTooltip\"></span>\n";
     public additionalClass: string;
     private readonly _defaultClass = defaultSliderClass + "__tooltip ";
     private _currentPosition: string;

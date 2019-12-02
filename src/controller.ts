@@ -9,7 +9,7 @@ export default class Controller {
         DOMElement: Element,
         parameters: object
     ) {
-        this._model = new Model(parameters);
         this._view = new View(DOMElement, parameters);
+        this._model = new Model(parameters);
     }
 }

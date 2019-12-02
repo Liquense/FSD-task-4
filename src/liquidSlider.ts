@@ -9,7 +9,8 @@ import Controller from "./controller"
  * (если не указан - будет массив чисел от min до max с шагом step)
  * @param parameters.value текущее значение
  * (если заданы кастомные значения, то текущее значение - номер элемента в массиве)
- * @param parameters.isRange если хэндлеры не заданы вручную - определяет их количество (false - 1, true - 2)
+ * @param parameters.isRange если хэндлеры не заданы вручную - определяет их количество
+ * (false - 1, true - 2)
  * @param parameters.isVertical вертикальная ли ориентация
  * @param parameters.min минимальное значение слайдера
  * @param parameters.max максимальное значение слайдер

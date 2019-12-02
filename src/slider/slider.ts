@@ -1,52 +1,25 @@
 import Handler from "./__handler/handler";
 
 export default class Slider {
-    /**
-     * коллекция данных для инициализации хэндлеров
-     */
     private _handlers: Handler[];
-
-    /**
-     * вертикальный ли слайдер (чтобы установить позицию тултипов, если она не указана)
-     */
     private _isVertical: boolean;
-
-    /**
-     * если не передана коллекция хэндлеров, то дефолтное их количество определяется данным параметром
-     */
     private _isRange: boolean;
-
-    /**
-     * Количество элементов, перебираемых слайдером
-     */
-    private _itemsCount: number;
-    set itemsCount(value: number) {
-        this._itemsCount = value;
-    };
-
-    /**
-     * HTML-код слайдера со внутренностями
-     */
     private _bodyHTML: string;
     get bodyHTML() {
         return this._bodyHTML;
     };
 
     constructor(parameters: {
-                    handlers: Handler[],
                     isVertical?: boolean,
                     isRange?: boolean,
+                    handlers?: object[],
                 }
     ) {
-        this.CreateHandlers();
-        this.SetBodyHTML();
+        this.CreateDefaultHandlers();
+        this.GenerateBodyHTML();
     }
 
-    /**
-     * Генерирует HTML-код слайдера в зависимости от содержимого (количество и вид хэндлеров, вид тултипа)
-     * @constructor
-     */
-    private SetBodyHTML() {
+    private GenerateBodyHTML() {
         let allHandlersHTML = "";
         this._handlers.forEach((value => {
             allHandlersHTML += "\n" + value.bodyHTML;
@@ -56,7 +29,7 @@ export default class Slider {
             "<div class=\"liquidSlider\">\n" +
             "    <p class=\"liquidSlider__data\">Отформатированные значения слайдера</p>\n" +
             "    <div class=\"liquidSlider__body\">\n" +
-            "        <div class=\"liquidSlider__scale\" style=\"width: 0; height: 0;\"></div>\n" +
+            "        <div class=\"liquidSlider__scale\"></div>\n" +
             allHandlersHTML +
             "        </div>\n" +
             "    </div>\n" +
@@ -65,17 +38,14 @@ export default class Slider {
         this._bodyHTML = result;
     };
 
-    /**
-     * Создает хэндлеры для слайдера
-     */
-    private CreateHandlers() {
-        if (this._isRange)
-            this._handlers = [new Handler("50"),];
-        else {
-            let startHandler = new Handler("10");
-            let endHandler = new Handler("90");
+    private CreateDefaultHandlers() {
+        if (this._isRange) {
+            let startHandler = new Handler({value: 10, sliderIsVertical: this._isVertical});
+            let endHandler = new Handler({value: 80, sliderIsVertical: this._isVertical});
             endHandler.BindWithHandler(startHandler);
             this._handlers = [startHandler, endHandler];
+        } else {
+            this._handlers = [new Handler({value: 50, sliderIsVertical: this._isVertical})];
         }
     };
 }

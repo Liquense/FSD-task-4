@@ -1,15 +1,15 @@
 import {defaultSliderClass} from "../../common";
 import Tooltip from "./__tooltip/tooltip";
-import tooltip from "./__tooltip/tooltip";
 
 export default class Handler {
     private _defaultClass = `${defaultSliderClass}__handler `;
     public additionalClass: string;
-    private _size = "10px";
+    private _height = "10px";
+    private _width = "10px";
     private _tooltip: Tooltip;
 
-    private _value: string;
-    set value(value: string) {
+    private _value: number;
+    set value(value: number) {
         this._value = value;
     }
 
@@ -55,9 +55,6 @@ export default class Handler {
         pairHandler._pairedHandler = this;
     };
 
-    /**
-     * Отображается ли тултип у хэндлеров
-     */
     private _withTooltip: boolean;
 
     showTooltip() {
@@ -68,17 +65,30 @@ export default class Handler {
         this._withTooltip = false;
     }
 
-    public handlerBodyHTML: "<div class=\"liquidSlider__handlerBody\"></div>\n";
+    private handlerBodyHTML = "<div class=\"liquidSlider__handlerBody\"></div>\n";
 
-    /**
-     * HTML-код хэндлера
-     */
     get bodyHTML() {
         return `<div class=liquidSlider__handlerContainer>${this._tooltip.bodyHTML}${this.handlerBodyHTML}</div>`;
     };
 
-    constructor(value: string, withTooltip = true, isEnd = true,) {
-        this._withTooltip = withTooltip;
-        this._isEnd = isEnd;
+    constructor(parameters:
+                    {
+                        value: number,
+                        sliderIsVertical: boolean,
+                        withTooltip?: boolean,
+                        isEnd?: boolean
+                        tooltip?: object,
+                    }
+    ) {
+        let defaultParameters = {
+            withTooltip: true,
+            isEnd: true,
+        };
+        parameters = {...defaultParameters, ...parameters};
+
+        this._value = parameters.value;
+        this._withTooltip = parameters.withTooltip;
+        this._isEnd = parameters.isEnd;
+        this._tooltip = new Tooltip(parameters.sliderIsVertical);
     }
 }
