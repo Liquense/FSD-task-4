@@ -1,30 +1,24 @@
 import "./slider/slider"
 import Slider from "./slider/slider";
-import Handler from "./slider/__handler/handler";
 
 export default class View {
-
     private readonly _element: Element;
-    private _slider: Slider;
+    private readonly _slider: Slider;
+    private readonly _tooltipPositions =
+        {
+            left: {x: -1, y: 1},
+            up: {x: 1, y: -1},
+            right: {x: 1, y: 1},
+            down: {x: 1, y: 1}
+        };
 
-    constructor(element: Element,
-                parameters:
-                    {
-                        isVertical?: boolean,
-                        handlers?: {
-                            additionalClass?: string,
-                            height?: string,
-                            width?: string,
-                            tooltip?: {
-                                additionalClass?: string,
-                                position?: string,
-                                bodyHTML?: string,
-                            },
-                        }[],
-                    },
-    ) {
+    constructor(element: Element, parameters: object) {
         this._element = element;
-        console.log(parameters.handlers);
-        //this._slider = new Slider(parameters);
+        this._slider = new Slider(parameters);
+        this.createSliderElement();
+    }
+
+    private createSliderElement() {
+        this._element.outerHTML = this._slider.bodyHTML.trim();
     }
 };
