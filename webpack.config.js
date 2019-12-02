@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
 	node: {
@@ -31,7 +32,12 @@ module.exports = {
 			template: `./src/demoPage/index.html`,
 			filename: `index.html`,
 			chunks: [`index`, 'commons', 'vendors'],
-		})
+		}),
+		new MiniCssExtractPlugin({
+			filename: '[name].css',
+			chunkFilename: '[id].css',
+			ignoreOrder: false,
+		}),
 	],
 
 	optimization: {
@@ -40,13 +46,11 @@ module.exports = {
 			cacheGroups: {
 				common: {
 					name: 'commons',
-					chunks: 'all',
 					priority: 0
 				},
 				vendor: {
 					test: /[\\/]node_modules[\\/]/,
 					name: 'vendors',
-					chunks: 'all',
 					priority: 1,
 				}
 			}
@@ -68,7 +72,11 @@ module.exports = {
 				test: /\.ts(x?)$/,
 				exclude: /node_modules/,
 				loader: "ts-loader",
-			}
+			},
+			{
+				test: /\.scss$/,
+				use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
+			},
 		]
 	}
 };
