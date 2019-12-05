@@ -9,6 +9,7 @@ export const modelFunctionNames = [
 export function parseClassesString(classesString: string): string[] {
     if (!classesString)
         return undefined;
+
     return classesString.split(" ");
 }
 
@@ -17,6 +18,10 @@ export function addClasses(element: Element, classes: string[]) {
         return;
 
     for (const className of classes) {
-        element.classList.add(className);
+        addClass(element, className);
     }
+}
+
+export function addClass(element: Element, className: string) {
+    element.classList.add(className.trim());
 }
