@@ -1,36 +1,50 @@
-import {defaultSliderClass} from "../../../common";
+import {addClass, defaultSliderClass, parseClassesString} from "../../../common";
 
 export default class Tooltip {
-    public value: string;
-    public bodyHTML = "<span class=\"liquidSlider__handlerTooltip\"></span>\n";
-    public additionalClass: string;
-    private readonly _defaultClass = defaultSliderClass + "__tooltip ";
+    private static positions = {left: "left", right: "right", up: "up", down: "down"};
+    public value: any;
+    public innerHTML = `${this.value}`;
+    private _element: Element;
+    private readonly _defaultClass = defaultSliderClass + "__tooltip";
     private _currentPosition: string;
 
-    constructor(sliderIsVertical: boolean, additionalClass?: string, position?: string, bodyHTML?: string) {
-        let defaultParameters = this.InitDefaultParameters(sliderIsVertical);
-        let parameters = {...defaultParameters, ...arguments};
-
-        this.additionalClass = parameters.additionalClass;
-        this._currentPosition = parameters.position;
-        this.bodyHTML = parameters.bodyHTML;
+    private _additionalClasses: string[];
+    set additionalClasses(classesString: string) {
+        this._additionalClasses = parseClassesString(classesString);
     }
 
-    private InitDefaultParameters(sliderIsVertical: boolean) {
+    constructor(parentElement: Element, sliderIsVertical: boolean, additionalClass?: string, position?: string, bodyHTML?: string) {
+        let defaultParameters = this.initDefaultParameters(sliderIsVertical);
+        let parameters = {...defaultParameters, ...arguments};
+
+        this.additionalClasses = parameters.additionalClass;
+        this._currentPosition = parameters.position;
+        this.createElement(parentElement);
+    }
+
+    private initDefaultParameters(sliderIsVertical: boolean) {
         let defaultParameters = {
             additionalClass: "",
-            bodyHTML: this.bodyHTML,
+            bodyHTML: this.innerHTML,
             withTooltip: true,
             isEnd: true,
             position: undefined,
         };
 
         if (sliderIsVertical) {
-            defaultParameters.position = "left";
+            defaultParameters.position = Tooltip.positions.left;
         } else {
-            defaultParameters.position = "up";
+            defaultParameters.position = Tooltip.positions.up;
         }
 
         return defaultParameters;
+    }
+
+    private createElement(parentElement: Element) {
+        this._element = document.createElement("span");
+        addClass(this._element, `${this._defaultClass}`);
+        this._element.innerHTML = this.innerHTML;
+
+        parentElement.appendChild(this._element);
     }
 }

@@ -1,28 +1,32 @@
-import {defaultSliderClass} from "../../common";
+import {addClass, addClasses, defaultSliderClass, parseClassesString} from "../../common";
 import Tooltip from "./__tooltip/tooltip";
 
 export default class Handler {
-    private _defaultClass = `${defaultSliderClass}__handler `;
-    public additionalClass: string;
-    private _height = "10px";
-    private _width = "10px";
+    private _defaultClass = `${defaultSliderClass}__handler`;
+
+    private _additionalClasses: string[];
+    set additionalClasses(classesString) {
+        this._additionalClasses = parseClassesString(classesString);
+    }
+
     private _tooltip: Tooltip;
+    public position: number;
 
-    private _value: number;
-    set value(value: number) {
-        this._value = value;
-    }
 
-    get value() {
-        return this._value;
-    }
+    private _element: {
+        wrap: Element,
+        body: Element,
+    };
 
-    //private _class: string; - надо бы интерфейс сделать или микс
+    get wrap(): Element {
+        return this._element.wrap;
+    };
 
-    /**
-     * Является ли хэндлер началом или концом интервала
-     * (используется, если нет привязки к другому хэндлеру: будет интервал от крайних значений слайдера)
-     */
+    get body(): Element {
+        return this._element.body;
+    };
+
+
     private _isEnd: boolean;
     get isEnd() {
         return this._isEnd;
@@ -40,20 +44,6 @@ export default class Handler {
         this._isEnd = !value;
     }
 
-    /**
-     * связанный хэндлер
-     * (между двумя связанными хэндлерами образуются интервалы)
-     */
-    private _pairedHandler?: Handler;
-
-    /**
-     * Связывает хэндлеры в отношения Начало-Конец
-     * @param pairHandler хэндлер, с которым связываем
-     */
-    BindWithHandler(pairHandler: Handler) {
-        this._pairedHandler = pairHandler;
-        pairHandler._pairedHandler = this;
-    };
 
     private _withTooltip: boolean;
 
@@ -65,18 +55,12 @@ export default class Handler {
         this._withTooltip = false;
     }
 
-    private handlerBodyHTML = "<div class=\"liquidSlider__handlerBody\"></div>\n";
-
-    get bodyHTML() {
-        return `<div class=liquidSlider__handlerContainer>${this._tooltip.bodyHTML}${this.handlerBodyHTML}</div>`;
-    };
-
-    constructor(parameters:
+    constructor(parentElement: Element,
+                parameters:
                     {
-                        value: number,
                         sliderIsVertical: boolean,
                         withTooltip?: boolean,
-                        isEnd?: boolean
+                        isEnd?: boolean,
                         tooltip?: object,
                     }
     ) {
@@ -86,9 +70,26 @@ export default class Handler {
         };
         parameters = {...defaultParameters, ...parameters};
 
-        this._value = parameters.value;
         this._withTooltip = parameters.withTooltip;
         this._isEnd = parameters.isEnd;
-        this._tooltip = new Tooltip(parameters.sliderIsVertical);
+        this.createElement(parentElement);
+
+        this._tooltip = new Tooltip(this._element.wrap, parameters.sliderIsVertical);
     }
+
+    createElement(parentElement: Element) {
+        this._element = {
+            wrap: document.createElement("div"),
+            body: document.createElement("div")
+        };
+        let wrap = this._element.wrap;
+        let body = this._element.body;
+
+        addClass(wrap, `${this._defaultClass}Container`);
+        addClasses(wrap, this._additionalClasses);
+        parentElement.appendChild(wrap);
+
+        addClass(body, `${this._defaultClass}Body`);
+        wrap.appendChild(body);
+    };
 }

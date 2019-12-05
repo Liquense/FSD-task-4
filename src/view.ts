@@ -14,11 +14,6 @@ export default class View {
 
     constructor(element: Element, parameters: object) {
         this._element = element;
-        this._slider = new Slider(parameters);
-        this.createSliderElement();
-    }
-
-    private createSliderElement() {
-        this._element.outerHTML = this._slider.bodyHTML.trim();
+        this._slider = new Slider(element, parameters);
     }
 };

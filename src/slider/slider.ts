@@ -1,51 +1,77 @@
 import Handler from "./__handler/handler";
+import Range from "./__range/range";
+import {addClass, defaultSliderClass} from "../common";
 
 export default class Slider {
+    private _DOMElement: {
+        wrap: Element,
+        body: Element,
+        scale: Element,
+    };
     private _handlers: Handler[];
     private _isVertical: boolean;
     private _isRange: boolean;
-    private _bodyHTML: string;
-    get bodyHTML() {
-        return this._bodyHTML;
-    };
+    private _ranges: Range[];
 
-    constructor(parameters: {
+    constructor(parentElement: Element,
+                parameters: {
                     isVertical?: boolean,
                     isRange?: boolean,
                     handlers?: object[],
                 }
     ) {
-        this.CreateDefaultHandlers();
-        this.GenerateBodyHTML();
+        let defaultParameters = {
+            isVertical: false,
+            isRange: false,
+        };
+        parameters = {...defaultParameters, ...parameters};
+
+        this._isVertical = parameters.isVertical;
+        this._isRange = parameters.isRange;
+        this._ranges = [];
+
+        this.createElement(parentElement);
+        this.createDefaultHandlers();
     }
 
-    private GenerateBodyHTML() {
-        let allHandlersHTML = "";
-        this._handlers.forEach((value => {
-            allHandlersHTML += "\n" + value.bodyHTML;
-        }));
+    private createElement(parentElement: Element) {
+        this._DOMElement = {
+            wrap: document.createElement("div"),
+            body: document.createElement("div"),
+            scale: document.createElement("div")
+        };
+        let wrap = this._DOMElement.wrap;
+        addClass(wrap, defaultSliderClass);
+        let body = this._DOMElement.body;
+        addClass(body, `${defaultSliderClass}__body`);
+        let scale = this._DOMElement.scale;
+        addClass(scale, `${defaultSliderClass}__scale`);
 
-        let result =
-            "<div class=\"liquidSlider\">\n" +
-            "    <p class=\"liquidSlider__data\">Отформатированные значения слайдера</p>\n" +
-            "    <div class=\"liquidSlider__body\">\n" +
-            "        <div class=\"liquidSlider__scale\"></div>\n" +
-            allHandlersHTML +
-            "        </div>\n" +
-            "    </div>\n" +
-            "</div>";
-
-        this._bodyHTML = result;
+        parentElement.replaceWith(wrap);
+        wrap.appendChild(body);
+        body.appendChild(scale);
     };
 
-    private CreateDefaultHandlers() {
+    private createUniqueRange(handler: Handler) {
+        const foundedRanges = this._ranges.filter(range => {
+            if (Object.values(range).includes(handler)) {
+                return range;
+            }
+        });
+
+        if (foundedRanges.length > 0)
+            return;
+
+        this._ranges.push(new Range(handler));
+    };
+
+    private createDefaultHandlers() {
         if (this._isRange) {
-            let startHandler = new Handler({value: 10, sliderIsVertical: this._isVertical});
-            let endHandler = new Handler({value: 80, sliderIsVertical: this._isVertical});
-            endHandler.BindWithHandler(startHandler);
+            let startHandler = new Handler(this._DOMElement.body, {sliderIsVertical: this._isVertical});
+            let endHandler = new Handler(this._DOMElement.body, {sliderIsVertical: this._isVertical});
             this._handlers = [startHandler, endHandler];
         } else {
-            this._handlers = [new Handler({value: 50, sliderIsVertical: this._isVertical})];
+            this._handlers = [new Handler(this._DOMElement.body, {sliderIsVertical: this._isVertical})];
         }
     };
 }
