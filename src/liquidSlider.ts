@@ -7,7 +7,7 @@ import Controller from "./controller"
  * @param parameters.additionalClass дополнительный класс
  * @param parameters.items массив элементов, который будет перебираться слайдером
  * (если не указан - будет массив чисел от min до max с шагом step)
- * @param parameters.value текущее значение
+ * @param parameters.values текущие значения, если не были переданы свои хэндлеры
  * (если заданы кастомные значения, то текущее значение - номер элемента в массиве)
  * @param parameters.isRange если хэндлеры не заданы вручную - определяет их количество
  * (false - 1, true - 2)
@@ -29,13 +29,14 @@ $.fn.liquidSlider = function liquidSlider(
     parameters?: {
         additionalClass?: string,
         items?: Array<any>,
-        value?: number,
+        values?: number,
         isRange?: boolean,
         isVertical?: boolean,
         min?: number,
         max?: number,
         step?: number,
         handlers?: {
+            value: number,
             additionalClass?: string,
             height?: string,
             width?: string,
@@ -46,24 +47,14 @@ $.fn.liquidSlider = function liquidSlider(
             },
         }[],
     }) {
-    let initParameters = {
-        isVertical: false,
-        isRange: false,
-        min: 0,
-        max: 100,
-        step: 5,
-        items: [],
-        handlers: undefined
-    };
 
-    initParameters = {...initParameters, ...parameters};
-
+    let pluginController: Controller;
     try {
-        new Controller($(this).get()[0], initParameters);
+        pluginController = new Controller($(this).get()[0], parameters);
     } catch (e) {
         console.log(e.description);
     }
 
-    return this;
+    return pluginController;
 };
 
