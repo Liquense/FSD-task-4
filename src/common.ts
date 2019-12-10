@@ -1,3 +1,5 @@
+import Func = Mocha.Func;
+
 export const defaultSliderClass = "liquidSlider";
 export const viewFunctionNames = [
     "viewTest", //
@@ -24,4 +26,40 @@ export function addClasses(element: Element, classes: string[]) {
 
 export function addClass(element: Element, className: string) {
     element.classList.add(className.trim());
+}
+
+export interface Listenable {
+    listenDictionary: { function: Function, listeners: Function[] }
+}
+
+export function addListener(executor: string, listener: Function, context: Listenable) {
+    if (!context)
+        return;
+
+    if (!context.listenDictionary) {
+        //добавляем функцию в словарь, если её не было
+        context.listenDictionary = {function: context[executor], listeners: []};
+    }
+    let listeners = context.listenDictionary.listeners;
+    listeners.push(listener);
+
+    const pureFunction = context.listenDictionary.function;
+    context[executor] = function (...args) {
+        //создаётся промис из чистой функции
+        let result = new Promise((resolve) => {
+            context ? pureFunction.call(context, ...args) : pureFunction(...args);
+            resolve(this);
+        });
+
+        //добавляется выполнение всех слушателей после исполнения функции
+        for (let listener of listeners) {
+            result.then(() => {
+                listener();
+            });
+        }
+    };
+}
+
+function addFunctionListener() {
+
 }
