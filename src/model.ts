@@ -3,7 +3,7 @@ export default class Model {
     private _min: number;
     private _max: number;
     private _step: number;
-    private _handlersValues: Array<number>;
+    private _handlers: Handler[];
 
     constructor(parameters:
                     {
@@ -11,7 +11,8 @@ export default class Model {
                         max?: number,
                         step?: number,
                         items?: Array<any>,
-                        values?: number[],
+                        values?: any[],
+                        handlersCount: number,
                         handlers?: {
                             value: number,
                         }[],
@@ -19,8 +20,8 @@ export default class Model {
     ) {
         let defaultParameters = {
             min: 0,
-            max: 100,
-            step: 1,
+            max: 10,
+            step: 1.5,
         };
         parameters = {...defaultParameters, ...parameters};
 
@@ -31,22 +32,43 @@ export default class Model {
         if (parameters.items && parameters.items.length > 0)
             this._items = parameters.items;
         else {
-            this.generateItems();
+            this.generateItemsArray();
         }
 
         if (parameters.handlers) {
-            this._handlersValues = parameters.handlers.map(handler => {
-                return handler.value
-            });
+            this.fillValuesFromObj(parameters.handlers);
         } else {
-            console.log(this.standardize(5.6));
+            this.generateHandlerValues(parameters.handlersCount);
         }
+        console.log(this);
     }
 
-    private generateItems() {
+    private generateItemsArray() {
         this._items = [];
         for (let i = this._min; i <= this._max; i += this._step) {
             this._items.push(`${i}`);
+        }
+    }
+
+    private fillValuesFromObj(objects: { value: any }[]) {
+        this._handlers = objects.map(handler => {
+            return new Handler(handler.value, 0, 0, this);
+        });
+    }
+
+    private generateHandlerValues(valuesCount: number) {
+        this._handlers = [];
+        let itemsCount = this._items.length - 1;
+
+        if (valuesCount === 1) {
+            const part = Math.round(itemsCount / 2);
+            this._handlers.push(new Handler(this._items[part], 0, part, this));
+        } else {
+            const part = Math.round(itemsCount / (valuesCount - 1));
+            for (let i = 0; i < valuesCount; i++) {
+                const valueIndex = i * part;
+                this._handlers.push(new Handler(this._items[valueIndex], 0, valueIndex, this));
+            }
         }
     }
 
@@ -59,9 +81,20 @@ export default class Model {
         let remainder = (value - this._min) % this._step;
         if (remainder === 0)
             return value;
-        if (this._step/2 > remainder)
+        if (this._step / 2 > remainder)
             return value - remainder; //ближе к нижней части шага
         else
             return value + (this._step - remainder); //ближе к верхней части
+    }
+}
+
+class Handler {
+    constructor(
+        private _value: any,
+        private _position: number,
+        private _index: number,
+        parentContext: Model,
+    ) {
+
     }
 }
