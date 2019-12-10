@@ -7,12 +7,12 @@ export default class Model {
 
     constructor(parameters:
                     {
+                        isRange?: boolean,
                         min?: number,
                         max?: number,
                         step?: number,
                         items?: Array<any>,
                         values?: any[],
-                        handlersCount: number,
                         handlers?: {
                             value: number,
                         }[],
@@ -38,9 +38,8 @@ export default class Model {
         if (parameters.handlers) {
             this.fillValuesFromObj(parameters.handlers);
         } else {
-            this.generateHandlerValues(parameters.handlersCount);
+            this.generateHandlerValues(parameters.isRange ? 2 : 1);
         }
-        console.log(this);
     }
 
     private generateItemsArray() {
