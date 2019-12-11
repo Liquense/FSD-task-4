@@ -29,21 +29,26 @@ export function addClass(element: Element, className: string) {
 }
 
 export interface Listenable {
-    listenDictionary: { function: Function, listeners: Function[] }
+    listenDictionary: object;
 }
 
 export function addListener(executor: string, listener: Function, context: Listenable) {
     if (!context)
         return;
-
-    if (!context.listenDictionary) {
-        //добавляем функцию в словарь, если её не было
-        context.listenDictionary = {function: context[executor], listeners: []};
+    if (!context.listenDictionary)
+        context.listenDictionary = {};
+    if (!context.listenDictionary[executor]) {
+        context.listenDictionary[executor] = {function: context[executor], listeners: [listener]};
     }
-    let listeners = context.listenDictionary.listeners;
+
+    let listeners = context.listenDictionary[executor].listeners;
     listeners.push(listener);
 
-    const pureFunction = context.listenDictionary.function;
+    bindListeners(executor, listeners, context);
+}
+
+function bindListeners(executor: string, listeners: Function[], context: Listenable) {
+    const pureFunction = context.listenDictionary[executor].function;
     context[executor] = function (...args) {
         //создаётся промис из чистой функции
         let result = new Promise((resolve) => {
@@ -58,8 +63,4 @@ export function addListener(executor: string, listener: Function, context: Liste
             });
         }
     };
-}
-
-function addFunctionListener() {
-
 }
