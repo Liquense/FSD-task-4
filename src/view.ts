@@ -16,4 +16,12 @@ export default class View {
         this._element = element;
         this._slider = new Slider(element, parameters);
     }
+
+    public handlersValuesChangedListener() {
+        console.log("handlers changed");
+    }
+
+    public setHandlersData(handlers: { value: number, position: number}[]) {
+        this._slider.setHandlersData(handlers); //todo: пересчет позиции в стилевые значения для передачи хэндлеру
+    }
 };
