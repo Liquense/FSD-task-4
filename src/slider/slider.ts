@@ -1,4 +1,4 @@
-import Handler from "./__handler/handler";
+import HandlerView from "./__handler/handler";
 import Range from "./__range/range";
 import {addClass, defaultSliderClass} from "../common";
 
@@ -8,7 +8,10 @@ export default class Slider {
         body: Element,
         scale: Element,
     };
-    private _handlers: Handler[];
+    private _handlers: HandlerView[];
+    get handlers() {
+        return this._handlers;
+    }
     private _isVertical: boolean;
     private _isRange: boolean;
     private _ranges: Range[];
@@ -31,7 +34,8 @@ export default class Slider {
         this._ranges = [];
 
         this.createElement(parentElement);
-        this.createDefaultHandlers();
+        if (!parameters.handlers)
+            this.createDefaultHandlers();
     }
 
     private createElement(parentElement: Element) {
@@ -52,7 +56,7 @@ export default class Slider {
         body.appendChild(scale);
     };
 
-    private createUniqueRange(handler: Handler) {
+    private createUniqueRange(handler: HandlerView) {
         const foundedRanges = this._ranges.filter(range => {
             if (Object.values(range).includes(handler)) {
                 return range;
@@ -67,11 +71,18 @@ export default class Slider {
 
     private createDefaultHandlers() {
         if (this._isRange) {
-            let startHandler = new Handler(this._DOMElement.body, {sliderIsVertical: this._isVertical});
-            let endHandler = new Handler(this._DOMElement.body, {sliderIsVertical: this._isVertical});
+            let startHandler = new HandlerView(this._DOMElement.body, {sliderIsVertical: this._isVertical});
+            let endHandler = new HandlerView(this._DOMElement.body, {sliderIsVertical: this._isVertical});
             this._handlers = [startHandler, endHandler];
         } else {
-            this._handlers = [new Handler(this._DOMElement.body, {sliderIsVertical: this._isVertical})];
+            this._handlers = [new HandlerView(this._DOMElement.body, {sliderIsVertical: this._isVertical})];
         }
     };
+
+    public setHandlersData(handlers: {value: number, position: number}[]) {
+        handlers.forEach((handler, index) => {
+            this._handlers[index].position = handler.position;
+            this._handlers[index].value = handler.value;
+        })
+    }
 }

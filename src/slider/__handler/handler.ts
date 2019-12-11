@@ -1,7 +1,7 @@
 import {addClass, addClasses, defaultSliderClass, parseClassesString} from "../../common";
 import Tooltip from "./__tooltip/tooltip";
 
-export default class Handler {
+export default class HandlerView {
     private _defaultClass = `${defaultSliderClass}__handler`;
 
     private _additionalClasses: string[];
@@ -10,7 +10,13 @@ export default class Handler {
     }
 
     private _tooltip: Tooltip;
-    public position: number;
+    set value(value: any) {
+        this._tooltip.value = value;
+    }
+    private _position: number;
+    set position(newPosition: number) {
+      this._position = newPosition;
+    };
 
 
     private _element: {
