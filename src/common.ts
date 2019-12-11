@@ -38,13 +38,28 @@ export function addListener(executor: string, listener: Function, context: Liste
     if (!context.listenDictionary)
         context.listenDictionary = {};
     if (!context.listenDictionary[executor]) {
-        context.listenDictionary[executor] = {function: context[executor], listeners: [listener]};
+        context.listenDictionary[executor] = {function: context[executor], listeners: []};
     }
 
     let listeners = context.listenDictionary[executor].listeners;
     listeners.push(listener);
 
     bindListeners(executor, listeners, context);
+}
+
+export function removeListener(executor: string, listener: Function, context: Listenable) {
+    if (!context || !context.listenDictionary || !context.listenDictionary[executor])
+        return;
+
+    let listeners = context.listenDictionary[executor].listeners;
+    const listenerIndex = listeners.findIndex((value) => {
+        if ("" + listener === "" + value)
+            return true;
+    });
+    if (listenerIndex === -1)
+        return;
+
+    listeners.splice(listenerIndex, 1);
 }
 
 function bindListeners(executor: string, listeners: Function[], context: Listenable) {
