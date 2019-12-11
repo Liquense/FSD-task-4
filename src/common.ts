@@ -73,9 +73,13 @@ function bindListeners(executor: string, listeners: Function[], context: Listena
 
         //добавляется выполнение всех слушателей после исполнения функции
         for (let listener of listeners) {
-            result.then(() => {
-                listener();
+            result.then((response) => {
+                listener(response);
             });
         }
     };
+}
+
+export function clamp(num: number, min: number, max: number) {
+    return Math.min(Math.max(num, min), max);
 }
