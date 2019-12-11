@@ -27,21 +27,21 @@ import Controller from "./controller"
  */
 $.fn.liquidSlider = function liquidSlider(
     parameters?: {
-        additionalClass?: string,
+        additionalClasses?: string,
         items?: Array<any>,
-        values?: number,
-        isRange?: boolean,
+        values?: number[], //если не заданы handlers
+        isRange?: boolean, //если не заданы handlers
         isVertical?: boolean,
         min?: number,
         max?: number,
         step?: number,
         handlers?: {
             value: number,
-            additionalClass?: string,
+            additionalClasses?: string,
             height?: string,
             width?: string,
             tooltip?: {
-                additionalClass?: string,
+                additionalClasses?: string,
                 position?: string,
                 bodyHTML?: string,
             },
@@ -52,7 +52,7 @@ $.fn.liquidSlider = function liquidSlider(
     try {
         pluginController = new Controller($(this).get()[0], parameters);
     } catch (e) {
-        console.log(e.description);
+        console.log(e);
     }
 
     return pluginController;
