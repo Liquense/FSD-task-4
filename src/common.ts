@@ -53,7 +53,7 @@ export function removeListener(executor: string, listener: Function, context: Li
 
     let listeners = context.listenDictionary[executor].listeners;
     const listenerIndex = listeners.findIndex((value) => {
-        if ("" + listener === "" + value)
+        if (listener === value)
             return true;
     });
     if (listenerIndex === -1)
