@@ -32,26 +32,26 @@ export interface Listenable {
     listenDictionary: object;
 }
 
-export function addListener(executor: string, listener: Function, context: Listenable) {
-    if (!context)
+export function addListener(executor: string, listener: Function, executorContext: Listenable) {
+    if (!executorContext)
         return;
-    if (!context.listenDictionary)
-        context.listenDictionary = {};
-    if (!context.listenDictionary[executor]) {
-        context.listenDictionary[executor] = {function: context[executor], listeners: []};
+    if (!executorContext.listenDictionary)
+        executorContext.listenDictionary = {};
+    if (!executorContext.listenDictionary[executor]) {
+        executorContext.listenDictionary[executor] = {function: executorContext[executor], listeners: []};
     }
 
-    let listeners = context.listenDictionary[executor].listeners;
+    let listeners = executorContext.listenDictionary[executor].listeners;
     listeners.push(listener);
 
-    bindListeners(executor, listeners, context);
+    bindListeners(executor, listeners, executorContext);
 }
 
-export function removeListener(executor: string, listener: Function, context: Listenable) {
-    if (!context || !context.listenDictionary || !context.listenDictionary[executor])
+export function removeListener(executor: string, listener: Function, executorContext: Listenable) {
+    if (!executorContext || !executorContext.listenDictionary || !executorContext.listenDictionary[executor])
         return;
 
-    let listeners = context.listenDictionary[executor].listeners;
+    let listeners = executorContext.listenDictionary[executor].listeners;
     const listenerIndex = listeners.findIndex((value) => {
         if (listener === value)
             return true;
@@ -62,20 +62,14 @@ export function removeListener(executor: string, listener: Function, context: Li
     listeners.splice(listenerIndex, 1);
 }
 
-function bindListeners(executor: string, listeners: Function[], context: Listenable) {
-    const pureFunction = context.listenDictionary[executor].function;
-    context[executor] = function (...args) {
-        //создаётся промис из чистой функции
-        let result = new Promise((resolve) => {
-            context ? pureFunction.call(context, ...args) : pureFunction(...args);
-            resolve(this);
-        });
+function bindListeners(executor: string, listeners: Function[], executorContext: Listenable) {
+    const pureFunc = executorContext.listenDictionary[executor].function;
+    executorContext[executor] = function (...args) {
+        pureFunc.call(executorContext, ...args);
 
         //добавляется выполнение всех слушателей после исполнения функции
         for (let listener of listeners) {
-            result.then((response) => {
-                listener(response);
-            });
+            listener(executorContext);
         }
     };
 }
