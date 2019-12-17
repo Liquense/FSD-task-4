@@ -2,9 +2,9 @@ import {addListener, clamp, Listenable, removeListener} from "./common";
 
 export default class Model implements Listenable {
     private _items: Array<any>;
-    private _min: number;
-    private _max: number;
-    private _step: number;
+    private _min = 0;
+    private _max = 10;
+    private _step = 1;
     private _handlers: HandlerModel[];
 
     public listenDictionary: { function: Function, listeners: Function[] };
@@ -15,23 +15,15 @@ export default class Model implements Listenable {
                         min?: number,
                         max?: number,
                         step?: number,
-                        items?: Array<any>, //todo: может быть стоит передавать только количество элементов
+                        items?: Array<any>,
                         values?: Array<any>,
                         handlers?: {
                             value: number,
                         }[],
                     }
     ) {
-        let defaultParameters = {
-            min: 0,
-            max: 10,
-            step: 1.5,
-        };
-        parameters = {...defaultParameters, ...parameters};
-
-        this._min = parameters.min;
-        this._max = parameters.max;
-        this._step = parameters.step;
+        this.setMinMax(parameters);
+        this.setStep(parameters);
 
         if (parameters.items && parameters.items.length > 0)
             //если передаётся массив своих значений
@@ -42,17 +34,48 @@ export default class Model implements Listenable {
 
         if (parameters.handlers && parameters.handlers.length > 0) {
             //если передаются кастомные хэндлеры
-            this.fillValuesFromObj(parameters.handlers);
+            this.generateHandlersFromObj(parameters.handlers);
         } else {
             this.generateHandlers(parameters.isRange ? 2 : 1);
         }
-
-        this._handlers[0].setActualPosition(100);
     }
 
-    private fillValuesFromObj(objects: { value: any }[]) {
+    private setStep(data: { step?: number, items?: Array<any> }) {
+        if (!data.step)
+            return;
+
+        if (data.items) {
+            this._step = Math.round(data.step);
+        } else {
+            this._step = data.step;
+        }
+    }
+
+    private setMinMax(data: { min?: number, max?: number, items?: Array<any> }) {
+        if (!data.items || data.items.length === 0)
+            this.setNumericMinMax(data.min, data.max);
+        else {
+            this.setNotNumericMinMax(data.items.length);
+        }
+    }
+
+    private setNumericMinMax(min: number, max: number) {
+        if (min)
+            this._min = min;
+        if (max)
+            this._max = max;
+    }
+
+    private setNotNumericMinMax(itemsCount: number) {
+        this._min = 0;
+        this._max = itemsCount;
+    }
+
+    private generateHandlersFromObj(objects: { value: any }[]) {
+        this._handlers = [];
         this._handlers = objects.map((handler, index) => {
-            return this.createHandler(handler.value, index, this._max);
+            //todo: валидация значений хэндлера
+            return this.createHandler(handler.value, index); //todo: должен быть индекс значения, а не хэндлера
         });
     }
 
@@ -71,11 +94,11 @@ export default class Model implements Listenable {
 
         if (valuesCount === 1) {
             const value = this.standardize(this._min + range / 2);
-            this._handlers.push(this.createHandler(value, value, this._max));
+            this._handlers.push(this.createHandler(value, value));
         } else {
             const part = this.standardize(range / (valuesCount - 1));
             for (let i = 0; i < valuesCount; i++) {
-                this._handlers.push(this.createHandler(i * part, i * part, this._max));
+                this._handlers.push(this.createHandler(i * part, i * part));
             }
         }
     };
@@ -85,19 +108,20 @@ export default class Model implements Listenable {
 
         if (valuesCount === 1) {
             const part = Math.round(itemsCount / 2);
-            this._handlers.push(this.createHandler(this._items[part], part, this._max));
+            this._handlers.push(this.createHandler(this._items[part], part));
         } else {
             const part = Math.round(itemsCount / (valuesCount - 1));
             for (let i = 0; i < valuesCount; i++) {
                 const valueIndex = i * part;
-                this._handlers.push(this.createHandler(this._items[valueIndex], valueIndex, this._max));
+                this._handlers.push(this.createHandler(this._items[valueIndex], valueIndex));
             }
         }
     };
 
-    private createHandler(value: number, index: number, maxValue: number) {
-        const newHandler = new HandlerModel(value, index, maxValue);
-        addListener("setActualPosition", this.handlerValueChanged, newHandler);
+    private createHandler(value: number, index: number) {
+        const newHandler = new HandlerModel(value, index, this._handlers.length);
+        addListener(newHandler.setPosition.name, this.handlerValueChanged.bind(this), newHandler);
+        newHandler.setPosition(this._min, this._max);
 
         return newHandler;
     };
@@ -106,7 +130,7 @@ export default class Model implements Listenable {
         console.log(handler);
     };
 
-    public getHandlersData(): { value: number, position: number}[] {
+    public getHandlersData(): { value: number, position: number }[] {
         return this._handlers.map((handler) => {
             return {value: handler.value, position: handler.position};
         });
@@ -133,7 +157,7 @@ export default class Model implements Listenable {
 }
 
 class HandlerModel implements Listenable {
-    //позиция будет передаваться между моделью и видом в виде процентов,
+    //позиция будет передаваться между моделью и видом в виде доли,
     //потому что это обезличенные данные, которые они могут интерпретировать как им нужно
     private _position: number;
 
@@ -150,21 +174,23 @@ class HandlerModel implements Listenable {
 
     constructor(
         private _value: any,
-        private _index: number,
-        private _max: number
+        public valueIndex: number, //если массив кастомных элементов
+        public handlerIndex: number,
     ) {
-        this.setActualPosition(_max);
     }
 
-    private calculatePosition(newIndex: number) {
-        return clamp(newIndex / this._max, 0, 1);
+    private calculatePosition(min: number, max: number) {
+        return clamp(((this.valueIndex - min) / (max - min)), 0, 1);
     }
 
-    public setActualPosition(newIndex: number) {
-        this._position = this.calculatePosition(newIndex);
+    public setPosition(min: number, max: number, newValueIndex?: number,) {
+        if (newValueIndex)
+            this.valueIndex = newValueIndex;
+
+        this._position = this.calculatePosition(min, max);
     }
 
-    public getActualPosition() {
+    public getPosition() {
         return this._position;
     }
 }
