@@ -89,6 +89,7 @@ export default class Model implements Listenable {
         this._handlers = [];
         this._handlers = objects.map((handler) => {
             const valueIndex = this.standardize(handler.value);
+
             const value = this.calculateHandlerValue(valueIndex);
             return this.createHandler(value);
         });
@@ -180,7 +181,6 @@ class HandlerModel implements Listenable {
         return this._position;
     }
 
-
     constructor(
         private _value: any, //непосредственно значение
         public valueIndex: number, //нужно для вычисления положения
@@ -197,9 +197,13 @@ class HandlerModel implements Listenable {
         );
     }
 
+    private updatePosition() {
+        this._position = this.calculatePosition();
+    }
+
     public setValueIndex(newValueIndex: number,) {
         this.valueIndex = newValueIndex;
-        this._position = this.calculatePosition();
+        this.updatePosition();
     }
 
     public getPosition() {
