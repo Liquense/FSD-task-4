@@ -33,7 +33,7 @@ export default class Model implements Listenable {
         this.setStep(parameters);
         this.setItems(parameters.items);
 
-        if (parameters.handlers && parameters.handlers.length > 0) {
+        if (parameters.handlers?.length) {
             //если передаются кастомные хэндлеры
             this.generateHandlersFromObj(parameters.handlers);
         } else {
@@ -42,10 +42,10 @@ export default class Model implements Listenable {
     }
 
     private setItems(items: any[]) {
-        if (items && items.length > 0)
+        if (items?.length) {
             //если передаётся массив своих значений
             this._items = items;
-        else {
+        } else {
             this._items = null;
         }
     }
@@ -61,12 +61,12 @@ export default class Model implements Listenable {
         }
     }
 
-    //region MinMax setting
+
     private setMinMax(data: { min?: number, max?: number, items?: Array<any> }) {
-        if (!data.items || data.items.length === 0)
-            this.setNumericMinMax(data.min, data.max);
-        else {
+        if (data.items?.length) {
             this.setNotNumericMinMax(data.items.length);
+        } else {
+            this.setNumericMinMax(data.min, data.max);
         }
     }
 
@@ -82,9 +82,7 @@ export default class Model implements Listenable {
         this._max = itemsCount - 1;
     }
 
-    //endregion
 
-    //region Handlers generation
     private generateHandlersFromObj(objects: { value: number }[]) {
         this._handlers = [];
         this._handlers = objects.map((handler) => {
@@ -125,7 +123,7 @@ export default class Model implements Listenable {
     }
 
     private createHandler(valueIndex: number) {
-        let handlerValue = this._items && this._items.length > 0 ? this._items[valueIndex] : valueIndex;
+        let handlerValue = this._items?.length > valueIndex ? this._items[valueIndex] : valueIndex;
 
         const newHandler = new HandlerModel(handlerValue, valueIndex, this._handlers.length, this);
         addListener(newHandler.setValueIndex.name, this.handlerValueChanged.bind(this), newHandler);
@@ -133,7 +131,6 @@ export default class Model implements Listenable {
         return newHandler;
     };
 
-    //endregion
 
     private handlerValueChanged(handler: HandlerModel) {
 
@@ -141,26 +138,30 @@ export default class Model implements Listenable {
 
     //для передачи контролеру
     public getHandlersData(): { value: number, position: number }[] {
-        return this._handlers.map((handler) => {
-            return {value: handler.value, position: handler.position};
-        });
+        return this._handlers.map(
+            handler => ({value: handler.value, position: handler.position})
+        );
     }
 
     private standardize(value: number): number {
         let resultValue: number;
         let remainder = (value - this._min) % this._step;
 
-        if (remainder === 0)
+        if (remainder === 0) {
             resultValue = value;
-        if (this._step / 2 > remainder)
+        }
+        if (this._step / 2 > remainder) {
             resultValue = value - remainder; //ближе к нижней части шага
-        else
+        } else {
             resultValue = value + (this._step - remainder); //ближе к верхней части
+        }
 
-        if (resultValue > this._max)
+        if (resultValue > this._max) {
             return this._max;
-        if (resultValue < this._min)
+        }
+        if (resultValue < this._min) {
             return this._min;
+        }
 
         return resultValue;
     }
