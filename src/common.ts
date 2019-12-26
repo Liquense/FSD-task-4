@@ -32,7 +32,7 @@ export interface Listenable {
     listenDictionary: object;
 }
 
-export function addListener(executor: string, listener: Function, executorContext: Listenable) {
+export function addListenerAfter(executor: string, listener: Function, executorContext: Listenable) {
     if (!executorContext)
         return;
     if (!executorContext.listenDictionary)
@@ -41,21 +41,18 @@ export function addListener(executor: string, listener: Function, executorContex
         executorContext.listenDictionary[executor] = {function: executorContext[executor], listeners: []};
     }
 
-    let listeners = executorContext.listenDictionary[executor].listeners;
+    let {listeners} = executorContext.listenDictionary[executor];
     listeners.push(listener);
 
     bindListeners(executor, listeners, executorContext);
 }
 
 export function removeListener(executor: string, listener: Function, executorContext: Listenable) {
-    if (!executorContext || !executorContext.listenDictionary || !executorContext.listenDictionary[executor])
+    if (!executorContext?.listenDictionary?.[executor])
         return;
 
-    let listeners = executorContext.listenDictionary[executor].listeners;
-    const listenerIndex = listeners.findIndex((value) => {
-        if (listener === value)
-            return true;
-    });
+    let {listeners} = executorContext.listenDictionary[executor];
+    const listenerIndex = listeners.findIndex((value: Function) => listener === value);
     if (listenerIndex === -1)
         return;
 
@@ -76,4 +73,14 @@ function bindListeners(executor: string, listeners: Function[], executorContext:
 
 export function clamp(num: number, min: number, max: number) {
     return Math.min(Math.max(num, min), max);
+}
+
+export function getElementCenter(element: Element): {x: number, y: number} {
+    let result = {x: undefined, y: undefined};
+
+    const elementCoordinates = element.getBoundingClientRect();
+    result.x = 2;
+    result.y = 3;
+
+    return result;
 }
