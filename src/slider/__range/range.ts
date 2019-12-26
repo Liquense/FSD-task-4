@@ -1,14 +1,14 @@
-import Handler from "../__handler/handler";
+import HandlerView from "../__handler/handler";
 import {defaultSliderClass} from "../../common";
 import handler from "../__handler/handler";
 
 export default class Range {
     public bodyHTML: string;
-    public startHandler: Handler;
-    public endHandler: Handler;
+    public startHandler: HandlerView;
+    public endHandler: HandlerView;
     private _element: Element;
 
-    constructor(firstHandler: Handler, secondHandler?: Handler) {
+    constructor(firstHandler: HandlerView, secondHandler?: HandlerView) {
         if (secondHandler)
             this.arrangeHandlers(firstHandler, secondHandler);
 
@@ -20,8 +20,8 @@ export default class Range {
         this.bodyHTML = `<div class=${defaultSliderClass}__range></div>`;
     }
 
-    private arrangeHandlers(firstHandler: Handler, secondHandler: Handler) {
-        if (firstHandler.position <= secondHandler.position) {
+    private arrangeHandlers(firstHandler: HandlerView, secondHandler: HandlerView) {
+        if (firstHandler.positionPart <= secondHandler.positionPart) {
             this.startHandler = firstHandler;
             this.endHandler = secondHandler;
         } else {
@@ -30,15 +30,15 @@ export default class Range {
         }
     };
 
-    public addHandler(handler: Handler) {
+    public addHandler(handler: HandlerView) {
 
     }
 
-    public removeHandler(handler: Handler) {
+    public removeHandler(handler: HandlerView) {
 
     }
 
-    public isHandlerInRange(handler: Handler) {
+    public isHandlerInRange(handler: HandlerView) {
         return handler === this.startHandler || handler === this.endHandler;
     }
 }
