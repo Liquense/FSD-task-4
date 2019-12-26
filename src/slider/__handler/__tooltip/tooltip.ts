@@ -15,12 +15,19 @@ export default class Tooltip {
     }
 
     private _element: Element;
-    private readonly _defaultClass = defaultSliderClass + "__tooltip";
+    get element(): Element {
+        return this._element;
+    }
+    private readonly _defaultClass = defaultSliderClass + "__handlerTooltip";
     private _currentPosition: string;
 
     private _additionalClasses: string[];
     set additionalClasses(classesString: string) {
         this._additionalClasses = parseClassesString(classesString);
+    }
+
+    get width(): number {
+        return this.element.getBoundingClientRect().width;
     }
 
     constructor(parentElement: Element,
@@ -58,7 +65,7 @@ export default class Tooltip {
     }
 
     private createElement(parentElement: Element) {
-        this._element = document.createElement("span");
+        this._element = document.createElement("div");
         addClass(this._element, `${this._defaultClass}`);
         this._element.innerHTML = this._innerHTML;
 
@@ -67,5 +74,9 @@ export default class Tooltip {
 
     public updateHTML() {
         this._element.innerHTML = this._innerHTML;
+    }
+
+    public updatePosition() {
+
     }
 }
