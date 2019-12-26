@@ -6,7 +6,9 @@
 
 $sliderWidth: 320px;
 $scaleHeight: 8px;
-$handlerSize: $scaleHeight + 6px;
+$handlerAddition: 6px;
+$handlerSize: $scaleHeight + $handlerAddition;
+$handlerBorderWidth: 1px;
 $scaleBorderWidth: 1px;
 $tooltipHeight: 15px;
 $tooltipWidth: 30px;
@@ -14,18 +16,21 @@ $tooltipMargin: 3px;
 $tooltipBorderWidth: 1px;
 .liquidSlider {
   margin-left: 30px;
+  padding-top: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipMargin;
+  padding-bottom: $handlerAddition/2 + $handlerBorderWidth;
 
   .liquidSlider__data {
     text-align: right;
     margin-bottom: $tooltipHeight + $tooltipMargin + 3px;
     max-width: $sliderWidth;
   }
-;
 
   .liquidSlider__body {
+    width: $sliderWidth;
+    position: relative;
 
     .liquidSlider__scale {
-      width: $sliderWidth;
+      width: 100%;
       height: $scaleHeight;
       background-color: rgba(200, 200, 200, 0.3);
       border: solid $scaleBorderWidth black;
@@ -33,18 +38,24 @@ $tooltipBorderWidth: 1px;
     }
 
     .liquidSlider__handlerContainer {
-      position: relative;
+      position: absolute;
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: start;
+      align-items: center;
+      top: -$tooltipHeight - (($handlerSize - $handlerBorderWidth*2)/2);
 
       .liquidSlider__handlerTooltip {
-        width: $tooltipWidth;
         height: $tooltipHeight;
         background-color: rgba(255, 255, 255, 0.5);
-        border: solid $tooltipBorderWidth black;
+        //border: solid $tooltipBorderWidth black;
         border-radius: 20%;
+        font-size: 14px;
+        line-height: $tooltipHeight - $tooltipBorderWidth*2;
+        text-align: center;
+        user-select: none;
 
-        position: absolute;
-        top: -$tooltipHeight - $scaleHeight - $tooltipMargin;
-        left: -$handlerSize/2 - $tooltipBorderWidth;
+        margin-top: 2px;
       }
 
       .liquidSlider__handlerBody {
@@ -52,11 +63,7 @@ $tooltipBorderWidth: 1px;
         width: $handlerSize;
         border-radius: 50%;
         background-color: #ffb6b0;
-        border: solid 1px darkgrey;
-
-        position: absolute;
-        top: -($handlerSize)/2 - ($scaleHeight)/2;
-        left: 0;
+        border: solid $handlerBorderWidth darkgrey;
 
         &:hover, &:active {
           border-color: #593832;
