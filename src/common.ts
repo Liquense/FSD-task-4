@@ -1,4 +1,6 @@
 import Func = Mocha.Func;
+import * as webpack from "webpack";
+import numberToIdentifer = webpack.Template.numberToIdentifer;
 
 export const defaultSliderClass = "liquidSlider";
 export const viewFunctionNames = [
@@ -75,7 +77,7 @@ export function clamp(num: number, min: number, max: number) {
     return Math.min(Math.max(num, min), max);
 }
 
-export function getElementCenter(element: Element): {x: number, y: number} {
+export function getElementCenter(element: Element): { x: number, y: number } {
     let result = {x: undefined, y: undefined};
 
     const elementCoordinates = element.getBoundingClientRect();
@@ -83,4 +85,27 @@ export function getElementCenter(element: Element): {x: number, y: number} {
     result.y = 3;
 
     return result;
+}
+
+export function standardize(value: number, parameters: { min: number, max: number, step: number }): number {
+    if (value > parameters.max) {
+        return parameters.max;
+    }
+    if (value < parameters.min) {
+        return parameters.min;
+    }
+
+    let resultValue: number;
+    let remainder = (value - parameters.min) % parameters.step;
+
+    if (remainder === 0) {
+        return value;
+    }
+    if (parameters.step / 2 > remainder) {
+        resultValue = value - remainder; //ближе к нижней части шага
+    } else {
+        resultValue = value + (parameters.step - remainder); //ближе к верхней части
+    }
+
+    return resultValue;
 }

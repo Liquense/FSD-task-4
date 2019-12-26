@@ -1,4 +1,4 @@
-import {addListener, clamp, Listenable, removeListener} from "./common";
+import {addListenerAfter, clamp, Listenable, removeListener, standardize} from "./common";
 
 export default class Model implements Listenable {
     private _items: Array<any>;
@@ -15,7 +15,7 @@ export default class Model implements Listenable {
     private _step = 1;
     private _handlers: HandlerModel[];
 
-    public listenDictionary: { function: Function, listeners: Function[] };
+    listenDictionary: { function: Function, listeners: Function[] };
 
     constructor(parameters: {
                     isRange?: boolean,
@@ -86,7 +86,10 @@ export default class Model implements Listenable {
     private generateHandlersFromObj(objects: { value: number }[]) {
         this._handlers = [];
         this._handlers = objects.map((handler) => {
-            const valueIndex = this.standardize(handler.value);
+            const valueIndex = standardize(
+                handler.value,
+                {min: this._min, max: this._max, step: this._step}
+            );
 
             const value = this.calculateHandlerValue(valueIndex);
             return this.createHandler(value);
@@ -111,10 +114,16 @@ export default class Model implements Listenable {
         const range = this._max - this._min;
 
         if (handlersCount === 1) {
-            const value = this.standardize(this._min + range / 2);
+            const value = standardize(
+                this._min + range / 2,
+                {min: this._min, max: this._max, step: this._step}
+            );
             this._handlers.push(this.createHandler(value));
         } else {
-            const part = this.standardize(range / (handlersCount - 1));
+            const part = standardize(
+                range / (handlersCount - 1),
+                {min: this._min, max: this._max, step: this._step}
+            );
             for (let i = 0; i < handlersCount; i++) {
                 const valueIndex = i * part;
                 this._handlers.push(this.createHandler(valueIndex));
@@ -126,7 +135,7 @@ export default class Model implements Listenable {
         let handlerValue = this._items?.length > valueIndex ? this._items[valueIndex] : valueIndex;
 
         const newHandler = new HandlerModel(handlerValue, valueIndex, this._handlers.length, this);
-        addListener(newHandler.setValueIndex.name, this.handlerValueChanged.bind(this), newHandler);
+        addListenerAfter(newHandler.setValueIndex.name, this.handlerValueChanged.bind(this), newHandler);
 
         return newHandler;
     };
@@ -137,33 +146,18 @@ export default class Model implements Listenable {
     };
 
     //для передачи контролеру
-    public getHandlersData(): { value: number, position: number }[] {
+    public getHandlersData(): { value: any, position: number }[] {
         return this._handlers.map(
             handler => ({value: handler.value, position: handler.position})
         );
     }
 
-    private standardize(value: number): number {
-        let resultValue: number;
-        let remainder = (value - this._min) % this._step;
+    public getSliderData() {
+        let result = {
+            step: this._step / (this._max - this._min),
+        };
 
-        if (remainder === 0) {
-            resultValue = value;
-        }
-        if (this._step / 2 > remainder) {
-            resultValue = value - remainder; //ближе к нижней части шага
-        } else {
-            resultValue = value + (this._step - remainder); //ближе к верхней части
-        }
-
-        if (resultValue > this._max) {
-            return this._max;
-        }
-        if (resultValue < this._min) {
-            return this._min;
-        }
-
-        return resultValue;
+        return result;
     }
 }
 
@@ -174,11 +168,11 @@ class HandlerModel implements Listenable {
 
     public listenDictionary: { function: Function, listeners: Function[] };
 
-    get value() {
+    get value(): any {
         return this._value;
     }
 
-    get position() {
+    get position(): number {
         return this._position;
     }
 
@@ -188,7 +182,7 @@ class HandlerModel implements Listenable {
         public handlerIndex: number,
         private readonly parentSlider: Model,
     ) {
-        this.calculatePosition();
+        this.updatePosition();
     }
 
     private calculatePosition() {
