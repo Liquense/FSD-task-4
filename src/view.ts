@@ -21,7 +21,19 @@ export default class View {
         console.log("handlers changed");
     }
 
-    public setHandlersData(handlers: { value: number, position: number}[]) {
-        this._slider.setHandlersData(handlers); //todo: пересчет позиции в стилевые значения для передачи хэндлеру
+    public setHandlersData(handlers: { value: any, position: number}[]) {
+        this._slider.setHandlersData(handlers);
+    }
+
+    public setSliderData(sliderData: object) {
+        this._slider.update(sliderData);
+    }
+
+    public addHandler() {
+
+    }
+
+    public addSliderMousedownListener(listener: Function) {
+        this._slider.addOnMouseDownListener(listener);
     }
 };
