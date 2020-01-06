@@ -5,7 +5,7 @@ export default class Tooltip {
     private _value: any;
     set value(value) {
         this._value = value;
-        this.innerHTML= value;
+        this.innerHTML = value;
     }
 
     private _innerHTML = `${this._value}`;
@@ -18,6 +18,7 @@ export default class Tooltip {
     get element(): Element {
         return this._element;
     }
+
     private readonly _defaultClass = defaultSliderClass + "__handlerTooltip";
     private _currentPosition: string;
 
@@ -30,8 +31,19 @@ export default class Tooltip {
         return this.element.getBoundingClientRect().width;
     }
 
+    get height(): number {
+        return this.element.getBoundingClientRect().height;
+    }
+
+    public getSize(): number {
+        if (this.sliderIsVertical)
+            return this.height;
+        else
+            return this.width;
+    }
+
     constructor(parentElement: Element,
-                sliderIsVertical: boolean,
+                private sliderIsVertical: boolean,
                 additionalClass?: string,
                 position?: string,
                 bodyHTML?: string,
@@ -77,6 +89,6 @@ export default class Tooltip {
     }
 
     public updatePosition() {
-
+        this.updateHTML();
     }
 }
