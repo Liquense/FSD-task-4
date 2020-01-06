@@ -47,7 +47,6 @@ $.fn.liquidSlider = function liquidSlider(
             },
         }[],
     }) {
-
     let pluginController: Controller;
     try {
         pluginController = new Controller($(this).get()[0], parameters);
