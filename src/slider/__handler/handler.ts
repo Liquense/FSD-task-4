@@ -41,6 +41,9 @@ export default class HandlerView {
     get width(): number {
         return this._element.body.getBoundingClientRect().width;
     }
+    get height(): number {
+        return this._element.body.getBoundingClientRect().height;
+    }
 
     private _isEnd: boolean;
     get isEnd() {
@@ -87,7 +90,7 @@ export default class HandlerView {
         parameters = {...defaultParameters, ...parameters};
         this._withTooltip = parameters.withTooltip;
         this._isEnd = parameters.isEnd;
-        this.createElement(parentSlider.bodyHTML);
+        this.createElement(parentSlider.bodyElement);
 
         this._tooltip = new Tooltip(this._element.wrap, parentSlider.isVertical);
 
@@ -112,12 +115,28 @@ export default class HandlerView {
         wrap.appendChild(body);
     };
 
+    private getSize(): number {
+        if (this.parentSlider.isVertical)
+            return this.height;
+        else
+            return this.width;
+    }
+
+    private calculateShift(): number {
+        let handlerSize = this.getSize();
+        let tooltipSize = this._tooltip.getSize();
+
+        const scaleSize = this.parentSlider.getScaleSize();
+        const workZone = scaleSize - handlerSize;
+
+        const tooltipExcess = Math.max(0, tooltipSize - handlerSize); //насколько тултип больше хэндлера
+        const shift = workZone * this._positionPart - 0.5 * tooltipExcess;
+
+        return shift;
+    }
+
     private updatePosition() {
-        const handlerWidth = this.width;
-        const tooltipWidth = this._tooltip?.width;
-        const sliderWidth = this.parentSlider.width;
-        const workZone = sliderWidth - handlerWidth;
-        const shift = workZone * this._positionPart - 0.5 * Math.abs(handlerWidth - tooltipWidth);
+        const shift = this.calculateShift();
 
         this._element.wrap.setAttribute(
             "style",
@@ -131,7 +150,23 @@ export default class HandlerView {
 
     }
 
-    public getRelativePosition() {
+    private calculateWorkingCoordinateCenter(element): number {
+        const thisRect = element.getBoundingClientRect();
+        let thisCenter: number;
 
+        if (this.parentSlider.isVertical) {
+            thisCenter = (thisRect.bottom - thisRect.top) / 2;
+        } else {
+            thisCenter = (thisRect.right - thisRect.left) / 2;
+        }
+
+        return thisCenter;
+    }
+
+    public calculateRelativePosition(): number {
+        const thisCenter = this.calculateWorkingCoordinateCenter(this._element.body);
+        const sliderRect = this.parentSlider.bodyElement.getBoundingClientRect();
+
+        return this.parentSlider.isVertical ? thisCenter - sliderRect.top : thisCenter - sliderRect.left;
     }
 }
