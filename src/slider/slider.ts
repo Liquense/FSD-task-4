@@ -9,14 +9,14 @@ import Func = Mocha.Func;
 export default class Slider implements Listenable {
     listenDictionary: { function: Function, listeners: Function[] };
 
-    private _DOMElement: {
+    private _element: {
         wrap: Element,
         body: Element,
         scale: Element,
     };
 
-    get bodyHTML(): Element {
-        return this._DOMElement.body;
+    get bodyElement(): Element {
+        return this._element.body;
     }
 
     private _handlers: HandlerView[];
@@ -33,8 +33,11 @@ export default class Slider implements Listenable {
     private _step: number;
     private _ranges: Range[];
 
-    get width() {
-        return this.bodyHTML.getBoundingClientRect().width;
+    public getScaleSize() {
+        if (this.isVertical)
+            return this.bodyElement.getBoundingClientRect().height;
+        else
+            return this.bodyElement.getBoundingClientRect().width;
     }
 
     constructor(parentElement: Element,
@@ -59,16 +62,16 @@ export default class Slider implements Listenable {
     }
 
     private createElement(parentElement: Element) {
-        this._DOMElement = {
+        this._element = {
             wrap: document.createElement("div"),
             body: document.createElement("div"),
             scale: document.createElement("div")
         };
-        let wrap = this._DOMElement.wrap;
+        let wrap = this._element.wrap;
         addClass(wrap, defaultSliderClass);
-        let body = this._DOMElement.body;
+        let body = this._element.body;
         addClass(body, `${defaultSliderClass}__body`);
-        let scale = this._DOMElement.scale;
+        let scale = this._element.scale;
         addClass(scale, `${defaultSliderClass}__scale`);
 
         parentElement.replaceWith(wrap);
@@ -78,30 +81,30 @@ export default class Slider implements Listenable {
 
 
     private setMouseEvents() {
-        this._DOMElement.body.addEventListener(
+        this._element.body.addEventListener(
             "mousedown",
             (...args) => this.onMouseDown.call(this, ...args)
         );
-        this._DOMElement.body.addEventListener(
+        this._element.body.addEventListener(
             "mouseup",
             (...args) => this.removeMouseMoveListener.call(this, ...args)
         );
-        this._DOMElement.body.addEventListener(
+        this._element.body.addEventListener(
             "mouseleave",
             (...args) => this.removeMouseMoveListener.call(this, ...args)
         );
     }
 
-    private onMouseDown(eventArgs) {
-        this._DOMElement.body.addEventListener("mousemove", this.onMouseMove);
-        this._handlers[0].positionPart = 0;
+    private onMouseDown(eventArgs): void {
+        this._element.body.addEventListener("mousemove", this.onMouseMove);
+        this._handlers[0].positionPart = 0.5;
     }
 
-    private removeMouseMoveListener(eventArgs) {
-        this._DOMElement.body.removeEventListener("mousemove", this.onMouseMove);
+    private removeMouseMoveListener(eventArgs): void {
+        this._element.body.removeEventListener("mousemove", this.onMouseMove);
     }
 
-    private onMouseMove(eventArgs) {
+    private onMouseMove(eventArgs): void {
 
     }
 
@@ -148,10 +151,10 @@ export default class Slider implements Listenable {
     }
 
     public addOnMouseDownListener(listener: Function) {
-        this._DOMElement.body.removeEventListener("mousedown", this.onMouseDown);
+        this._element.body.removeEventListener("mousedown", this.onMouseDown);
 
         addListenerAfter(this.onMouseDown.name, listener, this);
 
-        this._DOMElement.body.addEventListener("mousedown", this.onMouseDown);
+        this._element.body.addEventListener("mousedown", this.onMouseDown);
     }
 }
