@@ -53,9 +53,8 @@ $tooltipBorderWidth: 1px;
         font-size: 14px;
         line-height: $tooltipHeight - $tooltipBorderWidth*2;
         text-align: center;
-        user-select: none;
-
         margin-top: 2px;
+        user-select: none;
       }
 
       .liquidSlider__handlerBody {
