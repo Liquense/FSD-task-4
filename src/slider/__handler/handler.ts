@@ -41,20 +41,22 @@ export default class HandlerView {
     get width(): number {
         return this._element.body.getBoundingClientRect().width;
     }
+
     get height(): number {
         return this._element.body.getBoundingClientRect().height;
     }
+
 
     private _isEnd: boolean;
     get isEnd() {
         return this._isEnd;
     };
 
-    get isStart() {
+    get isStart(): boolean {
         return !this._isEnd;
     }
 
-    set isEnd(value) {
+    set isEnd(value: boolean) {
         this._isEnd = value;
     };
 
@@ -65,11 +67,11 @@ export default class HandlerView {
 
     private _withTooltip: boolean;
 
-    showTooltip() {
+    public showTooltip(): void {
         this._withTooltip = true;
     }
 
-    hideTooltip() {
+    public hideTooltip(): void {
         this._withTooltip = false;
     }
 
@@ -99,7 +101,7 @@ export default class HandlerView {
         requestAnimationFrame(this.updatePosition.bind(this));
     }
 
-    private createElement(parentElement: Element) {
+    private createElement(parentElement: Element): void {
         this._element = {
             wrap: document.createElement("div"),
             body: document.createElement("div")
@@ -124,19 +126,33 @@ export default class HandlerView {
 
     private calculateShift(): number {
         let handlerSize = this.getSize();
-        let tooltipSize = this._tooltip.getSize();
 
         const scaleSize = this.parentSlider.getScaleSize();
         const workZone = scaleSize - handlerSize;
 
-        const tooltipExcess = Math.max(0, tooltipSize - handlerSize); //насколько тултип больше хэндлера
-        const shift = workZone * this._positionPart - 0.5 * tooltipExcess;
+        const shift = workZone * this._positionPart;
 
         return shift;
     }
 
-    private updatePosition() {
-        const shift = this.calculateShift();
+    //добавляется смещение для правильного отображения хэндлера и тултипа, если тултип больше
+    private centerShift(shift): number {
+        let handlerSize = this.getSize();
+        let tooltipSize = this._tooltip.getSize();
+
+        const tooltipExcess = Math.max(0, tooltipSize - handlerSize);
+
+        return shift - 0.5 * tooltipExcess;
+    }
+
+    private calculateAccurateShift(): number {
+        let shift = this.calculateShift();
+
+        return this.centerShift(shift);
+    }
+
+    private updatePosition(): void {
+        const shift = this.calculateAccurateShift();
 
         this._element.wrap.setAttribute(
             "style",
