@@ -108,12 +108,10 @@ export default class HandlerView {
     }
 
     private createElement(parentElement: Element): void {
-        this._element = {
-            wrap: document.createElement("div"),
-            body: document.createElement("div")
-        };
-        let wrap = this._element.wrap;
-        let body = this._element.body;
+        let wrap = document.createElement("div");
+        let body = document.createElement("div");
+
+        this._element = {wrap, body};
 
         addClass(wrap, `${this._defaultClass}Container`);
         addClasses(wrap, this._additionalClasses);
@@ -173,8 +171,8 @@ export default class HandlerView {
 
     }
 
-    private calculateWorkingCoordinateCenter(element): number {
-        const thisRect = element.getBoundingClientRect();
+    private calculateBodyCenter(): number {
+        const thisRect = this._element.body.getBoundingClientRect();
         let thisCenter: number;
 
         if (this.parentSlider.isVertical) {
@@ -187,7 +185,7 @@ export default class HandlerView {
     }
 
     public calculateRelativePosition(): number {
-        const thisCenter = this.calculateWorkingCoordinateCenter(this._element.body);
+        const thisCenter = this.calculateBodyCenter();
         const sliderRect = this.parentSlider.bodyElement.getBoundingClientRect();
 
         return this.parentSlider.isVertical ? thisCenter - sliderRect.top : thisCenter - sliderRect.left;
