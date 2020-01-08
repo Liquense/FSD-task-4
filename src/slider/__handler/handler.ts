@@ -17,6 +17,12 @@ export default class HandlerView {
             this._tooltip.value = value;
     }
 
+    private _positionCoordinate: number;
+
+    get positionCoordinate() {
+        return this._positionCoordinate;
+    }
+
     private _positionPart: number;
     set positionPart(newPosition: number) {
         this._positionPart = newPosition;
@@ -158,6 +164,7 @@ export default class HandlerView {
             "style",
             `left: ${shift}px`
         );
+        this._positionCoordinate = this.calculateBodyCenter();
 
         this._tooltip?.updatePosition();
     }
