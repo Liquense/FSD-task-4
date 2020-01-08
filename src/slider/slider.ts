@@ -1,10 +1,6 @@
 import HandlerView from "./__handler/handler";
 import Range from "./__range/range";
 import {addClass, addListenerAfter, defaultSliderClass, Listenable, standardize} from "../common";
-import handler from "./__handler/handler";
-import * as webpack from "webpack";
-import Handler = webpack.Compiler.Watching.Handler;
-import Func = Mocha.Func;
 
 export default class Slider implements Listenable {
     listenDictionary: { function: Function, listeners: Function[] };
@@ -69,8 +65,11 @@ export default class Slider implements Listenable {
         };
         let wrap = this._element.wrap;
         addClass(wrap, defaultSliderClass);
+
         let body = this._element.body;
+        body.addEventListener("mousedown", (event) => event.preventDefault());
         addClass(body, `${defaultSliderClass}__body`);
+
         let scale = this._element.scale;
         addClass(scale, `${defaultSliderClass}__scale`);
 
@@ -83,35 +82,49 @@ export default class Slider implements Listenable {
     private setMouseEvents() {
         this._element.body.addEventListener(
             "mousedown",
-            (...args) => this.onMouseDown.call(this, ...args)
+            (event) => this.handleMouseDown(event)
         );
-        this._element.body.addEventListener(
+        document.body.addEventListener(
             "mouseup",
-            (...args) => this.removeMouseMoveListener.call(this, ...args)
-        );
-        this._element.body.addEventListener(
-            "mouseleave",
-            (...args) => this.removeMouseMoveListener.call(this, ...args)
+            (event) => {
+                document.body.removeEventListener("mousemove", this._mouseMoveListener);
+            }
         );
     }
 
-    private onMouseDown(eventArgs): void {
-        this._element.body.addEventListener("mousemove", this.onMouseMove);
-        this._handlers[0].positionPart = 0.5;
+    private _mouseMoveListener = this.handleMouseMove.bind(this); //хранится для корректного удаления слушателя
+
+    private handleMouseDown(event): void {
+        document.body.addEventListener("mousemove", this._mouseMoveListener);
     }
 
-    private removeMouseMoveListener(eventArgs): void {
-        this._element.body.removeEventListener("mousemove", this.onMouseMove);
+    private handleMouseMove(event): void {
+        const closestHandler = this.getClosestToMouseHandler(event.pageX, event.pageY);
+
+        if (this._isVertical) {
+
+        } else {
+
+        }
     }
 
-    private onMouseMove(eventArgs): void {
-
+    private getClosestToMouseHandler(mouseX: number, mouseY: number): HandlerView {
+        return this._isVertical ? this.findClosestHandler(mouseY) : this.findClosestHandler(mouseX);
     }
 
-    private getClosestHandler(mouseX: number, mouseY: number): HandlerView {
+    private findClosestHandler(mouseCoordinate: number): HandlerView {
+        let minDistance = Number.MAX_VALUE;
+        let closestHandler: HandlerView;
 
+        for (let handler of this._handlers) {
+            const distance = Math.abs(handler.positionCoordinate - mouseCoordinate);
 
-        return this._handlers[0];
+            if (minDistance > distance) {
+                closestHandler = handler;
+            }
+        }
+
+        return closestHandler;
     }
 
     private createUniqueRange(handler: HandlerView) {
@@ -141,6 +154,7 @@ export default class Slider implements Listenable {
             handlers.forEach((handler, index) => {
                 this._handlers[index].positionPart = handler.position;
                 this._handlers[index].value = handler.value;
+                this._handlers[index].index = index;
             })
         }
     }
@@ -151,10 +165,10 @@ export default class Slider implements Listenable {
     }
 
     public addOnMouseDownListener(listener: Function) {
-        this._element.body.removeEventListener("mousedown", this.onMouseDown);
+        this._element.body.removeEventListener("mousedown", this.handleMouseDown);
 
-        addListenerAfter(this.onMouseDown.name, listener, this);
+        addListenerAfter(this.handleMouseDown.name, listener, this);
 
-        this._element.body.addEventListener("mousedown", this.onMouseDown);
+        this._element.body.addEventListener("mousedown", this.handleMouseDown);
     }
 }
