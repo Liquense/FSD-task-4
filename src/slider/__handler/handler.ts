@@ -3,6 +3,8 @@ import Tooltip from "./__tooltip/tooltip";
 import Slider from "../slider";
 
 export default class HandlerView {
+    public index: number;
+
     private _defaultClass = `${defaultSliderClass}__handler`;
 
     private _additionalClasses: string[];
@@ -167,7 +169,7 @@ export default class HandlerView {
         this._tooltip?.updatePosition();
     }
 
-    private moveTo() {
+    public setPosition(newCoordinate: number) {
 
     }
 
