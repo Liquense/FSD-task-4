@@ -64,11 +64,11 @@ export function removeListener(executor: string, listener: Function, executorCon
 function bindListeners(executor: string, listeners: Function[], executorContext: Listenable) {
     const pureFunc = executorContext.listenDictionary[executor].function;
     executorContext[executor] = function (...args) {
-        pureFunc.call(executorContext, ...args);
+        const functionResult = pureFunc.call(executorContext, ...args);
 
         //добавляется выполнение всех слушателей после исполнения функции
         for (let listener of listeners) {
-            listener(executorContext);
+            listener(functionResult);
         }
     };
 }
@@ -107,7 +107,7 @@ export function standardize(value: number, parameters: { min: number, max: numbe
         resultValue = value + (parameters.step - remainder); //ближе к верхней части
     }
 
-    return resultValue;
+    return clamp(resultValue, parameters.min, parameters.max);
 }
 
 export function calculateElementCenter(DOMElement: Element, isVertical: boolean): number {
