@@ -121,12 +121,9 @@ export default class Slider implements Listenable {
 
     private handleMouseMove(event): void {
         const closestHandler = this.getClosestToMouseHandler(event.pageX, event.pageY);
-        const workZonePadding = closestHandler.size / 2;
-        const start = workZonePadding / this.scaleSize;
-        const end = 1 - (workZonePadding / this.scaleSize);
 
         const mousePosition = this.calculateMouseRelativePosition(event);
-        const standardMousePosition = standardize(mousePosition, {min: start, max: end, step: this._step});
+        const standardMousePosition = standardize(mousePosition, {min: 0, max: 1, step: this._step});
 
         this._parentView.handlerPositionChanged(closestHandler.index, standardMousePosition);
     }
