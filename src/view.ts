@@ -1,8 +1,10 @@
 import "./slider/slider"
 import Slider from "./slider/slider";
+import {Listenable} from "./common";
 
-export default class View {
-    private readonly _element: Element;
+export default class View implements Listenable {
+    listenDictionary: { function: Function, listeners: Function[] };
+    public readonly element: Element;
     private readonly _slider: Slider;
     private readonly _tooltipPositions =
         {
@@ -13,16 +15,20 @@ export default class View {
         };
 
     constructor(element: Element, parameters: object) {
-        this._element = element;
-        this._slider = new Slider(element, parameters);
+        this.element = element;
+        this._slider = new Slider(this, parameters);
     }
 
-    public handlersValuesChangedListener() {
-        console.log("handlers changed");
+    public handlerPositionChanged(handlerIndex: number, standardizedPosition: number): { index: number, position: number } {
+        return {index: handlerIndex, position: standardizedPosition};
     }
 
-    public setHandlersData(handlers: { value: any, position: number}[]) {
-        this._slider.setHandlersData(handlers);
+    public handlersValuesChangedListener(data: {index: number, position: number, value: any}): void {
+        this._slider.setHandlersData([data]);
+    }
+
+    public setHandlersData(handlers: { index: number, value: any, position: number }[]) {
+        this._slider.initHandlers(handlers);
     }
 
     public setSliderData(sliderData: object) {

@@ -1,4 +1,4 @@
-import {addClass, addClasses, defaultSliderClass, parseClassesString} from "../../common";
+import {addClass, addClasses, calculateElementCenter, defaultSliderClass, parseClassesString} from "../../common";
 import Tooltip from "./__tooltip/tooltip";
 import Slider from "../slider";
 
@@ -26,11 +26,9 @@ export default class HandlerView {
     }
 
     private _positionPart: number;
-    set positionPart(newPosition: number) {
-        this._positionPart = newPosition;
-        if (this._element)
-            this.updatePosition();
-    };
+    get positionPart(): number {
+        return this._positionPart;
+    }
 
 
     private _element: {
@@ -86,6 +84,7 @@ export default class HandlerView {
     constructor(private parentSlider: Slider,
                 parameters:
                     {
+                        index: number,
                         position: number,
                         value: any,
                         withTooltip?: boolean,
@@ -104,6 +103,7 @@ export default class HandlerView {
 
         this._tooltip = new Tooltip(this._element.wrap, parentSlider.isVertical);
 
+        this.index = parameters.index;
         this._positionPart = parameters.position;
         this.value = parameters.value;
         requestAnimationFrame(this.updatePosition.bind(this));
@@ -123,36 +123,34 @@ export default class HandlerView {
         wrap.appendChild(body);
     };
 
-    private getSize(): number {
+    get size(): number {
         if (this.parentSlider.isVertical)
             return this.height;
         else
             return this.width;
     }
 
-    private calculateShift(): number {
-        let handlerSize = this.getSize();
-
-        const scaleSize = this.parentSlider.getScaleSize();
+    private calculateOffset(): number {
+        let handlerSize = this.size;
+        const scaleSize = this.parentSlider.scaleSize;
         const workZone = scaleSize - handlerSize;
 
         const shift = workZone * this._positionPart;
-
         return shift;
     }
 
     //добавляется смещение для правильного отображения хэндлера и тултипа, если тултип больше
     private centerShift(shift): number {
-        let handlerSize = this.getSize();
+        let handlerSize = this.size;
         let tooltipSize = this._tooltip.getSize();
 
         const tooltipExcess = Math.max(0, tooltipSize - handlerSize);
 
-        return shift - 0.5 * tooltipExcess;
+        return (shift - 0.5 * tooltipExcess);
     }
 
     private calculateAccurateShift(): number {
-        let shift = this.calculateShift();
+        let shift = this.calculateOffset();
 
         return this.centerShift(shift);
     }
@@ -164,32 +162,14 @@ export default class HandlerView {
             "style",
             `left: ${shift}px`
         );
-        this._positionCoordinate = this.calculateBodyCenter();
+        this._positionCoordinate = calculateElementCenter(this._element.body, this.parentSlider.isVertical);
 
         this._tooltip?.updatePosition();
     }
 
-    public setPosition(newCoordinate: number) {
-
-    }
-
-    private calculateBodyCenter(): number {
-        const thisRect = this._element.body.getBoundingClientRect();
-        let thisCenter: number;
-
-        if (this.parentSlider.isVertical) {
-            thisCenter = (thisRect.bottom - thisRect.top) / 2;
-        } else {
-            thisCenter = (thisRect.right - thisRect.left) / 2;
-        }
-
-        return thisCenter;
-    }
-
-    public calculateRelativePosition(): number {
-        const thisCenter = this.calculateBodyCenter();
-        const sliderRect = this.parentSlider.bodyElement.getBoundingClientRect();
-
-        return this.parentSlider.isVertical ? thisCenter - sliderRect.top : thisCenter - sliderRect.left;
+    public setPosition(newPositionPart: number) {
+        this._positionPart = newPositionPart;
+        if (this._element)
+            this.updatePosition();
     }
 }

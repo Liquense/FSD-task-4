@@ -12,7 +12,20 @@ export default class Model implements Listenable {
         return this._max;
     }
 
+    get range(): number {
+        return this._max - this._min;
+    }
+
     private _step = 1;
+
+    get standardizeParams() {
+        return {
+            min: this._min,
+            max: this._max,
+            step: this._step
+        };
+    }
+
     private _handlers: HandlerModel[];
 
     listenDictionary: { function: Function, listeners: Function[] };
@@ -88,7 +101,7 @@ export default class Model implements Listenable {
         this._handlers = objects.map((handler, index) => {
             const valueIndex = standardize(
                 handler.value,
-                {min: this._min, max: this._max, step: this._step}
+                this.standardizeParams
             );
 
             const value = this.calculateHandlerValue(valueIndex);
@@ -96,7 +109,7 @@ export default class Model implements Listenable {
         });
     }
 
-    private calculateHandlerValue(valueOrIndex: number): any {
+    public calculateHandlerValue(valueOrIndex: number): any {
         let result: any;
 
         if (this._items) {
@@ -111,18 +124,16 @@ export default class Model implements Listenable {
     private generateDefaultHandlers(handlersCount: number) {
         this._handlers = [];
 
-        const range = this._max - this._min;
-
         if (handlersCount === 1) {
             const value = standardize(
-                this._min + range / 2,
-                {min: this._min, max: this._max, step: this._step}
+                this._min + this.range / 2,
+                this.standardizeParams
             );
             this._handlers.push(this.createHandler(value, this._handlers.length));
         } else {
             const part = standardize(
-                range / (handlersCount - 1),
-                {min: this._min, max: this._max, step: this._step}
+                this.range / (handlersCount - 1),
+                this.standardizeParams
             );
             for (let i = 0; i < handlersCount; i++) {
                 const valueIndex = i * part;
@@ -135,18 +146,16 @@ export default class Model implements Listenable {
         let handlerValue = this._items?.length > valueIndex ? this._items[valueIndex] : valueIndex;
 
         const newHandler = new HandlerModel(handlerValue, valueIndex, index, this);
-        addListenerAfter(newHandler.setValueIndex.name, this.handlerValueChanged.bind(this), newHandler);
-
         return newHandler;
     };
 
 
-    private handlerValueChanged(handler: HandlerModel) {
-
+    public handlerValueChanged(handler: HandlerModel) {
+        return {index: handler.index, position: handler.position, value: handler.value}
     };
 
     //для передачи контролеру
-    public getHandlersData(): {index: number, value: any, position: number }[] {
+    public getHandlersData(): { index: number, value: any, position: number }[] {
         return this._handlers.map(
             handler => ({index: handler.index, value: handler.value, position: handler.position})
         );
@@ -154,10 +163,22 @@ export default class Model implements Listenable {
 
     public getSliderData() {
         let result = {
-            step: this._step / (this._max - this._min),
+            step: this._step / this.range,
         };
 
         return result;
+    }
+
+    private getValueIndexFromPosition(position: number): number {
+        return standardize((this._min + position * this.range), this.standardizeParams);
+    }
+
+    public handleHandlerPositionChanged(data: { index: number, position: number }): void {
+        const newStandardPosition = this.getValueIndexFromPosition(data.position);
+        const newValue = this._items?.length ? this._items[newStandardPosition] : newStandardPosition;
+
+        this._handlers[data.index].setValueIndex(newStandardPosition);
+        console.log(`${newValue}`);
     }
 }
 
@@ -180,28 +201,27 @@ class HandlerModel implements Listenable {
         private _value: any, //непосредственно значение
         public valueIndex: number, //нужно для вычисления положения
         public index: number,
-        private readonly parentSlider: Model,
+        private readonly _parentModel: Model,
     ) {
         this.updatePosition();
     }
 
     private calculatePosition() {
         return clamp(
-            ((this.valueIndex - this.parentSlider.min) / (this.parentSlider.max - this.parentSlider.min)),
-            0, 1
+            ((this.valueIndex - this._parentModel.min) / this._parentModel.range),
+            0,
+            1
         );
     }
 
     private updatePosition() {
         this._position = this.calculatePosition();
+        this._parentModel.handlerValueChanged(this);
     }
 
     public setValueIndex(newValueIndex: number,) {
         this.valueIndex = newValueIndex;
+        this._value = this._parentModel.calculateHandlerValue(this.valueIndex);
         this.updatePosition();
-    }
-
-    public getPosition() {
-        return this._position;
     }
 }

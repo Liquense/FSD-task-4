@@ -1,6 +1,14 @@
 import HandlerView from "./__handler/handler";
 import Range from "./__range/range";
-import {addClass, addListenerAfter, calculateElementCenter, defaultSliderClass, Listenable, standardize} from "../common";
+import {
+    addClass,
+    addListenerAfter,
+    calculateElementCenter,
+    clamp,
+    defaultSliderClass,
+    Listenable,
+    standardize
+} from "../common";
 import View from "../view";
 
 export default class Slider implements Listenable {
@@ -14,6 +22,18 @@ export default class Slider implements Listenable {
 
     get bodyElement(): Element {
         return this._element.body;
+    }
+
+    get scaleStart(): number {
+        return this._isVertical ?
+            this._element.scale.getBoundingClientRect().bottom :
+            this._element.scale.getBoundingClientRect().left;
+    }
+
+    get scaleEnd(): number {
+        return this._isVertical ?
+            this._element.scale.getBoundingClientRect().top :
+            this._element.scale.getBoundingClientRect().right;
     }
 
     private _handlers: HandlerView[];
@@ -101,23 +121,21 @@ export default class Slider implements Listenable {
 
     private handleMouseMove(event): void {
         const closestHandler = this.getClosestToMouseHandler(event.pageX, event.pageY);
-        //const handlerCenter = calculateBodyCenter(closestHandler.body, this._isVertical);
         const workZonePadding = closestHandler.size / 2;
-        const start = this.bodyElement.getBoundingClientRect().left + workZonePadding;
-        const end = this.bodyElement.getBoundingClientRect().right - workZonePadding;
-        //const workZone = this.scaleSize - closestHandler.size;
-        const stepVew = this.scaleSize * this._step;
+        const start = workZonePadding / this.scaleSize;
+        const end = 1 - (workZonePadding / this.scaleSize);
 
-        const mousePosition = this._isVertical ? event.pageY : event.pageX;
-        const standardMousePosition = standardize(mousePosition, {min: start, max: end, step: stepVew});
+        const mousePosition = this.calculateMouseRelativePosition(event);
+        const standardMousePosition = standardize(mousePosition, {min: start, max: end, step: this._step});
+
         this._parentView.handlerPositionChanged(closestHandler.index, standardMousePosition);
     }
 
-    public calculateHandlerRelativePosition(): number {
-        const handlerCenter = calculateElementCenter(this._element.scale, this._isVertical);
-        const sliderRect = this._element.scale.getBoundingClientRect();
-
-        return this.isVertical ? handlerCenter - sliderRect.top : handlerCenter - sliderRect.left;
+    //возвращает позицию мыши относительно начала шкалы в стндартизированном виде
+    public calculateMouseRelativePosition(mouseEvent: MouseEvent): number {
+        return this.isVertical ?
+            clamp((mouseEvent.pageY - this.scaleStart) / this.scaleSize, 0, 1) :
+            clamp((mouseEvent.pageX - this.scaleStart) / this.scaleSize, 0, 1);
     }
 
     private getClosestToMouseHandler(mouseX: number, mouseY: number): HandlerView {
@@ -153,23 +171,20 @@ export default class Slider implements Listenable {
         this._ranges.push(new Range(handler));
     };
 
-    public createHandlers(handlers: {index: number, value: any, position: number }[]) {
+    public initHandlers(handlers: { index: number, value: any, position: number }[]) {
+        this._handlers = [];
         handlers.forEach(handlerData => {
             this._handlers.push(new HandlerView(this, handlerData));
         });
     }
 
-    public setHandlersData(handlers: {index: number, value: any, position: number }[]) {
-        if (!(handlers.length === this._handlers?.length)) {
-            this._handlers = [];
-            this.createHandlers(handlers);
-        } else {
-            handlers.forEach((handler, index) => {
-                this._handlers[index].positionPart = handler.position;
-                this._handlers[index].value = handler.value;
-                this._handlers[index].index = handler.index;
-            })
-        }
+    public setHandlersData(handlers: { index: number, value: any, position: number }[]) {
+        handlers.forEach((handler, index) => {
+            this._handlers[handler.index].setPosition(handler.position);
+            this._handlers[handler.index].value = handler.value;
+            this._handlers[handler.index].index = handler.index;
+            //console.log(`pos: ${handler.position} val: ${handler.value} i: ${handler.index}`)
+        })
     }
 
     public update(data: { step?: number }) {
