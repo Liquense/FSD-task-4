@@ -1,6 +1,7 @@
 import HandlerView from "./__handler/handler";
 import Range from "./__range/range";
-import {addClass, addListenerAfter, defaultSliderClass, Listenable, standardize} from "../common";
+import {addClass, addListenerAfter, calculateElementCenter, defaultSliderClass, Listenable, standardize} from "../common";
+import View from "../view";
 
 export default class Slider implements Listenable {
     listenDictionary: { function: Function, listeners: Function[] };
@@ -26,17 +27,17 @@ export default class Slider implements Listenable {
     }
 
     private _isRange: boolean;
-    private _step: number;
+    private _step: number; //относительное значение
     private _ranges: Range[];
 
-    public getScaleSize() {
+    get scaleSize() {
         if (this.isVertical)
             return this.bodyElement.getBoundingClientRect().height;
         else
             return this.bodyElement.getBoundingClientRect().width;
     }
 
-    constructor(parentElement: Element,
+    constructor(private _parentView: View,
                 parameters: {
                     isVertical?: boolean,
                     isRange?: boolean,
@@ -53,7 +54,7 @@ export default class Slider implements Listenable {
         this._isRange = parameters.isRange;
         this._ranges = [];
 
-        this.createElement(parentElement);
+        this.createElement(_parentView.element);
         this.setMouseEvents();
     }
 
@@ -100,12 +101,23 @@ export default class Slider implements Listenable {
 
     private handleMouseMove(event): void {
         const closestHandler = this.getClosestToMouseHandler(event.pageX, event.pageY);
+        //const handlerCenter = calculateBodyCenter(closestHandler.body, this._isVertical);
+        const workZonePadding = closestHandler.size / 2;
+        const start = this.bodyElement.getBoundingClientRect().left + workZonePadding;
+        const end = this.bodyElement.getBoundingClientRect().right - workZonePadding;
+        //const workZone = this.scaleSize - closestHandler.size;
+        const stepVew = this.scaleSize * this._step;
 
-        if (this._isVertical) {
+        const mousePosition = this._isVertical ? event.pageY : event.pageX;
+        const standardMousePosition = standardize(mousePosition, {min: start, max: end, step: stepVew});
+        this._parentView.handlerPositionChanged(closestHandler.index, standardMousePosition);
+    }
 
-        } else {
+    public calculateHandlerRelativePosition(): number {
+        const handlerCenter = calculateElementCenter(this._element.scale, this._isVertical);
+        const sliderRect = this._element.scale.getBoundingClientRect();
 
-        }
+        return this.isVertical ? handlerCenter - sliderRect.top : handlerCenter - sliderRect.left;
     }
 
     private getClosestToMouseHandler(mouseX: number, mouseY: number): HandlerView {
@@ -121,6 +133,7 @@ export default class Slider implements Listenable {
 
             if (minDistance > distance) {
                 closestHandler = handler;
+                minDistance = distance;
             }
         }
 
@@ -140,21 +153,21 @@ export default class Slider implements Listenable {
         this._ranges.push(new Range(handler));
     };
 
-    public createHandlers(handlers: { value: any, position: number }[]) {
-        this._handlers = [];
+    public createHandlers(handlers: {index: number, value: any, position: number }[]) {
         handlers.forEach(handlerData => {
             this._handlers.push(new HandlerView(this, handlerData));
         });
     }
 
-    public setHandlersData(handlers: { value: any, position: number }[]) {
+    public setHandlersData(handlers: {index: number, value: any, position: number }[]) {
         if (!(handlers.length === this._handlers?.length)) {
+            this._handlers = [];
             this.createHandlers(handlers);
         } else {
             handlers.forEach((handler, index) => {
                 this._handlers[index].positionPart = handler.position;
                 this._handlers[index].value = handler.value;
-                this._handlers[index].index = index;
+                this._handlers[index].index = handler.index;
             })
         }
     }
