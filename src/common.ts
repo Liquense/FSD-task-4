@@ -109,3 +109,16 @@ export function standardize(value: number, parameters: { min: number, max: numbe
 
     return resultValue;
 }
+
+export function calculateElementCenter(DOMElement: Element, isVertical: boolean): number {
+    const thisRect = DOMElement.getBoundingClientRect();
+    let thisCenter: number;
+
+    if (isVertical) {
+        thisCenter = thisRect.top + thisRect.height / 2;
+    } else {
+        thisCenter = thisRect.left + thisRect.width / 2;
+    }
+
+    return thisCenter;
+}
