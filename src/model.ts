@@ -2,6 +2,15 @@ import {addListenerAfter, clamp, Listenable, removeListener, standardize} from "
 
 export default class Model implements Listenable {
     private _items: Array<any>;
+
+    private getItem(itemIndex) {
+        if (this._items)
+            return this._items[standardize(itemIndex, this.standardizeParams)];
+        else
+            return standardize(itemIndex, this.standardizeParams);
+    };
+
+    private _occupiedItems: {[key: number]: number} = {};
     private _min = 0;
     get min() {
         return this._min;
@@ -178,6 +187,18 @@ export default class Model implements Listenable {
 
         this._handlers[data.index].setValueIndex(newStandardPosition);
     }
+
+    public checkItemOccupancy(itemIndex): boolean {
+        return !(this._occupiedItems[itemIndex] === undefined);
+    }
+
+    public occupyItem(itemIndex: number, handlerIndex: number): void {
+        this._occupiedItems[itemIndex] = handlerIndex;
+    }
+
+    public freeItem(itemIndex: number): void {
+        delete this._occupiedItems[itemIndex];
+    }
 }
 
 class HandlerModel implements Listenable {
@@ -217,9 +238,16 @@ class HandlerModel implements Listenable {
         this._parentModel.handlerValueChanged(this);
     }
 
-    public setValueIndex(newValueIndex: number,) {
-        this.valueIndex = newValueIndex;
+    public setValueIndex(newItemIndex: number,) {
+        const oldItemIndex = this.valueIndex;
+        if (this._parentModel.checkItemOccupancy(newItemIndex))
+            return;
+
+        this.valueIndex = newItemIndex;
         this._value = this._parentModel.calculateHandlerValue(this.valueIndex);
         this.updatePosition();
+
+        this._parentModel.freeItem(oldItemIndex);
+        this._parentModel.occupyItem(newItemIndex, this.index);
     }
 }

@@ -41,6 +41,8 @@ export default class Slider implements Listenable {
         return this._handlers;
     }
 
+    private _activeHandler: HandlerView;
+
     private _isVertical: boolean;
     get isVertical(): boolean {
         return this._isVertical;
@@ -103,27 +105,41 @@ export default class Slider implements Listenable {
     private setMouseEvents() {
         this._element.body.addEventListener(
             "mousedown",
-            (event) => this.handleMouseDown(event)
+            this.handleMouseDown.bind(this)
         );
         document.body.addEventListener(
             "mouseup",
-            (event) => {
-                document.body.removeEventListener("mousemove", this._mouseMoveListener);
-            }
+            this.handleMouseUp.bind(this)
         );
     }
 
     private _mouseMoveListener = this.handleMouseMove.bind(this); //хранится для корректного удаления слушателя
 
-    private handleMouseDown(event): void {
+    private handleMouseUp(event: MouseEvent): void {
+        this._activeHandler = null;
+
+        document.body.removeEventListener("mousemove", this._mouseMoveListener);
+    }
+
+    private handleMouseDown(event: MouseEvent): void {
+        this._activeHandler = this.getClosestToMouseHandler(event.pageX, event.pageY);
+
         document.body.addEventListener("mousemove", this._mouseMoveListener);
     }
 
-    private handleMouseMove(event): void {
+    private handleMouseMove(event: MouseEvent) {
         const closestHandler = this.getClosestToMouseHandler(event.pageX, event.pageY);
+
+        if (closestHandler !== this._activeHandler)
+            return;
+
+        this._activeHandler = closestHandler;
 
         const mousePosition = this.calculateMouseRelativePosition(event);
         const standardMousePosition = standardize(mousePosition, {min: 0, max: 1, step: this._step});
+
+        if (standardMousePosition === closestHandler.positionPart)
+            return;
 
         this._parentView.handlerPositionChanged(closestHandler.index, standardMousePosition);
     }
