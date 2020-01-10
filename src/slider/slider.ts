@@ -177,9 +177,9 @@ export default class Slider implements Listenable {
 
     public setHandlersData(handlers: { index: number, value: any, position: number }[]) {
         handlers.forEach((handler, index) => {
-            this._handlers[handler.index].setPosition(handler.position);
-            this._handlers[handler.index].value = handler.value;
             this._handlers[handler.index].index = handler.index;
+            this._handlers[handler.index].value = handler.value;
+            this._handlers[handler.index].setPosition(handler.position);
             //console.log(`pos: ${handler.position} val: ${handler.value} i: ${handler.index}`)
         })
     }
