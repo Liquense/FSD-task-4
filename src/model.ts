@@ -222,7 +222,7 @@ class HandlerModel implements Listenable {
         public index: number,
         private readonly _parentModel: Model,
     ) {
-        this.updatePosition();
+        this.setValueIndex(valueIndex);
     }
 
     private calculatePosition() {
