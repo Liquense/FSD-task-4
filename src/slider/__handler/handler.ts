@@ -1,8 +1,16 @@
-import {addClass, addClasses, calculateElementCenter, defaultSliderClass, parseClassesString} from "../../common";
+import {
+    addClass,
+    addClasses,
+    calculateElementCenter,
+    defaultSliderClass,
+    Listenable,
+    parseClassesString
+} from "../../common";
 import Tooltip from "./__tooltip/tooltip";
 import Slider from "../slider";
 
-export default class HandlerView {
+export default class HandlerView implements Listenable {
+    listenDictionary: { function: Function, listeners: Function[] };
     public index: number;
 
     private _defaultClass = `${defaultSliderClass}__handler`;
@@ -19,10 +27,8 @@ export default class HandlerView {
             this._tooltip.value = value;
     }
 
-    private _positionCoordinate: number;
-
     get positionCoordinate() {
-        return this._positionCoordinate;
+        return calculateElementCenter(this._element.body, this.parentSlider.isVertical);
     }
 
     private _positionPart: number;
@@ -137,8 +143,8 @@ export default class HandlerView {
         const scaleSize = this.parentSlider.scaleSize;
         const workZone = scaleSize - handlerSize;
 
-        const shift = workZone * this._positionPart;
-        return shift;
+        const offset = workZone * this._positionPart;
+        return offset;
     }
 
     //добавляется смещение для правильного отображения хэндлера и тултипа, если тултип больше
@@ -151,20 +157,19 @@ export default class HandlerView {
         return (shift - 0.5 * tooltipExcess);
     }
 
-    private calculateAccurateShift(): number {
+    private calculateAccurateOffset(): number {
         let shift = this.calculateOffset();
 
         return this.centerShift(shift);
     }
 
     private updatePosition(): void {
-        const shift = this.calculateAccurateShift();
+        const offset = this.calculateAccurateOffset();
 
         this._element.wrap.setAttribute(
             "style",
-            `left: ${shift}px`
+            `left: ${offset}px`
         );
-        this._positionCoordinate = calculateElementCenter(this._element.body, this.parentSlider.isVertical);
 
         this._tooltip?.updatePosition();
     }
