@@ -15,6 +15,7 @@ $tooltipWidth: 30px;
 $tooltipMargin: 3px;
 $tooltipBorderWidth: 1px;
 .liquidSlider {
+  width: fit-content;
   margin-left: 30px;
   padding-top: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipMargin;
   padding-bottom: $handlerAddition/2 + $handlerBorderWidth;
@@ -55,6 +56,11 @@ $tooltipBorderWidth: 1px;
         text-align: center;
         margin-top: 2px;
         user-select: none;
+
+        > * {
+          width: inherit;
+          height: inherit;
+        }
       }
 
       .liquidSlider__handlerBody {
