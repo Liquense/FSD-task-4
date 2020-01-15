@@ -23,12 +23,17 @@ export default class View implements Listenable {
         return {index: handlerIndex, position: standardizedPosition};
     }
 
-    public handlersValuesChangedListener(data: {index: number, position: number, value: any}): void {
+    public handlersValuesChangedListener(data: { index: number, position: number, value: any }): void {
         this._slider.setHandlersData([data]);
     }
 
-    public setHandlersData(handlers: { index: number, value: any, position: number }[]) {
-        this._slider.initHandlers(handlers);
+    public initHandlers(handlersData: {
+                            customHandlers: boolean,
+                            handlersArray: { index: number, value: any, position: number }[]
+                        }
+    ) {
+        this._slider.initHandlers(handlersData);
+        this._slider.createRanges();
     }
 
     public setSliderData(sliderData: object) {
@@ -36,7 +41,7 @@ export default class View implements Listenable {
     }
 
     public addHandler() {
-
+        this._slider.createRanges();
     }
 
     public addSliderMousedownListener(listener: Function) {

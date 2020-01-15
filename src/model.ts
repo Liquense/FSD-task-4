@@ -1,4 +1,4 @@
-import {addListenerAfter, clamp, Listenable, removeListener, standardize} from "./common";
+import {clamp, Listenable, standardize} from "./common";
 
 export default class Model implements Listenable {
     private _items: Array<any>;
@@ -10,7 +10,7 @@ export default class Model implements Listenable {
             return standardize(itemIndex, this.standardizeParams);
     };
 
-    private _occupiedItems: {[key: number]: number} = {};
+    private _occupiedItems: { [key: number]: number } = {};
     private _min = 0;
     get min() {
         return this._min;
@@ -35,7 +35,9 @@ export default class Model implements Listenable {
         };
     }
 
-    private _handlers: HandlerModel[];
+    private _handlers: HandlerModel[] = [];
+
+    public withCustomHandlers: boolean;
 
     listenDictionary: { function: Function, listeners: Function[] };
 
@@ -57,8 +59,10 @@ export default class Model implements Listenable {
 
         if (parameters.handlers?.length) {
             //если передаются кастомные хэндлеры
+            this.withCustomHandlers = true;
             this.generateHandlersFromObj(parameters.handlers);
         } else {
+            this.withCustomHandlers = false;
             this.generateDefaultHandlers(parameters.isRange ? 2 : 1);
         }
     }
@@ -154,8 +158,7 @@ export default class Model implements Listenable {
     private createHandler(valueIndex: number, index: number): HandlerModel {
         let handlerValue = this._items?.length > valueIndex ? this._items[valueIndex] : valueIndex;
 
-        const newHandler = new HandlerModel(handlerValue, valueIndex, index, this);
-        return newHandler;
+        return new HandlerModel(handlerValue, valueIndex, index, this);
     };
 
 
@@ -164,18 +167,19 @@ export default class Model implements Listenable {
     };
 
     //для передачи контролеру
-    public getHandlersData(): { index: number, value: any, position: number }[] {
-        return this._handlers.map(
-            handler => ({index: handler.index, value: handler.value, position: handler.position})
-        );
+    public getHandlersData(): { customHandlers: boolean, handlersArray: { index: number, value: any, position: number }[] } {
+        return {
+            customHandlers: this.withCustomHandlers,
+            handlersArray: this._handlers.map(
+                handler => ({index: handler.index, value: handler.value, position: handler.position})
+            )
+        };
     }
 
     public getSliderData() {
-        let result = {
+        return {
             step: this._step / this.range,
         };
-
-        return result;
     }
 
     private getValueIndexFromPosition(position: number): number {

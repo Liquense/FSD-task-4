@@ -4,7 +4,7 @@ import {addListenerAfter} from "./common";
 
 export default class Controller {
     private _view: View;
-    private _model: Model;
+    private readonly _model: Model;
 
     constructor(
         DOMElement: Element,
@@ -44,7 +44,7 @@ export default class Controller {
 
         }
         if (receiver instanceof View) {
-            this._view.setHandlersData(this._model.getHandlersData());
+            this._view.initHandlers(this._model.getHandlersData());
         }
     }
 

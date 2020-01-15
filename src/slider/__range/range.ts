@@ -3,12 +3,12 @@ import {defaultSliderClass} from "../../common";
 import handler from "../__handler/handler";
 
 export default class Range {
-    public bodyHTML: string;
+    private bodyHTML: string = `<div class=${defaultSliderClass}__range></div>`;
     public startHandler: HandlerView;
     public endHandler: HandlerView;
     private _element: Element;
 
-    constructor(firstHandler: HandlerView, secondHandler?: HandlerView) {
+    constructor(parentElement: Element, firstHandler: HandlerView, secondHandler?: HandlerView) {
         if (secondHandler)
             this.arrangeHandlers(firstHandler, secondHandler);
 
@@ -16,8 +16,10 @@ export default class Range {
             this.startHandler = firstHandler;
         else
             this.endHandler = firstHandler;
+    }
 
-        this.bodyHTML = `<div class=${defaultSliderClass}__range></div>`;
+    private createElement(): void {
+
     }
 
     private arrangeHandlers(firstHandler: HandlerView, secondHandler: HandlerView) {
@@ -38,7 +40,7 @@ export default class Range {
 
     }
 
-    public isHandlerInRange(handler: HandlerView) {
+    public hasHandler(handler: HandlerView) {
         return handler === this.startHandler || handler === this.endHandler;
     }
 }

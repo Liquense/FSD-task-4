@@ -36,7 +36,7 @@ export default class Slider implements Listenable {
             this._element.scale.getBoundingClientRect().right;
     }
 
-    private _handlers: HandlerView[];
+    private _handlers: HandlerView[] = [];
     get handlers() {
         return this._handlers;
     }
@@ -50,7 +50,7 @@ export default class Slider implements Listenable {
 
     private _isRange: boolean;
     private _step: number; //относительное значение
-    private _ranges: Range[];
+    private _ranges: Range[] = [];
 
     get scaleSize() {
         if (this.isVertical)
@@ -74,7 +74,6 @@ export default class Slider implements Listenable {
 
         this._isVertical = parameters.isVertical;
         this._isRange = parameters.isRange;
-        this._ranges = [];
 
         this.createElement(_parentView.element);
         this.setMouseEvents();
@@ -171,32 +170,93 @@ export default class Slider implements Listenable {
         return closestHandler;
     }
 
-    private createUniqueRange(handler: HandlerView) {
-        const foundedRanges = this._ranges.filter(range => {
-            if (Object.values(range).includes(handler)) {
-                return range;
+    //возвращает хэндлеры не в ренджах
+    private getFreeHandlers(): HandlerView[] {
+        return this._handlers.filter(handler => !handler.inRange);
+    }
+
+    private sortHandlersByValue() {
+        function handlersComparing(firstHandler: HandlerView, secondHandler: HandlerView) {
+            if (firstHandler.value > secondHandler.value)
+                return 1;
+            if (firstHandler.value < secondHandler.value)
+                return -1;
+
+            return 0;
+        }
+
+        this._handlers.sort(handlersComparing);
+    }
+
+    private findSuitableHandler(firstHandlerIndex: number, firstHandler: HandlerView, handlers: HandlerView[]): HandlerView {
+        let suitableHandler: HandlerView = undefined;
+
+        handlers.some(((handler, i) => {
+                if (!handler.inRange)
+                    if (((firstHandler.isEnd) && (i < firstHandlerIndex) && handler.isStart) ||
+                        (firstHandler.isStart && (i > firstHandlerIndex) && handler.isEnd)) {
+                        suitableHandler = handler;
+                        return true;
+                    }
             }
-        });
+        ));
 
-        if (foundedRanges.length > 0)
-            return;
+        return suitableHandler;
+    }
 
-        this._ranges.push(new Range(handler));
-    };
+    public createRanges(): void {
+        this.sortHandlersByValue();
+        let freeHandlers = this.getFreeHandlers();
 
-    public initHandlers(handlers: { index: number, value: any, position: number }[]) {
-        this._handlers = [];
-        handlers.forEach(handlerData => {
-            this._handlers.push(new HandlerView(this, handlerData));
+        for (let i = 0; i < freeHandlers.length; i++) {
+            const handler = freeHandlers[i];
+            if (this._ranges.slice(-1)[0]?.hasHandler(handler))
+                continue;
+            if (handler.isEnd === null)
+                continue;
+
+            let secondHandler: HandlerView = undefined;
+            //от начала координат до первого хэндлера || от последнего хэндлера до концац координат
+            if (((i === 0) && handler.isEnd) || ((i === freeHandlers.length - 1) && handler.isStart)) {
+                secondHandler = null;
+            } else { //остальные случаи
+                secondHandler = this.findSuitableHandler(i, handler, freeHandlers);
+            }
+            if (secondHandler === undefined)
+                continue;
+
+            this._ranges.push(new Range(this._element.scale, handler, secondHandler));
+            handler.inRange = true;
+            if (secondHandler)
+                secondHandler.inRange = true;
+        }
+        console.log(this._ranges);
+    }
+
+    public initHandlers(handlersData: {
+                            customHandlers: boolean,
+                            handlersArray: { index: number, value: any, position: number }[]
+                        }
+    ) {
+        this._handlers = handlersData.handlersArray.map((handler, index, handlers) => {
+            let newHandler = new HandlerView(this, handler);
+
+            if (!handlersData.customHandlers) {
+                if ((handlers.length === 2) && (index === 0)) {
+                    newHandler.isStart = true;
+                }
+            }
+
+            return newHandler;
         });
     }
 
     public setHandlersData(handlers: { index: number, value: any, position: number }[]) {
-        handlers.forEach((handler, index) => {
-            this._handlers[handler.index].index = handler.index;
-            this._handlers[handler.index].value = handler.value;
-            this._handlers[handler.index].setPosition(handler.position);
-            //console.log(`pos: ${handler.position} val: ${handler.value} i: ${handler.index}`)
+        handlers.forEach(({index, value, position}) => {
+            this._handlers[index].index = index;
+            this._handlers[index].value = value;
+
+            this._handlers[index].setPosition(position);
         })
     }
 
