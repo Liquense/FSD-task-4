@@ -31,11 +31,20 @@ $tooltipBorderWidth: 1px;
     position: relative;
 
     .liquidSlider__scale {
+      $scaleBorderRadius: 5px;
       width: 100%;
       height: $scaleHeight;
       background-color: rgba(200, 200, 200, 0.3);
       border: solid $scaleBorderWidth black;
-      border-radius: 5px;
+      border-radius: $scaleBorderRadius;
+
+      .liquidSlider__range {
+        height: $scaleHeight - $scaleBorderWidth*2;
+        top: $scaleBorderWidth;
+        position: absolute;
+        background-color: #c5e6e6;
+        border-radius: $scaleBorderRadius;
+      }
     }
 
     .liquidSlider__handlerContainer {

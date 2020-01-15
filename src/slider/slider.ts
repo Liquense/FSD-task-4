@@ -3,7 +3,6 @@ import Range from "./__range/range";
 import {
     addClass,
     addListenerAfter,
-    calculateElementCenter,
     clamp,
     defaultSliderClass,
     Listenable,
@@ -34,6 +33,12 @@ export default class Slider implements Listenable {
         return this._isVertical ?
             this._element.scale.getBoundingClientRect().top :
             this._element.scale.getBoundingClientRect().right;
+    }
+
+    get scaleBorderWidth(): number {
+        return Number.parseFloat(
+            getComputedStyle(this._element.scale).getPropertyValue("border-left-width")
+        );
     }
 
     private _handlers: HandlerView[] = [];
@@ -127,6 +132,7 @@ export default class Slider implements Listenable {
     }
 
     private handleMouseMove(event: MouseEvent) {
+        console.log(event.pageX);
         const closestHandler = this.getClosestToMouseHandler(event.pageX, event.pageY);
 
         if (closestHandler !== this._activeHandler)
@@ -225,19 +231,17 @@ export default class Slider implements Listenable {
             if (secondHandler === undefined)
                 continue;
 
-            this._ranges.push(new Range(this._element.scale, handler, secondHandler));
+            this._ranges.push(new Range(this, this._element.scale, handler, secondHandler));
             handler.inRange = true;
             if (secondHandler)
                 secondHandler.inRange = true;
         }
-        console.log(this._ranges);
     }
 
     public initHandlers(handlersData: {
-                            customHandlers: boolean,
-                            handlersArray: { index: number, value: any, position: number }[]
-                        }
-    ) {
+        customHandlers: boolean,
+        handlersArray: { index: number, value: any, position: number }[]
+    }) {
         this._handlers = handlersData.handlersArray.map((handler, index, handlers) => {
             let newHandler = new HandlerView(this, handler);
 
@@ -253,9 +257,7 @@ export default class Slider implements Listenable {
 
     public setHandlersData(handlers: { index: number, value: any, position: number }[]) {
         handlers.forEach(({index, value, position}) => {
-            this._handlers[index].index = index;
             this._handlers[index].value = value;
-
             this._handlers[index].setPosition(position);
         })
     }
