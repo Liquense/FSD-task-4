@@ -53,13 +53,13 @@ export default class HandlerView {
     }
 
 
-    private _isEnd: boolean;
+    private _isEnd: boolean = null;
     get isEnd() {
-        return this._isEnd;
+        return this._isEnd === null ? null : this._isEnd;
     };
 
     get isStart(): boolean {
-        return !this._isEnd;
+        return this._isEnd === null ? null : !this._isEnd;
     }
 
     set isEnd(value: boolean) {
@@ -80,6 +80,8 @@ export default class HandlerView {
     public hideTooltip(): void {
         this._withTooltip = false;
     }
+
+    public inRange: boolean = false;
 
     constructor(private parentSlider: Slider,
                 parameters:
