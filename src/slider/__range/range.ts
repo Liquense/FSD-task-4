@@ -7,9 +7,9 @@ export default class Range {
     private bodyHTML: string = `<div class=${this._defaultClass}></div>`;
     public startHandler: HandlerView;
     public endHandler: HandlerView;
-    private _element: Element;
+    private _element: HTMLElement;
 
-    constructor(private parentSlider: Slider, public parentElement: Element, firstHandler: HandlerView, secondHandler?: HandlerView) {
+    constructor(private parentSlider: Slider, public parentElement: HTMLElement, firstHandler: HandlerView, secondHandler?: HandlerView) {
         if (secondHandler)
             this.arrangeHandlers(firstHandler, secondHandler);
         else {

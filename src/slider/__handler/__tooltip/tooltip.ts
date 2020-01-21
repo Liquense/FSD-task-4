@@ -1,4 +1,5 @@
 import {addClass, defaultSliderClass, parseClassesString} from "../../../common";
+import HandlerView from "../handler";
 
 export default class Tooltip {
     private static positions = {left: "left", right: "right", up: "up", down: "down"};
@@ -14,8 +15,8 @@ export default class Tooltip {
         this.updateHTML();
     }
 
-    private _element: Element;
-    get element(): Element {
+    private _element: HTMLElement;
+    get element(): HTMLElement {
         return this._element;
     }
 
@@ -42,14 +43,14 @@ export default class Tooltip {
             return this.width;
     }
 
-    constructor(parentElement: Element,
-                private sliderIsVertical: boolean,
+    constructor(parentElement: HTMLElement,
+                public parentHandler: HandlerView,
                 additionalClass?: string,
                 position?: string,
                 bodyHTML?: string,
                 value?: any,
     ) {
-        let defaultParameters = this.initDefaultParameters(sliderIsVertical);
+        let defaultParameters = this.initDefaultParameters(parentHandler.parentSlider.isVertical);
         let parameters = {...defaultParameters, ...arguments};
 
         this.additionalClasses = parameters.additionalClass;
@@ -76,7 +77,7 @@ export default class Tooltip {
         return defaultParameters;
     }
 
-    private createElement(parentElement: Element) {
+    private createElement(parentElement: HTMLElement) {
         this._element = document.createElement("div");
         addClass(this._element, `${this._defaultClass}`);
         this._element.innerHTML = this._innerHTML;

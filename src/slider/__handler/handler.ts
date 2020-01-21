@@ -38,15 +38,15 @@ export default class HandlerView implements Listenable {
 
 
     private _element: {
-        wrap: Element,
-        body: Element,
+        wrap: HTMLElement,
+        body: HTMLElement,
     };
 
-    get wrap(): Element {
+    get wrap(): HTMLElement {
         return this._element.wrap;
     };
 
-    get body(): Element {
+    get body(): HTMLElement {
         return this._element.body;
     };
 
@@ -89,7 +89,7 @@ export default class HandlerView implements Listenable {
 
     public inRange: boolean = false;
 
-    constructor(private parentSlider: Slider,
+    constructor(public parentSlider: Slider,
                 parameters:
                     {
                         index: number,
@@ -109,7 +109,7 @@ export default class HandlerView implements Listenable {
         this._isEnd = parameters.isEnd;
         this.createElement(parentSlider.bodyElement);
 
-        this._tooltip = new Tooltip(this._element.wrap, parentSlider.isVertical);
+        this._tooltip = new Tooltip(this._element.wrap, this);
 
         this.index = parameters.index;
         this._positionPart = parameters.position;
@@ -117,7 +117,7 @@ export default class HandlerView implements Listenable {
         requestAnimationFrame(this.updatePosition.bind(this));
     }
 
-    private createElement(parentElement: Element): void {
+    private createElement(parentElement: HTMLElement): void {
         let wrap = document.createElement("div");
         let body = document.createElement("div");
 
@@ -140,7 +140,7 @@ export default class HandlerView implements Listenable {
 
     private calculateOffset(): number {
         let handlerSize = this.size;
-        const scaleSize = this.parentSlider.scaleSize;
+        const scaleSize = this.parentSlider.getScaleLength();
         const workZone = scaleSize - handlerSize;
 
         const offset = workZone * this._positionPart;

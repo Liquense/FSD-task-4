@@ -14,12 +14,12 @@ export default class Slider implements Listenable {
     listenDictionary: { function: Function, listeners: Function[] };
 
     private _element: {
-        wrap: Element,
-        body: Element,
-        scale: Element,
+        wrap: HTMLElement,
+        body: HTMLElement,
+        scale: HTMLElement,
     };
 
-    get bodyElement(): Element {
+    get bodyElement(): HTMLElement {
         return this._element.body;
     }
 
@@ -73,7 +73,6 @@ export default class Slider implements Listenable {
     ) {
         let defaultParameters = {
             isVertical: false,
-            isRange: false,
         };
         parameters = {...defaultParameters, ...parameters};
 
@@ -84,7 +83,7 @@ export default class Slider implements Listenable {
         this.setMouseEvents();
     }
 
-    private createElement(parentElement: Element) {
+    private createElement(parentElement: HTMLElement) {
         this._element = {
             wrap: document.createElement("div"),
             body: document.createElement("div"),
@@ -132,7 +131,6 @@ export default class Slider implements Listenable {
     }
 
     private handleMouseMove(event: MouseEvent) {
-        console.log(event.pageX);
         const closestHandler = this.getClosestToMouseHandler(event.pageX, event.pageY);
 
         if (closestHandler !== this._activeHandler)
@@ -222,7 +220,7 @@ export default class Slider implements Listenable {
                 continue;
 
             let secondHandler: HandlerView = undefined;
-            //от начала координат до первого хэндлера || от последнего хэндлера до концац координат
+            //от начала координат до первого хэндлера || от последнего хэндлера до конца координат
             if (((i === 0) && handler.isEnd) || ((i === freeHandlers.length - 1) && handler.isStart)) {
                 secondHandler = null;
             } else { //остальные случаи

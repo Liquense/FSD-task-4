@@ -7,7 +7,7 @@ export default class Controller {
     private readonly _model: Model;
 
     constructor(
-        DOMElement: Element,
+        DOMElement: HTMLElement,
         parameters: object,
     ) {
         this._view = new View(DOMElement, parameters);
