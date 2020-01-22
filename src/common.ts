@@ -1,14 +1,4 @@
-import Func = Mocha.Func;
-import * as webpack from "webpack";
-import numberToIdentifer = webpack.Template.numberToIdentifer;
-
 export const defaultSliderClass = "liquidSlider";
-export const viewFunctionNames = [
-    "viewTest", //
-];
-export const modelFunctionNames = [
-    "modelTest",
-];
 
 export function parseClassesString(classesString: string): string[] {
     if (!classesString)
