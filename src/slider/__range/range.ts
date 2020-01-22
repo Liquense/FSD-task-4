@@ -4,7 +4,6 @@ import Slider from "../slider";
 
 export default class Range {
     private readonly _defaultClass = `${defaultSliderClass}__range`;
-    private bodyHTML: string = `<div class=${this._defaultClass}></div>`;
     public startHandler: HandlerView;
     public endHandler: HandlerView;
     private _element: HTMLElement;
@@ -44,12 +43,11 @@ export default class Range {
             0;
         const endCoordinate = this.endHandler ?
             this.endHandler.positionCoordinate - this.parentSlider.scaleStart :
-            this.parentSlider.scaleEnd;
+            this.parentSlider.scaleEnd - this.parentSlider.scaleStart - this.parentSlider.scaleBorderWidth;
         let offset = startCoordinate + this.parentSlider.scaleBorderWidth;
         let length = endCoordinate - startCoordinate;
 
         this._element.style[this.parentSlider.offsetDirection] = `${offset}px`;
-
         this._element.style[this.parentSlider.expandDimension] = `${length}px`;
     }
 
