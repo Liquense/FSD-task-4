@@ -22,7 +22,9 @@ let $slider2 = $(".initSliderHere").liquidSlider({
     ],
     min: 0,
     max: 22,
-    isRange: true
+    isRange: true,
+    isReversed: true,
+    isVertical: true,
 });
 
 let $slider3 = $(".initSliderHere").liquidSlider({

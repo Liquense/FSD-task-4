@@ -32,6 +32,7 @@ $.fn.liquidSlider = function liquidSlider(
         values?: number[], //если не заданы handlers
         isRange?: boolean, //если не заданы handlers
         isVertical?: boolean,
+        isReversed?: boolean,
         min?: number,
         max?: number,
         step?: number,

@@ -75,12 +75,13 @@ export default class Slider implements Listenable {
     constructor(private _parentView: View,
                 parameters: {
                     isVertical?: boolean,
+                    isReversed?: boolean,
                     isRange?: boolean,
                     handlers?: object[],
                 }
     ) {
-        if (parameters.isVertical !== undefined)
-            this.isVertical = parameters.isVertical;
+        this.isVertical = parameters.isVertical;
+        this.isReversed = parameters.isReversed;
 
         this.createElement(_parentView.element);
         this.setMouseEvents();
