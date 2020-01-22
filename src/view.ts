@@ -4,7 +4,7 @@ import {Listenable} from "./common";
 
 export default class View implements Listenable {
     listenDictionary: { function: Function, listeners: Function[] };
-    public readonly element: Element;
+    public readonly element: HTMLElement;
     private readonly _slider: Slider;
     private readonly _tooltipPositions =
         {
@@ -14,7 +14,7 @@ export default class View implements Listenable {
             down: {x: 1, y: 1}
         };
 
-    constructor(element: Element, parameters: object) {
+    constructor(element: HTMLElement, parameters: object) {
         this.element = element;
         this._slider = new Slider(this, parameters);
     }
