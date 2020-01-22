@@ -77,7 +77,6 @@ export default class Slider implements Listenable {
                     isVertical?: boolean,
                     isReversed?: boolean,
                     isRange?: boolean,
-                    handlers?: object[],
                 }
     ) {
         this.isVertical = parameters.isVertical;
@@ -183,21 +182,22 @@ export default class Slider implements Listenable {
     }
 
     //возвращает хэндлеры не в ренджах
-    private getFreeHandlers(): HandlerView[] {
-        return this._handlers.filter(handler => !handler.inRange);
+    private getFreeHandlers(handlersArray: HandlerView[]): HandlerView[] {
+        return handlersArray.filter(handler => !handler.inRange);
     }
 
-    private sortHandlersByValue() {
+    private sortHandlersByValue(): HandlerView[] {
         function handlersComparing(firstHandler: HandlerView, secondHandler: HandlerView) {
-            if (firstHandler.value > secondHandler.value)
+            if (firstHandler.positionPart > secondHandler.positionPart)
                 return 1;
-            if (firstHandler.value < secondHandler.value)
+            if (firstHandler.positionPart < secondHandler.positionPart)
                 return -1;
 
             return 0;
         }
 
-        this._handlers.sort(handlersComparing);
+        let arrayToSort = [...this._handlers];
+        return arrayToSort.sort(handlersComparing);
     }
 
     private findSuitableHandler(firstHandlerIndex: number, firstHandler: HandlerView, handlers: HandlerView[]): HandlerView {
@@ -217,8 +217,8 @@ export default class Slider implements Listenable {
     }
 
     public createRanges(): void {
-        this.sortHandlersByValue();
-        let freeHandlers = this.getFreeHandlers();
+        let sortedHandlers = this.sortHandlersByValue();
+        let freeHandlers = this.getFreeHandlers(sortedHandlers);
 
         for (let i = 0; i < freeHandlers.length; i++) {
             const handler = freeHandlers[i];
@@ -246,7 +246,11 @@ export default class Slider implements Listenable {
 
     public initHandlers(handlersData: {
         customHandlers: boolean,
-        handlersArray: { index: number, value: any, position: number }[]
+        handlersArray: {
+            index: number,
+            position: number,
+            value: any,
+        }[]
     }) {
         this._handlers = handlersData.handlersArray.map((handler, index, handlers) => {
             let newHandler = new HandlerView(this, handler);

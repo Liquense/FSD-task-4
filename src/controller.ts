@@ -8,7 +8,7 @@ export default class Controller {
 
     constructor(
         DOMElement: HTMLElement,
-        parameters: object,
+        parameters: { handlers?: { value: number }[] },
     ) {
         this._view = new View(DOMElement, parameters);
         this._model = new Model(parameters);
@@ -17,7 +17,7 @@ export default class Controller {
         addListenerAfter("handlerPositionChanged", this.passHandlerPositionChange.bind(this), this._view);
         addListenerAfter("createHandler", this.viewAddHandler.bind(this), this._model);
 
-        this.passHandlersData(this._view);
+        this.passHandlersData(parameters.handlers);
         this.passSliderData(this._view);
     }
 
@@ -31,21 +31,23 @@ export default class Controller {
         }
     }
 
-    private passHandlerPositionChange(data: {index: number, position: number}) {
+    private passHandlerPositionChange(data: { index: number, position: number }) {
         this._model.handleHandlerPositionChanged(data);
     }
 
-    private passHandlerValueChange(data: {index: number, position: number, value: any}): void {
+    private passHandlerValueChange(data: { index: number, position: number, value: any }): void {
         this._view.handlersValuesChangedListener(data);
     }
 
-    private passHandlersData(receiver: Model | View,) {
-        if (receiver instanceof Model) {
+    private passHandlersData(initHandlersData: object[]) {
+        let handlersData = this._model.getHandlersData();
 
-        }
-        if (receiver instanceof View) {
-            this._view.initHandlers(this._model.getHandlersData());
-        }
+        if (initHandlersData)
+            handlersData.handlersArray.forEach((handlerData, index) => {
+                handlersData.handlersArray[index] = {...handlerData, ...initHandlersData[index]};
+            });
+
+        this._view.initHandlers(handlersData);
     }
 
     private viewAddHandler() {

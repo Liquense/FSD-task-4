@@ -6,13 +6,6 @@ export default class View implements Listenable {
     listenDictionary: { function: Function, listeners: Function[] };
     public readonly element: HTMLElement;
     private readonly _slider: Slider;
-    private readonly _tooltipPositions =
-        {
-            left: {x: -1, y: 1},
-            up: {x: 1, y: -1},
-            right: {x: 1, y: 1},
-            down: {x: 1, y: 1}
-        };
 
     constructor(element: HTMLElement, parameters: object) {
         this.element = element;
@@ -29,7 +22,11 @@ export default class View implements Listenable {
 
     public initHandlers(handlersData: {
                             customHandlers: boolean,
-                            handlersArray: { index: number, value: any, position: number }[]
+                            handlersArray: {
+                                index: number,
+                                position: number,
+                                value: any,
+                            }[]
                         }
     ) {
         this._slider.initHandlers(handlersData);

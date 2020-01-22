@@ -99,13 +99,12 @@ export default class HandlerView implements Listenable {
                         tooltip?: object,
                     }
     ) {
-        let defaultParameters = {
-            withTooltip: true,
-            isEnd: true,
-        };
-        parameters = {...defaultParameters, ...parameters};
-        this._withTooltip = parameters.withTooltip;
-        this._isEnd = parameters.isEnd;
+        if (parameters.withTooltip !== undefined)
+            this._withTooltip = parameters.withTooltip;
+
+        if (parameters.isEnd !== undefined)
+            this._isEnd = parameters.isEnd;
+
         this.createElement(parentSlider.bodyElement);
 
         this._tooltip = new Tooltip(this._element.wrap, this);
@@ -123,11 +122,11 @@ export default class HandlerView implements Listenable {
 
         this._element = {wrap, body};
 
-        addClasses(wrap,[`${this._defaultClass}Container`, orientationClass]);
+        addClasses(wrap, [`${this._defaultClass}Container`, orientationClass]);
         addClasses(wrap, this._additionalClasses);
         parentElement.appendChild(wrap);
 
-        addClasses(body,[`${this._defaultClass}Body`, orientationClass]);
+        addClasses(body, [`${this._defaultClass}Body`, orientationClass]);
         wrap.appendChild(body);
     };
 

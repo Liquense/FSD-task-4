@@ -39,11 +39,10 @@ $.fn.liquidSlider = function liquidSlider(
         handlers?: {
             value: number,
             additionalClasses?: string,
-            height?: string,
-            width?: string,
+            isEnd?: boolean,
+            withTooltip?: boolean,
             tooltip?: {
                 additionalClasses?: string,
-                position?: string,
                 bodyHTML?: string,
             },
         }[],

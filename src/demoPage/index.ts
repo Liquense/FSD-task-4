@@ -2,13 +2,15 @@ import $ from "jquery";
 import "../liquidSlider"
 import "../slider/slider.scss"
 
-let $slider = $(".initSliderHere").liquidSlider({
+const sliderInitSelector = ".initSliderHere";
+
+let $slider = $(sliderInitSelector).liquidSlider({
     min: -50,
     max: 20,
-    step: 1
+    step: 1,
 });
 
-let $slider2 = $(".initSliderHere").liquidSlider({
+let $slider2 = $(sliderInitSelector).liquidSlider({
     items: [
         1,
         {
@@ -25,8 +27,9 @@ let $slider2 = $(".initSliderHere").liquidSlider({
     isRange: true,
     isReversed: true,
     isVertical: true,
+    values: [1, 2],
 });
 
-let $slider3 = $(".initSliderHere").liquidSlider({
-    handlers: [{value: 2}, {value: 6, }, {value: 19}],
+let $slider3 = $(sliderInitSelector).liquidSlider({
+    handlers: [{value: 2}, {value: 6, isEnd: false}, {value: 19, isEnd: true}],
 });

@@ -47,7 +47,7 @@ export default class Model implements Listenable {
                     max?: number,
                     step?: number,
                     items?: Array<any>, //если задан, то оперируемые значения это индексы массива
-                    values?: number, //значения стандартных хэндлеров
+                    values?: number[], //значения стандартных хэндлеров
                     handlers?: {
                         value: number,
                     }[],
@@ -63,7 +63,7 @@ export default class Model implements Listenable {
             this.generateHandlersFromObj(parameters.handlers);
         } else {
             this.withCustomHandlers = false;
-            this.generateDefaultHandlers(parameters.isRange ? 2 : 1);
+            this.generateDefaultHandlers(parameters.isRange ? 2 : 1, parameters.values);
         }
     }
 
@@ -134,22 +134,22 @@ export default class Model implements Listenable {
         return result;
     }
 
-    private generateDefaultHandlers(handlersCount: number) {
+    private generateDefaultHandlers(handlersCount: number, values?: number[]) {
         this._handlers = [];
 
         if (handlersCount === 1) {
-            const value = standardize(
-                this._min + this.range / 2,
-                this.standardizeParams
-            );
+            const value = Number.isFinite(values?.[0]) ?
+                standardize(values[0], this.standardizeParams) :
+                standardize(this._min + (this.range / 2), this.standardizeParams);
             this._handlers.push(this.createHandler(value, this._handlers.length));
         } else {
-            const part = standardize(
-                this.range / (handlersCount - 1),
-                this.standardizeParams
-            );
+            const part = this.range / (handlersCount - 1);
+
             for (let i = 0; i < handlersCount; i++) {
-                const valueIndex = i * part;
+                const valueIndex = Number.isFinite(values?.[i]) ?
+                    standardize(values[i], this.standardizeParams) :
+                    standardize(i * part, this.standardizeParams);
+
                 this._handlers.push(this.createHandler(valueIndex, this._handlers.length));
             }
         }
