@@ -48,8 +48,8 @@ export default class Slider implements Listenable {
 
     private _activeHandler: HandlerView;
 
-    public isVertical = true;
-    public isReversed: boolean;
+    public isVertical = false;
+    public isReversed = true;
 
     get offsetDirection(): string {
         if (this.isVertical)
@@ -252,7 +252,9 @@ export default class Slider implements Listenable {
 
             if (!handlersData.customHandlers) {
                 if ((handlers.length === 2) && (index === 0)) {
-                    newHandler.isStart = true;
+                    newHandler.isStart = !this.isReversed;
+                } else {
+                    newHandler.isStart = this.isReversed;
                 }
             }
 
