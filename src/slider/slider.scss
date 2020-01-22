@@ -1,74 +1,118 @@
-* {
+.liquidSlider, .liquidSlider * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-$sliderWidth: 320px;
-$scaleHeight: 8px;
-$handlerAddition: 6px;
-$handlerSize: $scaleHeight + $handlerAddition;
-$handlerBorderWidth: 1px;
+$sliderLength: 240px;
+
+$scaleThickness: 8px;
 $scaleBorderWidth: 1px;
+
+$handlerSize: 14px;
+$handlerAddition: abs($handlerSize - $scaleThickness);
+$handlerBorderWidth: 1px;
+
 $tooltipHeight: 15px;
 $tooltipWidth: 30px;
+$tooltipPadding: 4px;
 $tooltipMargin: 3px;
 $tooltipBorderWidth: 1px;
+
 .liquidSlider {
   width: fit-content;
-  margin-left: 30px;
-  padding-top: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipMargin;
-  padding-bottom: $handlerAddition/2 + $handlerBorderWidth;
+
+  &.liquidSlider_horizontal {
+    padding-top: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipPadding*2;
+    padding-bottom: $handlerAddition/2 + $handlerBorderWidth;
+  }
+
+  &.liquidSlider_vertical {
+    padding-left: $handlerAddition/2 + $handlerBorderWidth;
+    padding-right: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipPadding*2;
+  }
 
   .liquidSlider__data {
     text-align: right;
     margin-bottom: $tooltipHeight + $tooltipMargin + 3px;
-    max-width: $sliderWidth;
+    max-width: $sliderLength;
   }
 
   .liquidSlider__body {
-    width: $sliderWidth;
+    &.liquidSlider_horizontal {
+      width: $sliderLength;
+    }
+
+    &.liquidSlider_vertical {
+      height: $sliderLength;
+    }
+
     position: relative;
 
     .liquidSlider__scale {
       $scaleBorderRadius: 5px;
-      width: 100%;
-      height: $scaleHeight;
+
+      &.liquidSlider_horizontal {
+        width: 100%;
+        height: $scaleThickness;
+      }
+
+      &.liquidSlider_vertical {
+        height: 100%;
+        width: $scaleThickness;
+      }
+
       background-color: rgba(200, 200, 200, 0.3);
       border: solid $scaleBorderWidth black;
       border-radius: $scaleBorderRadius;
 
       .liquidSlider__range {
-        height: $scaleHeight - $scaleBorderWidth*2;
-        top: $scaleBorderWidth;
         position: absolute;
         background-color: #c5e6e6;
         border-radius: $scaleBorderRadius;
+
+        &.liquidSlider_vertical {
+          width: $scaleThickness - $scaleBorderWidth*2;
+          left: $scaleBorderWidth;
+        }
+
+        &.liquidSlider_horizontal {
+          height: $scaleThickness - $scaleBorderWidth*2;
+          top: $scaleBorderWidth;
+        }
       }
     }
 
     .liquidSlider__handlerContainer {
       position: absolute;
       display: flex;
-      flex-direction: column-reverse;
+
+      &.liquidSlider_horizontal {
+        flex-direction: column-reverse;
+        bottom: - abs($scaleThickness - $handlerSize) / 2;
+      }
+
+      &.liquidSlider_vertical {
+        flex-direction: row;
+        left: - abs($scaleThickness - $handlerSize) / 2;
+      }
+
       justify-content: start;
       align-items: center;
-      top: -$tooltipHeight - (($handlerSize - $handlerBorderWidth*2)/2);
 
       .liquidSlider__handlerTooltip {
-        height: $tooltipHeight;
-        background-color: rgba(255, 255, 255, 0.5);
-        //border: solid $tooltipBorderWidth black;
+        height: $tooltipHeight + $tooltipPadding * 2;
+        padding: $tooltipPadding;
+        background-color: rgba(255, 255, 255, 0.75);
+        border: solid $tooltipBorderWidth rgba(0, 0, 0, 0.25);
         border-radius: 20%;
         font-size: 14px;
         line-height: $tooltipHeight - $tooltipBorderWidth*2;
         text-align: center;
-        margin-top: 2px;
         user-select: none;
 
         > * {
-          width: inherit;
-          height: inherit;
+          height: $tooltipHeight;
         }
       }
 

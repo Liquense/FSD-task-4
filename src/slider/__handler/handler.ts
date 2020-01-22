@@ -1,5 +1,4 @@
 import {
-    addClass,
     addClasses,
     calculateElementCenter,
     defaultSliderClass,
@@ -120,22 +119,20 @@ export default class HandlerView implements Listenable {
     private createElement(parentElement: HTMLElement): void {
         let wrap = document.createElement("div");
         let body = document.createElement("div");
+        const orientationClass = this.parentSlider.getOrientationClass(this._defaultClass);
 
         this._element = {wrap, body};
 
-        addClass(wrap, `${this._defaultClass}Container`);
+        addClasses(wrap,[`${this._defaultClass}Container`, orientationClass]);
         addClasses(wrap, this._additionalClasses);
         parentElement.appendChild(wrap);
 
-        addClass(body, `${this._defaultClass}Body`);
+        addClasses(body,[`${this._defaultClass}Body`, orientationClass]);
         wrap.appendChild(body);
     };
 
     get size(): number {
-        if (this.parentSlider.isVertical)
-            return this.height;
-        else
-            return this.width;
+        return this[this.parentSlider.expandDimension];
     }
 
     private calculateOffset(): number {
@@ -166,10 +163,7 @@ export default class HandlerView implements Listenable {
     private updatePosition(): void {
         const offset = this.calculateAccurateOffset();
 
-        this._element.wrap.setAttribute(
-            "style",
-            `left: ${offset}px`
-        );
+        this._element.wrap.style[this.parentSlider.offsetDirection] = `${offset}px`;
 
         this._tooltip?.updatePosition();
     }

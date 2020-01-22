@@ -1,7 +1,7 @@
 import HandlerView from "./__handler/handler";
 import Range from "./__range/range";
 import {
-    addClass,
+    addClasses,
     addListenerAfter,
     clamp,
     defaultSliderClass,
@@ -24,20 +24,20 @@ export default class Slider implements Listenable {
     }
 
     get scaleStart(): number {
-        return this._isVertical ?
-            this._element.scale.getBoundingClientRect().bottom :
+        return this.isVertical ?
+            this._element.scale.getBoundingClientRect().top :
             this._element.scale.getBoundingClientRect().left;
     }
 
     get scaleEnd(): number {
-        return this._isVertical ?
-            this._element.scale.getBoundingClientRect().top :
+        return this.isVertical ?
+            this._element.scale.getBoundingClientRect().bottom :
             this._element.scale.getBoundingClientRect().right;
     }
 
     get scaleBorderWidth(): number {
         return Number.parseFloat(
-            getComputedStyle(this._element.scale).getPropertyValue("border-left-width")
+            getComputedStyle(this._element.scale).getPropertyValue(`border-${this.offsetDirection}-width`)
         );
     }
 
@@ -48,20 +48,28 @@ export default class Slider implements Listenable {
 
     private _activeHandler: HandlerView;
 
-    private _isVertical: boolean;
-    get isVertical(): boolean {
-        return this._isVertical;
+    public isVertical = true;
+    public isReversed: boolean;
+
+    get offsetDirection(): string {
+        if (this.isVertical)
+            return "top";
+        else
+            return "left"
     }
 
-    private _isRange: boolean;
+    get expandDimension(): string {
+        if (this.isVertical)
+            return "height";
+        else
+            return "width";
+    }
+
     private _step: number; //относительное значение
     private _ranges: Range[] = [];
 
-    get scaleSize() {
-        if (this.isVertical)
-            return this.bodyElement.getBoundingClientRect().height;
-        else
-            return this.bodyElement.getBoundingClientRect().width;
+    public getScaleLength() {
+        return this.bodyElement.getBoundingClientRect()[this.expandDimension];
     }
 
     constructor(private _parentView: View,
@@ -71,39 +79,38 @@ export default class Slider implements Listenable {
                     handlers?: object[],
                 }
     ) {
-        let defaultParameters = {
-            isVertical: false,
-        };
-        parameters = {...defaultParameters, ...parameters};
-
-        this._isVertical = parameters.isVertical;
-        this._isRange = parameters.isRange;
+        if (parameters.isVertical !== undefined)
+            this.isVertical = parameters.isVertical;
 
         this.createElement(_parentView.element);
         this.setMouseEvents();
     }
 
     private createElement(parentElement: HTMLElement) {
+        let orientationClass = this.getOrientationClass(defaultSliderClass);
         this._element = {
             wrap: document.createElement("div"),
             body: document.createElement("div"),
             scale: document.createElement("div")
         };
         let wrap = this._element.wrap;
-        addClass(wrap, defaultSliderClass);
+        addClasses(wrap, [defaultSliderClass, orientationClass]);
 
         let body = this._element.body;
         body.addEventListener("mousedown", (event) => event.preventDefault());
-        addClass(body, `${defaultSliderClass}__body`);
+        addClasses(body, [`${defaultSliderClass}__body`, orientationClass]);
 
         let scale = this._element.scale;
-        addClass(scale, `${defaultSliderClass}__scale`);
+        addClasses(scale, [`${defaultSliderClass}__scale`, orientationClass]);
 
         parentElement.replaceWith(wrap);
         wrap.appendChild(body);
         body.appendChild(scale);
     };
 
+    public getOrientationClass(defaultClass: string): string {
+        return this.isVertical ? `${defaultSliderClass}_vertical` : `${defaultSliderClass}_horizontal`;
+    }
 
     private setMouseEvents() {
         this._element.body.addEventListener(
@@ -150,12 +157,12 @@ export default class Slider implements Listenable {
     //возвращает позицию мыши относительно начала шкалы в стндартизированном виде
     public calculateMouseRelativePosition(mouseEvent: MouseEvent): number {
         return this.isVertical ?
-            clamp((mouseEvent.pageY - this.scaleStart) / this.scaleSize, 0, 1) :
-            clamp((mouseEvent.pageX - this.scaleStart) / this.scaleSize, 0, 1);
+            clamp((mouseEvent.pageY - this.scaleStart) / this.getScaleLength(), 0, 1) :
+            clamp((mouseEvent.pageX - this.scaleStart) / this.getScaleLength(), 0, 1);
     }
 
     private getClosestToMouseHandler(mouseX: number, mouseY: number): HandlerView {
-        return this._isVertical ? this.findClosestHandler(mouseY) : this.findClosestHandler(mouseX);
+        return this.isVertical ? this.findClosestHandler(mouseY) : this.findClosestHandler(mouseX);
     }
 
     private findClosestHandler(mouseCoordinate: number): HandlerView {

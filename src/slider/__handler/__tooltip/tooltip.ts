@@ -1,4 +1,4 @@
-import {addClass, defaultSliderClass, parseClassesString} from "../../../common";
+import {addClasses, defaultSliderClass, parseClassesString} from "../../../common";
 import HandlerView from "../handler";
 
 export default class Tooltip {
@@ -36,8 +36,12 @@ export default class Tooltip {
         return this.element.getBoundingClientRect().height;
     }
 
+    private isSliderVertical(): boolean {
+        return this.parentHandler.parentSlider.isVertical;
+    }
+
     public getSize(): number {
-        if (this.sliderIsVertical)
+        if (this.isSliderVertical())
             return this.height;
         else
             return this.width;
@@ -78,8 +82,10 @@ export default class Tooltip {
     }
 
     private createElement(parentElement: HTMLElement) {
+        const orientationClass = this.parentHandler.parentSlider.getOrientationClass(this._defaultClass);
+
         this._element = document.createElement("div");
-        addClass(this._element, `${this._defaultClass}`);
+        addClasses(this._element, [`${this._defaultClass}`, orientationClass]);
         this._element.innerHTML = this._innerHTML;
 
         parentElement.appendChild(this._element);

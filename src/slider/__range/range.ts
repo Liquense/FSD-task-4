@@ -1,5 +1,5 @@
 import HandlerView from "../__handler/handler";
-import {addClass, addClasses, addListenerAfter, defaultSliderClass} from "../../common";
+import {addClasses, addListenerAfter, defaultSliderClass} from "../../common";
 import Slider from "../slider";
 
 export default class Range {
@@ -22,15 +22,18 @@ export default class Range {
         this.createElement();
         requestAnimationFrame(this.updatePosition.bind(this));
         //слушаем изменения хэндлеров, между которыми ренж
-        addListenerAfter("updatePosition", this.updatePosition.bind(this), this.startHandler);
-        addListenerAfter("updatePosition", this.updatePosition.bind(this), this.endHandler);
+        if (this.startHandler)
+            addListenerAfter("updatePosition", this.updatePosition.bind(this), this.startHandler);
+        if (this.endHandler)
+            addListenerAfter("updatePosition", this.updatePosition.bind(this), this.endHandler);
     }
 
     private createElement(): void {
         let body = document.createElement("div");
+        const orientationClass = this.parentSlider.getOrientationClass(this._defaultClass);
 
         this._element = body;
-        addClass(body, `${this._defaultClass}`);
+        addClasses(body, [`${this._defaultClass} `, orientationClass]);
 
         this.parentElement.appendChild(body);
     }
@@ -43,12 +46,11 @@ export default class Range {
             this.endHandler.positionCoordinate - this.parentSlider.scaleStart :
             this.parentSlider.scaleEnd;
         let offset = startCoordinate + this.parentSlider.scaleBorderWidth;
-        let width = endCoordinate - startCoordinate;
+        let length = endCoordinate - startCoordinate;
 
-        this._element.setAttribute(
-            "style",
-            `left: ${offset}px; width: ${width}px`
-        );
+        this._element.style[this.parentSlider.offsetDirection] = `${offset}px`;
+
+        this._element.style[this.parentSlider.expandDimension] = `${length}px`;
     }
 
 
