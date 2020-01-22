@@ -16,7 +16,9 @@ let $slider2 = $(".initSliderHere").liquidSlider({
                 return "two"
             }
         },
-        "<div>three</div>"
+        "<img src='https://img.icons8.com/cotton/2x/like--v1.png' alt='heart'>",
+        "last"
+
     ],
     min: 0,
     max: 22,
@@ -24,5 +26,5 @@ let $slider2 = $(".initSliderHere").liquidSlider({
 });
 
 let $slider3 = $(".initSliderHere").liquidSlider({
-    handlers: [{value: 2}, {value: 6}, {value: 19}],
+    handlers: [{value: 2}, {value: 6, }, {value: 19}],
 });
