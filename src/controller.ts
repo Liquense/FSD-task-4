@@ -44,7 +44,7 @@ export default class Controller {
 
         if (initHandlersData)
             handlersData.handlersArray.forEach((handlerData, index) => {
-                handlersData.handlersArray[index] = {...handlerData, ...initHandlersData[index]};
+                handlersData.handlersArray[index] = {...initHandlersData[index], ...handlerData};
             });
 
         this._view.initHandlers(handlersData);
