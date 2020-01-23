@@ -19,7 +19,7 @@ export default class HandlerView implements Listenable {
         this._additionalClasses = parseClassesString(classesString);
     }
 
-    private _tooltip: Tooltip;
+    private readonly _tooltip: Tooltip;
 
     set value(value: any) {
         if (this._tooltip)

@@ -2,7 +2,7 @@ import {addClasses, defaultSliderClass, parseClassesString} from "../../../commo
 import HandlerView from "../handler";
 
 export default class Tooltip {
-    private static positions = {left: "left", right: "right", up: "up", down: "down"};
+
     private _value: any;
     set value(value) {
         this._value = value;
@@ -50,11 +50,10 @@ export default class Tooltip {
     constructor(parentElement: HTMLElement,
                 public parentHandler: HandlerView,
                 additionalClass?: string,
-                position?: string,
                 bodyHTML?: string,
                 value?: any,
     ) {
-        let defaultParameters = this.initDefaultParameters(parentHandler.parentSlider.isVertical);
+        let defaultParameters = this.initDefaultParameters();
         let parameters = {...defaultParameters, ...arguments};
 
         this.additionalClasses = parameters.additionalClass;
@@ -63,22 +62,14 @@ export default class Tooltip {
         this.value = value;
     }
 
-    private initDefaultParameters(sliderIsVertical: boolean) {
-        let defaultParameters = {
+    private initDefaultParameters() {
+        return {
             additionalClass: "",
             bodyHTML: this.innerHTML,
             withTooltip: true,
             isEnd: true,
             position: undefined,
         };
-
-        if (sliderIsVertical) {
-            defaultParameters.position = Tooltip.positions.left;
-        } else {
-            defaultParameters.position = Tooltip.positions.up;
-        }
-
-        return defaultParameters;
     }
 
     private createElement(parentElement: HTMLElement) {

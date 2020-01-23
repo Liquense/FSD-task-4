@@ -2,8 +2,8 @@ import HandlerView from "../__handler/handler";
 import {addClasses, addListenerAfter, defaultSliderClass} from "../../common";
 import Slider from "../slider";
 
-export default class Range {
-    private readonly _defaultClass = `${defaultSliderClass}__range`;
+export default class RangeView {
+    private static readonly _defaultClass = `${defaultSliderClass}__range`;
     public startHandler: HandlerView;
     public endHandler: HandlerView;
     private _element: HTMLElement;
@@ -29,10 +29,10 @@ export default class Range {
 
     private createElement(): void {
         let body = document.createElement("div");
-        const orientationClass = this.parentSlider.getOrientationClass(this._defaultClass);
+        const orientationClass = this.parentSlider.getOrientationClass(RangeView._defaultClass);
 
         this._element = body;
-        addClasses(body, [`${this._defaultClass} `, orientationClass]);
+        addClasses(body, [`${RangeView._defaultClass} `, orientationClass]);
 
         this.parentElement.appendChild(body);
     }
