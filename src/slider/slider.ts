@@ -1,5 +1,5 @@
 import HandlerView from "./__handler/handler";
-import Range from "./__range/range";
+import RangeView from "./__range/rangeView";
 import {
     addClasses,
     addListenerAfter,
@@ -66,7 +66,7 @@ export default class Slider implements Listenable {
     }
 
     private _step: number; //относительное значение
-    private _ranges: Range[] = [];
+    private _ranges: RangeView[] = [];
 
     public getScaleLength() {
         return this.bodyElement.getBoundingClientRect()[this.expandDimension];
@@ -182,11 +182,11 @@ export default class Slider implements Listenable {
     }
 
     //возвращает хэндлеры не в ренджах
-    private getFreeHandlers(handlersArray: HandlerView[]): HandlerView[] {
+    private static getFreeHandlers(handlersArray: HandlerView[]): HandlerView[] {
         return handlersArray.filter(handler => !handler.inRange);
     }
 
-    private sortHandlersByValue(): HandlerView[] {
+    private getSortedHandlersByPositionPart(): HandlerView[] {
         function handlersComparing(firstHandler: HandlerView, secondHandler: HandlerView) {
             if (firstHandler.positionPart > secondHandler.positionPart)
                 return 1;
@@ -217,8 +217,8 @@ export default class Slider implements Listenable {
     }
 
     public createRanges(): void {
-        let sortedHandlers = this.sortHandlersByValue();
-        let freeHandlers = this.getFreeHandlers(sortedHandlers);
+        let sortedHandlers = this.getSortedHandlersByPositionPart();
+        let freeHandlers = Slider.getFreeHandlers(sortedHandlers);
 
         for (let i = 0; i < freeHandlers.length; i++) {
             const handler = freeHandlers[i];
@@ -237,7 +237,7 @@ export default class Slider implements Listenable {
             if (secondHandler === undefined)
                 continue;
 
-            this._ranges.push(new Range(this, this._element.scale, handler, secondHandler));
+            this._ranges.push(new RangeView(this, this._element.scale, handler, secondHandler));
             handler.inRange = true;
             if (secondHandler)
                 secondHandler.inRange = true;
@@ -256,8 +256,11 @@ export default class Slider implements Listenable {
             let newHandler = new HandlerView(this, handler);
 
             if (!handlersData.customHandlers) {
-                if ((handlers.length === 2) && (index === 0)) {
-                    newHandler.isStart = !this.isReversed;
+                if (handlers.length === 2) {
+                    if (index === 0)
+                        newHandler.isStart = (this.isReversed) === (handlers[0].position > handlers[1].position);
+                    if (index === 1)
+                        newHandler.isEnd = (this.isReversed) === (handlers[0].position > handlers[1].position);
                 } else {
                     newHandler.isStart = this.isReversed;
                 }

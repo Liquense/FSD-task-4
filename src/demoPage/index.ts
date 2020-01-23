@@ -25,11 +25,15 @@ let $slider2 = $(sliderInitSelector).liquidSlider({
     min: 0,
     max: 22,
     isRange: true,
-    isReversed: true,
+    isReversed: false,
     isVertical: true,
     values: [1, 2],
 });
 
 let $slider3 = $(sliderInitSelector).liquidSlider({
-    handlers: [{value: 2}, {value: 6, isEnd: false}, {value: 19, isEnd: true}],
+    handlers: [
+        {value: 2, isEnd: false},
+        {value: 6, isEnd: false},
+        {value: 19, isEnd: false}
+    ],
 });
