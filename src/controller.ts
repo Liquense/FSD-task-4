@@ -8,7 +8,7 @@ export default class Controller {
 
     constructor(
         DOMElement: HTMLElement,
-        parameters: { handlers?: { value: number }[] },
+        parameters: { handlers?: object[] },
     ) {
         this._view = new View(DOMElement, parameters);
         this._model = new Model(parameters);

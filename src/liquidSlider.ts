@@ -37,7 +37,7 @@ $.fn.liquidSlider = function liquidSlider(
         max?: number,
         step?: number,
         handlers?: {
-            value: number,
+            value?: number,
             additionalClasses?: string,
             isEnd?: boolean,
             withTooltip?: boolean,

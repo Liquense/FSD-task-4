@@ -49,7 +49,7 @@ export default class Model implements Listenable {
                     items?: Array<any>, //если задан, то оперируемые значения это индексы массива
                     values?: number[], //значения стандартных хэндлеров
                     handlers?: {
-                        value: number,
+                        value?: number,
                     }[],
                 }
     ) {
@@ -109,7 +109,7 @@ export default class Model implements Listenable {
     }
 
 
-    private generateHandlersFromObj(objects: { value: number }[]) {
+    private generateHandlersFromObj(objects: { value?: number }[]) {
         this._handlers = [];
         this._handlers = objects.map((handler, index) => {
             const valueIndex = standardize(
