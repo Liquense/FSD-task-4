@@ -37,7 +37,7 @@ export default class Tooltip {
     }
 
     private isSliderVertical(): boolean {
-        return this.parentHandler.parentSlider.isVertical;
+        return this.parentHandler.ownerSlider.isVertical;
     }
 
     public getSize(): number {
@@ -49,9 +49,12 @@ export default class Tooltip {
 
     constructor(parentElement: HTMLElement,
                 public parentHandler: HandlerView,
-                additionalClass?: string,
-                bodyHTML?: string,
-                value?: any,
+                params?: {
+                    additionalClass?: string,
+                    bodyHTML?: string,
+                    value?: any,
+                    visibilityState?: boolean,
+                }
     ) {
         let defaultParameters = this.initDefaultParameters();
         let parameters = {...defaultParameters, ...arguments};
@@ -59,7 +62,9 @@ export default class Tooltip {
         this.additionalClasses = parameters.additionalClass;
         this._currentPosition = parameters.position;
         this.createElement(parentElement);
-        this.value = value;
+        this.value = params?.value;
+        console.log(params.visibilityState);
+        this.setVisibility(params.visibilityState);
     }
 
     private initDefaultParameters() {
@@ -72,8 +77,20 @@ export default class Tooltip {
         };
     }
 
+    public setVisibility(visibilityState: boolean): void {
+        visibilityState ? this.show() : this.hide();
+    }
+
+    private show(): void {
+        this._element.style.visibility = "visible";
+    }
+
+    private hide(): void {
+        this._element.style.visibility = "hidden";
+    }
+
     private createElement(parentElement: HTMLElement) {
-        const orientationClass = this.parentHandler.parentSlider.getOrientationClass(this._defaultClass);
+        const orientationClass = this.parentHandler.ownerSlider.getOrientationClass(this._defaultClass);
 
         this._element = document.createElement("div");
         addClasses(this._element, [`${this._defaultClass}`, orientationClass]);

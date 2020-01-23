@@ -50,6 +50,7 @@ export default class Slider implements Listenable {
 
     public isVertical = false;
     public isReversed = true;
+    private _tooltipsIsVisible = false;
 
     get offsetDirection(): string {
         if (this.isVertical)
@@ -75,6 +76,7 @@ export default class Slider implements Listenable {
     constructor(private _parentView: View,
                 parameters: {
                     isVertical?: boolean,
+                    showTooltips?: boolean,
                     isReversed?: boolean,
                     isRange?: boolean,
                 }
@@ -107,6 +109,16 @@ export default class Slider implements Listenable {
         wrap.appendChild(body);
         body.appendChild(scale);
     };
+
+    public setTooltipsVisibility(stateToSet?: boolean): void {
+        let stateToPass = (stateToSet !== undefined) ?
+            (stateToSet) :
+            (this._tooltipsIsVisible);
+
+        this._handlers.forEach(handler => {
+            handler.setTooltipVisibility(stateToPass);
+        })
+    }
 
     public getOrientationClass(defaultClass: string): string {
         return this.isVertical ? `${defaultSliderClass}_vertical` : `${defaultSliderClass}_horizontal`;
@@ -253,7 +265,10 @@ export default class Slider implements Listenable {
         }[]
     }) {
         this._handlers = handlersData.handlersArray.map((handler, index, handlers) => {
-            let newHandler = new HandlerView(this, handler);
+            let newHandler = new HandlerView(
+                this,
+                {...handler, withTooltip: this._tooltipsIsVisible}
+            );
 
             if (!handlersData.customHandlers) {
                 if (handlers.length === 2) {

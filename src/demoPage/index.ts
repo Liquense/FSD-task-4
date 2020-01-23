@@ -32,8 +32,9 @@ let $slider2 = $(sliderInitSelector).liquidSlider({
 
 let $slider3 = $(sliderInitSelector).liquidSlider({
     handlers: [
-        {value: 2, isEnd: false},
-        {value: 6, isEnd: false},
-        {value: 19, isEnd: false}
+        {value: 1, isEnd: true},
+        {value: 4, isEnd: false},
+        {value: 6, isEnd: true},
+        {value: 9, isEnd: false}
     ],
 });

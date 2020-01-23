@@ -27,7 +27,7 @@ export default class HandlerView implements Listenable {
     }
 
     get positionCoordinate() {
-        return calculateElementCenter(this._element.body, this.parentSlider.isVertical);
+        return calculateElementCenter(this._element.body, this.ownerSlider.isVertical);
     }
 
     private _positionPart: number;
@@ -76,20 +76,10 @@ export default class HandlerView implements Listenable {
     }
 
 
-    private _withTooltip: boolean;
-
-    public showTooltip(): void {
-        this._withTooltip = true;
-    }
-
-    public hideTooltip(): void {
-        this._withTooltip = false;
-    }
-
     public inRange: boolean = false;
 
-    constructor(public parentSlider: Slider,
-                parameters:
+    constructor(public ownerSlider: Slider,
+                params:
                     {
                         index: number,
                         position: number,
@@ -99,26 +89,23 @@ export default class HandlerView implements Listenable {
                         tooltip?: object,
                     }
     ) {
-        if (parameters.withTooltip !== undefined)
-            this._withTooltip = parameters.withTooltip;
+        if (params.isEnd !== undefined)
+            this._isEnd = params.isEnd;
 
-        if (parameters.isEnd !== undefined)
-            this._isEnd = parameters.isEnd;
+        this.createElement(ownerSlider.bodyElement);
 
-        this.createElement(parentSlider.bodyElement);
+        this._tooltip = new Tooltip(this._element.wrap, this, {visibilityState: params?.withTooltip});
 
-        this._tooltip = new Tooltip(this._element.wrap, this);
-
-        this.index = parameters.index;
-        this._positionPart = parameters.position;
-        this.value = parameters.value;
+        this.index = params.index;
+        this._positionPart = params.position;
+        this.value = params.value;
         requestAnimationFrame(this.updatePosition.bind(this));
     }
 
     private createElement(parentElement: HTMLElement): void {
         let wrap = document.createElement("div");
         let body = document.createElement("div");
-        const orientationClass = this.parentSlider.getOrientationClass(this._defaultClass);
+        const orientationClass = this.ownerSlider.getOrientationClass(this._defaultClass);
 
         this._element = {wrap, body};
 
@@ -131,12 +118,12 @@ export default class HandlerView implements Listenable {
     };
 
     get size(): number {
-        return this[this.parentSlider.expandDimension];
+        return this[this.ownerSlider.expandDimension];
     }
 
     private calculateOffset(): number {
         let handlerSize = this.size;
-        const scaleSize = this.parentSlider.getScaleLength();
+        const scaleSize = this.ownerSlider.getScaleLength();
         const workZone = scaleSize - handlerSize;
 
         const offset = workZone * this._positionPart;
@@ -162,7 +149,7 @@ export default class HandlerView implements Listenable {
     private updatePosition(): void {
         const offset = this.calculateAccurateOffset();
 
-        this._element.wrap.style[this.parentSlider.offsetDirection] = `${offset}px`;
+        this._element.wrap.style[this.ownerSlider.offsetDirection] = `${offset}px`;
 
         this._tooltip?.updatePosition();
     }
@@ -171,5 +158,9 @@ export default class HandlerView implements Listenable {
         this._positionPart = newPositionPart;
         if (this._element)
             this.updatePosition();
+    }
+
+    public setTooltipVisibility(stateToSet: boolean) {
+
     }
 }
