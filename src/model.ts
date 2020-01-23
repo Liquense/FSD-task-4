@@ -109,15 +109,15 @@ export default class Model implements Listenable {
     }
 
 
-    private generateHandlersFromObj(objects: { value?: number }[]) {
+    private generateHandlersFromObj(customHandlers: { value?: number }[]) {
         this._handlers = [];
-        this._handlers = objects.map((handler, index) => {
+        this._handlers = customHandlers.map((handler, index) => {
             const valueIndex = standardize(
                 handler.value,
                 this.standardizeParams
             );
-
             const value = this.calculateHandlerValue(valueIndex);
+
             return this.createHandler(value, index);
         });
     }
@@ -156,7 +156,7 @@ export default class Model implements Listenable {
     }
 
     private createHandler(valueIndex: number, index: number): HandlerModel {
-        let handlerValue = this._items?.length > valueIndex ? this._items[valueIndex] : valueIndex;
+        let handlerValue = (this._items?.length > valueIndex) ? (this._items[valueIndex]) : (valueIndex);
 
         return new HandlerModel(handlerValue, valueIndex, index, this);
     };
