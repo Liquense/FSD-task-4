@@ -50,7 +50,7 @@ export default class Slider implements Listenable {
 
     public isVertical = false;
     public isReversed = true;
-    private _tooltipsIsVisible = false;
+    private _tooltipsAreVisible = true;
 
     get offsetDirection(): string {
         if (this.isVertical)
@@ -113,7 +113,7 @@ export default class Slider implements Listenable {
     public setTooltipsVisibility(stateToSet?: boolean): void {
         let stateToPass = (stateToSet !== undefined) ?
             (stateToSet) :
-            (this._tooltipsIsVisible);
+            (this._tooltipsAreVisible);
 
         this._handlers.forEach(handler => {
             handler.setTooltipVisibility(stateToPass);
@@ -138,13 +138,14 @@ export default class Slider implements Listenable {
     private _mouseMoveListener = this.handleMouseMove.bind(this); //хранится для корректного удаления слушателя
 
     private handleMouseUp(event: MouseEvent): void {
-        this._activeHandler = null;
+        this.deactivateActiveHandler(); //todo: может быть сделать через фокус?
 
         document.body.removeEventListener("mousemove", this._mouseMoveListener);
     }
 
     private handleMouseDown(event: MouseEvent): void {
-        this._activeHandler = this.getClosestToMouseHandler(event.pageX, event.pageY);
+        this.activateHandler(this.getClosestToMouseHandler(event.pageX, event.pageY));
+        this._activeHandler.body.focus();
 
         document.body.addEventListener("mousemove", this._mouseMoveListener);
     }
@@ -155,7 +156,7 @@ export default class Slider implements Listenable {
         if (closestHandler !== this._activeHandler)
             return;
 
-        this._activeHandler = closestHandler;
+        this.activateHandler(closestHandler);
 
         const mousePosition = this.calculateMouseRelativePosition(event);
         const standardMousePosition = standardize(mousePosition, {min: 0, max: 1, step: this._step});
@@ -164,6 +165,20 @@ export default class Slider implements Listenable {
             return;
 
         this._parentView.handlerPositionChanged(closestHandler.index, standardMousePosition);
+    }
+
+    private deactivateActiveHandler() {
+        this.activateHandler(null);
+    }
+
+    private activateHandler(handlerToActivate: HandlerView): void {
+        if (!this._tooltipsAreVisible)
+            this._activeHandler?.setTooltipVisibility(false); //убираем отображение тултипа с предыдущего
+
+        this._activeHandler = handlerToActivate;
+
+        if (!this._tooltipsAreVisible)
+            handlerToActivate?.setTooltipVisibility(true);
     }
 
     //возвращает позицию мыши относительно начала шкалы в стндартизированном виде
@@ -267,7 +282,7 @@ export default class Slider implements Listenable {
         this._handlers = handlersData.handlersArray.map((handler, index, handlers) => {
             let newHandler = new HandlerView(
                 this,
-                {...handler, withTooltip: this._tooltipsIsVisible}
+                {...handler, withTooltip: this._tooltipsAreVisible}
             );
 
             if (!handlersData.customHandlers) {

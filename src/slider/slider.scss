@@ -122,14 +122,12 @@ $tooltipBorderWidth: 1px;
         border-radius: 50%;
         background-color: #ffb6b0;
         border: solid $handlerBorderWidth darkgrey;
+        outline: none;
 
-        &:hover, &:active {
+        &:hover, &:focus {
           border-color: #593832;
         }
-
       }
     }
   }
 }
-
-;

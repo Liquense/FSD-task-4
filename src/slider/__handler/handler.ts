@@ -108,6 +108,7 @@ export default class HandlerView implements Listenable {
         const orientationClass = this.ownerSlider.getOrientationClass(this._defaultClass);
 
         this._element = {wrap, body};
+        this._element.body.setAttribute("tabindex", "0");
 
         addClasses(wrap, [`${this._defaultClass}Container`, orientationClass]);
         addClasses(wrap, this._additionalClasses);
@@ -161,6 +162,7 @@ export default class HandlerView implements Listenable {
     }
 
     public setTooltipVisibility(stateToSet: boolean) {
-
+        console.log(stateToSet);
+        this._tooltip.setVisibility(stateToSet);
     }
 }

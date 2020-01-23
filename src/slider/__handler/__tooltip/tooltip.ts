@@ -63,7 +63,6 @@ export default class Tooltip {
         this._currentPosition = parameters.position;
         this.createElement(parentElement);
         this.value = params?.value;
-        console.log(params.visibilityState);
         this.setVisibility(params.visibilityState);
     }
 
