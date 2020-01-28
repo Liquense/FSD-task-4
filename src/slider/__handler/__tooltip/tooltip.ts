@@ -1,4 +1,4 @@
-import {addClasses, defaultSliderClass, parseClassesString} from "../../../common";
+import {addClass, addClasses, defaultSliderClass, parseClassesString, removeClass} from "../../../common";
 import HandlerView from "../handler";
 
 export default class Tooltip {
@@ -81,15 +81,17 @@ export default class Tooltip {
     }
 
     private show(): void {
-        this._element.style.visibility = "visible";
+        addClass(this._element, `${this._defaultClass}_visible`);
+        removeClass(this._element, `${this._defaultClass}_hidden`);
     }
 
     private hide(): void {
-        this._element.style.visibility = "hidden";
+        addClass(this._element, `${this._defaultClass}_hidden`);
+        removeClass(this._element, `${this._defaultClass}_visible`);
     }
 
     private createElement(parentElement: HTMLElement) {
-        const orientationClass = this.parentHandler.ownerSlider.getOrientationClass(this._defaultClass);
+        const orientationClass = this.parentHandler.ownerSlider.getOrientationClass();
 
         this._element = document.createElement("div");
         addClasses(this._element, [`${this._defaultClass}`, orientationClass]);

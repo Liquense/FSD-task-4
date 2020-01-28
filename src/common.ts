@@ -7,7 +7,7 @@ export function parseClassesString(classesString: string): string[] {
     return classesString.split(" ");
 }
 
-export function addClasses(element: Element, classes: string[]) {
+export function addClasses(element: HTMLElement, classes: string[]) {
     if (!classes)
         return;
 
@@ -16,8 +16,12 @@ export function addClasses(element: Element, classes: string[]) {
     }
 }
 
-export function addClass(element: Element, className: string) {
+export function addClass(element: HTMLElement, className: string) {
     element.classList.add(className.trim());
+}
+
+export function removeClass(element: HTMLElement, className: string) {
+    element.classList.remove(className.trim());
 }
 
 export interface Listenable {

@@ -29,7 +29,7 @@ export default class RangeView {
 
     private createElement(): void {
         let body = document.createElement("div");
-        const orientationClass = this.parentSlider.getOrientationClass(RangeView._defaultClass);
+        const orientationClass = this.parentSlider.getOrientationClass();
 
         this._element = body;
         addClasses(body, [`${RangeView._defaultClass} `, orientationClass]);

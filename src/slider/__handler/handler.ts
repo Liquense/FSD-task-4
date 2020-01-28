@@ -99,16 +99,17 @@ export default class HandlerView implements Listenable {
         this.index = params.index;
         this._positionPart = params.position;
         this.value = params.value;
+
         requestAnimationFrame(this.updatePosition.bind(this));
     }
 
     private createElement(parentElement: HTMLElement): void {
         let wrap = document.createElement("div");
         let body = document.createElement("div");
-        const orientationClass = this.ownerSlider.getOrientationClass(this._defaultClass);
+        const orientationClass = this.ownerSlider.getOrientationClass();
 
         this._element = {wrap, body};
-        this._element.body.setAttribute("tabindex", "0");
+        this._element.body.setAttribute("tabindex", "-1");
 
         addClasses(wrap, [`${this._defaultClass}Container`, orientationClass]);
         addClasses(wrap, this._additionalClasses);
@@ -162,7 +163,6 @@ export default class HandlerView implements Listenable {
     }
 
     public setTooltipVisibility(stateToSet: boolean) {
-        console.log(stateToSet);
         this._tooltip.setVisibility(stateToSet);
     }
 }

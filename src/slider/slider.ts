@@ -83,13 +83,16 @@ export default class Slider implements Listenable {
     ) {
         this.isVertical = parameters.isVertical;
         this.isReversed = parameters.isReversed;
+        if (parameters.showTooltips !== undefined) {
+            this._tooltipsAreVisible = parameters.showTooltips;
+        }
 
         this.createElement(_parentView.element);
         this.setMouseEvents();
     }
 
     private createElement(parentElement: HTMLElement) {
-        let orientationClass = this.getOrientationClass(defaultSliderClass);
+        let orientationClass = this.getOrientationClass();
         this._element = {
             wrap: document.createElement("div"),
             body: document.createElement("div"),
@@ -120,11 +123,15 @@ export default class Slider implements Listenable {
         })
     }
 
-    public getOrientationClass(defaultClass: string): string {
+    public getOrientationClass(): string {
         return this.isVertical ? `${defaultSliderClass}_vertical` : `${defaultSliderClass}_horizontal`;
     }
 
     private setMouseEvents() {
+        window.addEventListener(
+            "mousedown",
+            this.handleWindowMouseDown.bind(this)
+        );
         this._element.body.addEventListener(
             "mousedown",
             this.handleMouseDown.bind(this)
@@ -135,11 +142,16 @@ export default class Slider implements Listenable {
         );
     }
 
+    private handleWindowMouseDown(event: MouseEvent) {
+        let targetElement = (event.target) as HTMLElement;
+        if (!this._element.wrap.contains(targetElement)) {
+            this.deactivateActiveHandler();
+        }
+    }
+
     private _mouseMoveListener = this.handleMouseMove.bind(this); //хранится для корректного удаления слушателя
 
     private handleMouseUp(event: MouseEvent): void {
-        this.deactivateActiveHandler(); //todo: может быть сделать через фокус?
-
         document.body.removeEventListener("mousemove", this._mouseMoveListener);
     }
 
@@ -147,6 +159,7 @@ export default class Slider implements Listenable {
         this.activateHandler(this.getClosestToMouseHandler(event.pageX, event.pageY));
         this._activeHandler.body.focus();
 
+        this.handleMouseMove(event);
         document.body.addEventListener("mousemove", this._mouseMoveListener);
     }
 
