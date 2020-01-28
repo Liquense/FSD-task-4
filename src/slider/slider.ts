@@ -9,6 +9,7 @@ import {
     standardize
 } from "../common";
 import View from "../view";
+import MarkupView from "./_markup/markup";
 
 export default class Slider implements Listenable {
     listenDictionary: { function: Function, listeners: Function[] };
@@ -41,6 +42,12 @@ export default class Slider implements Listenable {
         );
     }
 
+    get handlerSize() {
+        const exemplarHandler = this._handlers?.[0];
+
+        return exemplarHandler.size;
+    };
+
     private _handlers: HandlerView[] = [];
     get handlers() {
         return this._handlers;
@@ -51,6 +58,8 @@ export default class Slider implements Listenable {
     public isVertical = false;
     public isReversed = true;
     private _tooltipsAreVisible = true;
+    private _withMarkup = true;
+    private _markup: MarkupView;
 
     get offsetDirection(): string {
         if (this.isVertical)
@@ -79,6 +88,7 @@ export default class Slider implements Listenable {
                     showTooltips?: boolean,
                     isReversed?: boolean,
                     isRange?: boolean,
+                    withMarkup?: boolean,
                 }
     ) {
         this.isVertical = parameters.isVertical;
@@ -100,16 +110,15 @@ export default class Slider implements Listenable {
         };
         let wrap = this._element.wrap;
         addClasses(wrap, [defaultSliderClass, orientationClass]);
+        parentElement.replaceWith(wrap);
 
         let body = this._element.body;
         body.addEventListener("mousedown", (event) => event.preventDefault());
         addClasses(body, [`${defaultSliderClass}__body`, orientationClass]);
+        wrap.appendChild(body);
 
         let scale = this._element.scale;
         addClasses(scale, [`${defaultSliderClass}__scale`, orientationClass]);
-
-        parentElement.replaceWith(wrap);
-        wrap.appendChild(body);
         body.appendChild(scale);
     };
 
@@ -284,14 +293,24 @@ export default class Slider implements Listenable {
         }
     }
 
-    public initHandlers(handlersData: {
-        customHandlers: boolean,
-        handlersArray: {
-            index: number,
-            position: number,
-            value: any,
-        }[]
-    }) {
+    private fillMarkup() {
+        this._markup.clearAllMarks();
+
+        for (let i = 0; i < 1; i += this._step) {
+            const standardPosition = standardize(i, {min: 0, max: 1, step: this._step});
+            this._markup.addMark(standardPosition);
+        }
+    }
+
+    public initHandlers(
+        handlersData: {
+            customHandlers: boolean,
+            handlersArray: {
+                index: number,
+                position: number,
+                value: any,
+            }[]
+        }) {
         this._handlers = handlersData.handlersArray.map((handler, index, handlers) => {
             let newHandler = new HandlerView(
                 this,
@@ -311,6 +330,16 @@ export default class Slider implements Listenable {
 
             return newHandler;
         });
+
+        this._markup = new MarkupView(this, this._element.scale);
+    }
+
+    public calculateOffset(relativePosition: number): number {
+        let handlerSize = this.handlerSize;
+        const scaleSize = this.getScaleLength();
+        const workZone = scaleSize - handlerSize;
+
+        return  workZone * relativePosition;
     }
 
     public setHandlersData(handlers: { index: number, value: any, position: number }[]) {
@@ -321,8 +350,10 @@ export default class Slider implements Listenable {
     }
 
     public update(data: { step?: number }) {
-        if (data.step)
+        if (data.step) {
             this._step = data.step;
+            this.fillMarkup();
+        }
     }
 
     public addOnMouseDownListener(listener: Function) {

@@ -123,13 +123,8 @@ export default class HandlerView implements Listenable {
         return this[this.ownerSlider.expandDimension];
     }
 
-    private calculateOffset(): number {
-        let handlerSize = this.size;
-        const scaleSize = this.ownerSlider.getScaleLength();
-        const workZone = scaleSize - handlerSize;
-
-        const offset = workZone * this._positionPart;
-        return offset;
+    public calculateOffset(): number {
+        return this.ownerSlider.calculateOffset(this._positionPart);
     }
 
     //добавляется смещение для правильного отображения хэндлера и тултипа, если тултип больше
@@ -148,7 +143,7 @@ export default class HandlerView implements Listenable {
         return this.centerShift(shift);
     }
 
-    private updatePosition(): void {
+    public updatePosition(): void {
         const offset = this.calculateAccurateOffset();
 
         this._element.wrap.style[this.ownerSlider.offsetDirection] = `${offset}px`;

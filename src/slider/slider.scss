@@ -19,8 +19,12 @@ $tooltipPadding: 4px;
 $tooltipMargin: 3px;
 $tooltipBorderWidth: 1px;
 
+$markupThickness: 1px;
+$markupLength: $scaleThickness + 6px;
+
 .liquidSlider {
   width: fit-content;
+  outline: none;
 
   &.liquidSlider_horizontal {
     padding-top: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipPadding*2;
@@ -51,6 +55,9 @@ $tooltipBorderWidth: 1px;
 
     .liquidSlider__scale {
       $scaleBorderRadius: 5px;
+      background-color: rgba(200, 200, 200, 0.3);
+      border: solid $scaleBorderWidth black;
+      border-radius: $scaleBorderRadius;
 
       &.liquidSlider_horizontal {
         width: 100%;
@@ -62,13 +69,36 @@ $tooltipBorderWidth: 1px;
         width: $scaleThickness;
       }
 
-      background-color: rgba(200, 200, 200, 0.3);
-      border: solid $scaleBorderWidth black;
-      border-radius: $scaleBorderRadius;
+      .liquidSlider__markupWrap {
+        .liquidSlider__markup {
+          position: absolute;
+          background-color: #29aee9;
+        }
+
+        &.liquidSlider_horizontal {
+          width: 100%;
+
+          .liquidSlider__markup {
+            bottom: - abs($markupLength - $scaleThickness);
+            width: $markupThickness;
+            height: $markupLength;
+          }
+        }
+
+        &.liquidSlider_vertical {
+          height: 100%;
+
+          .liquidSlider__markup {
+            left: - abs($markupLength - $scaleThickness);
+            height: $markupThickness;
+            width: $markupLength;
+          }
+        }
+      }
 
       .liquidSlider__range {
         position: absolute;
-        background-color: #c5e6e6;
+        background-color: #83d3e9;
         border-radius: $scaleBorderRadius;
 
         &.liquidSlider_vertical {
@@ -114,6 +144,14 @@ $tooltipBorderWidth: 1px;
         > * {
           height: $tooltipHeight;
         }
+
+        &.liquidSlider__handlerTooltip_visible {
+          visibility: visible;
+        }
+
+        &.liquidSlider__handlerTooltip_hidden {
+          visibility: hidden;
+        }
       }
 
       .liquidSlider__handlerBody {
@@ -126,6 +164,10 @@ $tooltipBorderWidth: 1px;
 
         &:hover, &:focus {
           border-color: #593832;
+
+          + .liquidSlider__handlerTooltip {
+            visibility: visible;
+          }
         }
       }
     }
