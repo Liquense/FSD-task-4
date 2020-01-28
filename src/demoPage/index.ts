@@ -36,4 +36,5 @@ let $slider3 = $(sliderInitSelector).liquidSlider({
         {value: 6, isEnd: false}
     ],
     showTooltips: false,
+    withMarkup: true
 });

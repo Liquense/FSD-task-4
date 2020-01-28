@@ -58,7 +58,7 @@ export default class Slider implements Listenable {
     public isVertical = false;
     public isReversed = true;
     private _tooltipsAreVisible = true;
-    private _withMarkup = true;
+    private _withMarkup = false;
     private _markup: MarkupView;
 
     get offsetDirection(): string {
@@ -96,6 +96,7 @@ export default class Slider implements Listenable {
         if (parameters.showTooltips !== undefined) {
             this._tooltipsAreVisible = parameters.showTooltips;
         }
+        this._withMarkup = parameters.withMarkup;
 
         this.createElement(_parentView.element);
         this.setMouseEvents();
@@ -293,12 +294,14 @@ export default class Slider implements Listenable {
         }
     }
 
-    private fillMarkup() {
+    private updateMarkup() {
         this._markup.clearAllMarks();
 
-        for (let i = 0; i < 1; i += this._step) {
-            const standardPosition = standardize(i, {min: 0, max: 1, step: this._step});
-            this._markup.addMark(standardPosition);
+        if (this._withMarkup) {
+            for (let i = 0; i < 1; i += this._step) {
+                const standardPosition = standardize(i, {min: 0, max: 1, step: this._step});
+                this._markup.addMark(standardPosition);
+            }
         }
     }
 
@@ -352,7 +355,7 @@ export default class Slider implements Listenable {
     public update(data: { step?: number }) {
         if (data.step) {
             this._step = data.step;
-            this.fillMarkup();
+            this.updateMarkup();
         }
     }
 
