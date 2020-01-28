@@ -40,11 +40,11 @@ export default class RangeView {
     public updatePosition() {
         const startCoordinate = this.startHandler ?
             this.startHandler.positionCoordinate - this.parentSlider.scaleStart :
-            0;
+            this.parentSlider.scaleBorderWidth;
         const endCoordinate = this.endHandler ?
             this.endHandler.positionCoordinate - this.parentSlider.scaleStart :
             this.parentSlider.scaleEnd - this.parentSlider.scaleStart - this.parentSlider.scaleBorderWidth;
-        let offset = startCoordinate + this.parentSlider.scaleBorderWidth;
+        let offset = startCoordinate;
         let length = endCoordinate - startCoordinate;
 
         this._element.style[this.parentSlider.offsetDirection] = `${offset}px`;
