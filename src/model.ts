@@ -60,7 +60,7 @@ export default class Model implements Listenable {
         if (parameters.handlers?.length) {
             //если передаются кастомные хэндлеры
             this.withCustomHandlers = true;
-            this.generateHandlersFromObj(parameters.handlers);
+            this.createCustomHandlers(parameters.handlers);
         } else {
             this.withCustomHandlers = false;
             this.generateDefaultHandlers(parameters.isRange ? 2 : 1, parameters.values);
@@ -109,20 +109,35 @@ export default class Model implements Listenable {
     }
 
 
-    private generateHandlersFromObj(customHandlers: { value?: number }[]) {
+    private createCustomHandlers(customHandlers: { value?: number }[]) {
         this._handlers = [];
-        this._handlers = customHandlers.map((handler, index) => {
-            const valueIndex = standardize(
-                handler.value,
-                this.standardizeParams
-            );
-            const value = this.calculateHandlerValue(valueIndex);
 
-            return this.createHandler(value, index);
+        this._handlers = customHandlers.map((handler, index) => {
+            const itemIndex = Number.isFinite(handler.value) ?
+                standardize(handler.value, this.standardizeParams) :
+                undefined;
+            const value = this.calculateValue(itemIndex);
+
+            const newHandler = this.createHandler(value, index);
+            if (newHandler !== null)
+                return newHandler;
+        });
+
+        this._handlers.forEach((handler, index) => {
+            if (handler.value === undefined) {
+                const itemIndex = this._min + (this.range / (this._handlers.length + 1)) * (index + 1);
+                this.setHandlerItem(handler, itemIndex);
+            }
         });
     }
 
-    public calculateHandlerValue(valueOrIndex: number): any {
+    public setHandlerItem(handler: HandlerModel, itemIndex: number) {
+        const valueIsOccupied = this.checkItemOccupancy(itemIndex);
+        const newItemIndex = valueIsOccupied ? this.getFirstFreeItemIndex(itemIndex) : itemIndex;
+        handler.setItemIndex(newItemIndex);
+    }
+
+    public calculateValue(valueOrIndex: number): any {
         let result: any;
 
         if (this._items) {
@@ -134,31 +149,32 @@ export default class Model implements Listenable {
         return result;
     }
 
-    private generateDefaultHandlers(handlersCount: number, values?: number[]) {
+    private generateDefaultHandlers(handlersCount: number, itemIndexes?: number[]) {
         this._handlers = [];
+        const part = this.range / (handlersCount + 1);
 
-        if (handlersCount === 1) {
-            const value = Number.isFinite(values?.[0]) ?
-                standardize(values[0], this.standardizeParams) :
-                standardize(this._min + (this.range / 2), this.standardizeParams);
-            this._handlers.push(this.createHandler(value, this._handlers.length));
-        } else {
-            const part = this.range / (handlersCount - 1);
+        for (let i = 0; i < handlersCount; i++) {
+            const itemIndex = Number.isFinite(itemIndexes?.[i]) ?
+                standardize(itemIndexes[i], this.standardizeParams) :
+                standardize(this._min + (i + 1) * part, this.standardizeParams);
 
-            for (let i = 0; i < handlersCount; i++) {
-                const valueIndex = Number.isFinite(values?.[i]) ?
-                    standardize(values[i], this.standardizeParams) :
-                    standardize(i * part, this.standardizeParams);
-
-                this._handlers.push(this.createHandler(valueIndex, this._handlers.length));
-            }
+            const newHandler = this.createHandler(itemIndex, i);
+            if (newHandler)
+                this._handlers.push(newHandler);
         }
     }
 
-    private createHandler(valueIndex: number, index: number): HandlerModel {
-        let handlerValue = (this._items?.length > valueIndex) ? (this._items[valueIndex]) : (valueIndex);
+    private createHandler(itemIndex: number, index: number): HandlerModel {
+        let freeItemIndex = itemIndex;
+        if (this.checkItemOccupancy(itemIndex)) {
+            freeItemIndex = this.getFirstFreeItemIndex(itemIndex);
+        }
+        if (freeItemIndex === null)
+            return null;
 
-        return new HandlerModel(handlerValue, valueIndex, index, this);
+        const handlerValue = (this._items?.length > freeItemIndex) ? (this._items[freeItemIndex]) : (freeItemIndex);
+
+        return new HandlerModel(handlerValue, freeItemIndex, index, this);
     };
 
 
@@ -167,7 +183,10 @@ export default class Model implements Listenable {
     };
 
     //для передачи контролеру
-    public getHandlersData(): { customHandlers: boolean, handlersArray: { index: number, value: any, position: number }[] } {
+    public getHandlersData(): {
+        customHandlers: boolean,
+        handlersArray: { index: number, value: any, position: number }[]
+    } {
         return {
             customHandlers: this.withCustomHandlers,
             handlersArray: this._handlers.map(
@@ -189,7 +208,7 @@ export default class Model implements Listenable {
     public handleHandlerPositionChanged(data: { index: number, position: number }): void {
         const newStandardPosition = this.getValueIndexFromPosition(data.position);
 
-        this._handlers[data.index].setValueIndex(newStandardPosition);
+        this._handlers[data.index].setItemIndex(newStandardPosition);
     }
 
     public checkItemOccupancy(itemIndex): boolean {
@@ -200,8 +219,39 @@ export default class Model implements Listenable {
         this._occupiedItems[itemIndex] = handlerIndex;
     }
 
-    public freeItem(itemIndex: number): void {
+    public releaseItem(itemIndex: number): void {
         delete this._occupiedItems[itemIndex];
+    }
+
+    /**
+     * находит первый свободный индекс значения
+     * @param startIndex необязательный аргумент, если нужно начать с конкретного индекса
+     */
+    private getFirstFreeItemIndex(startIndex?: number): number {
+        let result: number;
+
+        const start = startIndex ? startIndex : this._min;
+        result = this.findFirstFreeItemIndex(start, this._max);
+
+        if (result === null) {
+            //если ПОСЛЕ нужного индекса ничего не нашлось, с горя ищем ДО него
+            result = this.findFirstFreeItemIndex(this._min, start);
+        }
+
+        return result;
+    }
+
+    private findFirstFreeItemIndex(start: number, end: number): number {
+        let result: number = null;
+
+        for (let i = start; i <= end; i += this._step) {
+            if (!this.checkItemOccupancy(i)) {
+                result = i;
+                break;
+            }
+        }
+
+        return result;
     }
 }
 
@@ -222,16 +272,16 @@ class HandlerModel implements Listenable {
 
     constructor(
         private _value: any, //непосредственно значение
-        public valueIndex: number, //нужно для вычисления положения
+        public itemIndex: number, //нужно для вычисления положения
         public index: number,
         private readonly _parentModel: Model,
     ) {
-        this.setValueIndex(valueIndex);
+        this.setItemIndex(itemIndex);
     }
 
     private calculatePosition() {
         return clamp(
-            ((this.valueIndex - this._parentModel.min) / this._parentModel.range),
+            ((this.itemIndex - this._parentModel.min) / this._parentModel.range),
             0,
             1
         );
@@ -242,16 +292,16 @@ class HandlerModel implements Listenable {
         this._parentModel.handlerValueChanged(this);
     }
 
-    public setValueIndex(newItemIndex: number,) {
-        const oldItemIndex = this.valueIndex;
+    public setItemIndex(newItemIndex: number,) {
+        const oldItemIndex = this.itemIndex;
         if (this._parentModel.checkItemOccupancy(newItemIndex))
             return;
 
-        this.valueIndex = newItemIndex;
-        this._value = this._parentModel.calculateHandlerValue(this.valueIndex);
+        this.itemIndex = newItemIndex;
+        this._value = this._parentModel.calculateValue(this.itemIndex);
         this.updatePosition();
 
-        this._parentModel.freeItem(oldItemIndex);
+        this._parentModel.releaseItem(oldItemIndex);
         this._parentModel.occupyItem(newItemIndex, this.index);
     }
 }
