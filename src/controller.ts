@@ -17,8 +17,8 @@ export default class Controller {
         addListenerAfter("handlerPositionChanged", this.passHandlerPositionChange.bind(this), this._view);
         addListenerAfter("createHandler", this.viewAddHandler.bind(this), this._model);
 
-        this.passHandlersData(parameters.handlers);
         this.passSliderData(this._view);
+        this.passHandlersData(parameters.handlers);
     }
 
 
