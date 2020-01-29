@@ -18,10 +18,15 @@ export default class Slider implements Listenable {
         wrap: HTMLElement,
         body: HTMLElement,
         scale: HTMLElement,
+        handlers: HTMLElement,
     };
 
     get bodyElement(): HTMLElement {
         return this._element.body;
+    }
+
+    get handlersElement(): HTMLElement {
+        return this._element.handlers;
     }
 
     get scaleStart(): number {
@@ -107,7 +112,8 @@ export default class Slider implements Listenable {
         this._element = {
             wrap: document.createElement("div"),
             body: document.createElement("div"),
-            scale: document.createElement("div")
+            scale: document.createElement("div"),
+            handlers: document.createElement("div"),
         };
         let wrap = this._element.wrap;
         addClasses(wrap, [defaultSliderClass, orientationClass]);
@@ -121,6 +127,10 @@ export default class Slider implements Listenable {
         let scale = this._element.scale;
         addClasses(scale, [`${defaultSliderClass}__scale`, orientationClass]);
         body.appendChild(scale);
+
+        const handlers = this._element.handlers;
+        addClasses(handlers, [`${defaultSliderClass}__handlers`, orientationClass]);
+        body.appendChild(handlers);
     };
 
     public setTooltipsVisibility(stateToSet?: boolean): void {

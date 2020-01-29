@@ -92,7 +92,7 @@ export default class HandlerView implements Listenable {
         if (params.isEnd !== undefined)
             this._isEnd = params.isEnd;
 
-        this.createElement(ownerSlider.bodyElement);
+        this.createElement(ownerSlider.handlersElement);
 
         this._tooltip = new Tooltip(this._element.wrap, this, {visibilityState: params?.withTooltip});
 
