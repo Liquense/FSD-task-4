@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -26,6 +27,12 @@ module.exports = {
 	},
 
 	plugins: [
+		new webpack.ProvidePlugin({
+			$: "jquery",
+			jQuery: "jquery",
+			"window.$": "jquery",
+			"window.jQuery": "jquery",
+		}),
 		new CleanWebpackPlugin(),
 		//new BundleAnalyzerPlugin(),
 		new HtmlWebpackPlugin({
@@ -60,21 +67,11 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				enforce: "pre",
-				test: /\.ts$/,
-				loader: "source-map-loader"
-			},
-			{
-				test: /\.ts(x?)$/,
-				exclude: /node_modules/,
-				loader: 'babel-loader'
-			},
-			{
 				test: /\.html$/,
 				loader: "html-loader",
 			},
 			{
-				test: /\.ts(x?)$/,
+				test: /(?!.test)\.ts(x?)$/,
 				exclude: /node_modules/,
 				loader: "ts-loader",
 			},
