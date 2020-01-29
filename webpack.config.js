@@ -22,7 +22,7 @@ module.exports = {
 	},
 
 	resolve: {
-		extensions: ['.ts', '.js', '.json']
+		extensions: ['.ts', '.js']
 	},
 
 	plugins: [
@@ -61,8 +61,13 @@ module.exports = {
 		rules: [
 			{
 				enforce: "pre",
-				test: /\.js$/,
+				test: /\.ts$/,
 				loader: "source-map-loader"
+			},
+			{
+				test: /\.ts(x?)$/,
+				exclude: /node_modules/,
+				loader: 'babel-loader'
 			},
 			{
 				test: /\.html$/,
