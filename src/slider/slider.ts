@@ -304,6 +304,11 @@ export default class Slider implements Listenable {
         }
     }
 
+    private initMarkup() {
+        this._markup = new MarkupView(this);
+        this.updateMarkup();
+    }
+
     private updateMarkup() {
         this._markup.clearAllMarks();
 
@@ -344,7 +349,9 @@ export default class Slider implements Listenable {
             return newHandler;
         });
 
-        this._markup = new MarkupView(this, this._element.scale);
+        if (this._withMarkup) {
+            this.initMarkup();
+        }
     }
 
     public calculateOffset(relativePosition: number): number {
@@ -352,7 +359,7 @@ export default class Slider implements Listenable {
         const scaleSize = this.getScaleLength();
         const workZone = scaleSize - handlerSize;
 
-        return  workZone * relativePosition;
+        return workZone * relativePosition;
     }
 
     public setHandlersData(handlers: { index: number, value: any, position: number }[]) {
@@ -365,7 +372,6 @@ export default class Slider implements Listenable {
     public update(data: { step?: number }) {
         if (data.step) {
             this._step = data.step;
-            this.updateMarkup();
         }
     }
 

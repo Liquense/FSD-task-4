@@ -4,29 +4,25 @@ import {addClasses, defaultSliderClass} from "../../common";
 export default class MarkupView {
     private marks: HTMLElement[] = [];
     private wrap: HTMLElement;
-    private orientationClass: string;
     private defaultClass = `${defaultSliderClass}__markup`;
 
     private getMarkSize() {
         const dimension = this.ownerSlider.expandDimension;
-        console.log(this.marks?.[0].getBoundingClientRect());
         return this.marks?.[0].getBoundingClientRect()[dimension];
     }
 
     constructor(
         public ownerSlider: SliderView,
-        private parentElement: HTMLElement
     ) {
-        this.orientationClass = this.ownerSlider.getOrientationClass();
         this.createElement();
     }
 
     private createElement() {
         this.wrap = document.createElement("div");
 
-        addClasses(this.wrap, [`${this.defaultClass}Wrap`, this.orientationClass]);
+        addClasses(this.wrap, [`${this.defaultClass}Wrap`, this.ownerSlider.getOrientationClass()]);
 
-        this.parentElement.appendChild(this.wrap);
+        this.ownerSlider.bodyElement.insertBefore(this.wrap, this.ownerSlider.handlersElement);
     }
 
     public clearAllMarks() {
@@ -35,7 +31,7 @@ export default class MarkupView {
 
     public addMark(relativePosition: number) {
         let newMark = document.createElement("div");
-        addClasses(newMark, [this.defaultClass, this.orientationClass]);
+        addClasses(newMark, [this.defaultClass, this.ownerSlider.getOrientationClass()]);
         this.wrap.appendChild(newMark);
         this.marks.push(newMark);
 

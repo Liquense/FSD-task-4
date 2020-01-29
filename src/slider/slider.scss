@@ -69,33 +69,6 @@ $markupLength: $scaleThickness + 6px;
         width: $scaleThickness;
       }
 
-      .liquidSlider__markupWrap {
-        .liquidSlider__markup {
-          position: absolute;
-          background-color: #29aee9;
-        }
-
-        &.liquidSlider_horizontal {
-          width: 100%;
-
-          .liquidSlider__markup {
-            bottom: - abs($markupLength - $scaleThickness);
-            width: $markupThickness;
-            height: $markupLength;
-          }
-        }
-
-        &.liquidSlider_vertical {
-          height: 100%;
-
-          .liquidSlider__markup {
-            left: - abs($markupLength - $scaleThickness);
-            height: $markupThickness;
-            width: $markupLength;
-          }
-        }
-      }
-
       .liquidSlider__range {
         position: absolute;
         background-color: #83d3e9;
@@ -109,6 +82,39 @@ $markupLength: $scaleThickness + 6px;
         &.liquidSlider_horizontal {
           height: $scaleThickness - $scaleBorderWidth*2;
           top: $scaleBorderWidth;
+        }
+      }
+    }
+
+    .liquidSlider__markupWrap {
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      .liquidSlider__markup {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.3);
+      }
+
+      &.liquidSlider_horizontal {
+        width: $sliderLength;
+        height: $scaleThickness;
+
+        .liquidSlider__markup {
+          bottom: - abs($markupLength - $scaleThickness);
+          width: $markupThickness;
+          height: $markupLength;
+        }
+      }
+
+      &.liquidSlider_vertical {
+        height: $sliderLength;
+        width: $scaleThickness;
+
+        .liquidSlider__markup {
+          left: - abs($markupLength - $scaleThickness);
+          height: $markupThickness;
+          width: $markupLength;
         }
       }
     }
