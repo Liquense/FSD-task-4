@@ -124,7 +124,7 @@ export default class HandlerView implements Listenable {
     }
 
     public calculateOffset(): number {
-        return this.ownerSlider.calculateOffset(this._positionPart);
+        return this.ownerSlider.calculateHandlerOffset(this._positionPart);
     }
 
     //добавляется смещение для правильного отображения хэндлера и тултипа, если тултип больше

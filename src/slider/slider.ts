@@ -47,10 +47,19 @@ export default class Slider implements Listenable {
         );
     }
 
-    get handlerSize() {
-        const exemplarHandler = this._handlers?.[0];
+    private _handlerSize: number;
 
-        return exemplarHandler.size;
+    get shrinkCoeff() {
+        return this.getWorkZoneLength() / this.getScaleLength();
+    }
+
+    private setHandlerSize() {
+        const exemplarHandler = this._handlers?.[0];
+        this._handlerSize = exemplarHandler.size;
+    }
+
+    get handlerSize() {
+        return this._handlerSize;
     };
 
     private _handlers: HandlerView[] = [];
@@ -315,7 +324,8 @@ export default class Slider implements Listenable {
         if (this._withMarkup) {
             for (let i = 0; i < 1; i += this._step) {
                 const standardPosition = standardize(i, {min: 0, max: 1, step: this._step});
-                this._markup.addMark(standardPosition);
+                const shrinkPosition = standardPosition * this.shrinkCoeff;
+                this._markup.addMark(shrinkPosition, this.calcRelativeHandlerSize());
             }
         }
     }
@@ -349,17 +359,25 @@ export default class Slider implements Listenable {
             return newHandler;
         });
 
+        this.setHandlerSize();
+
         if (this._withMarkup) {
             this.initMarkup();
         }
     }
 
-    public calculateOffset(relativePosition: number): number {
+    public getWorkZoneLength(): number {
         let handlerSize = this.handlerSize;
         const scaleSize = this.getScaleLength();
-        const workZone = scaleSize - handlerSize;
+        return scaleSize - handlerSize;
+    }
 
-        return workZone * relativePosition;
+    public calculateHandlerOffset(relativePosition: number): number {
+        return this.getWorkZoneLength() * relativePosition;
+    }
+
+    public calcRelativeHandlerSize() {
+        return this.handlerSize / this.getWorkZoneLength();
     }
 
     public setHandlersData(handlers: { index: number, value: any, position: number }[]) {
