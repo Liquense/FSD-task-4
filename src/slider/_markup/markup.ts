@@ -2,17 +2,19 @@ import SliderView from "../slider";
 import {addClasses, defaultSliderClass} from "../../common";
 
 export default class MarkupView {
-    private marks: HTMLElement[] = [];
-    private wrap: HTMLElement;
-    private defaultClass = `${defaultSliderClass}__markup`;
+    private _marks: HTMLElement[] = [];
+    private _wrap: HTMLElement = undefined;
+    private _defaultClass = `${defaultSliderClass}__markup`;
 
-    private getMarkSize() {
+    private getMarkThickness() {
         const dimension = this.ownerSlider.expandDimension;
-        return this.marks?.[0].getBoundingClientRect()[dimension];
+        return this._marks[0].getBoundingClientRect()[dimension];
     }
 
-    private getRelativeMarkSize() {
-        return this.getMarkSize() / this.ownerSlider.getScaleLength();
+    private getRelativeMarkThickness(): number {
+        return this.ownerSlider.getScaleLength() ?
+            this.ownerSlider.shrinkCoeff * (this.getMarkThickness() / this.ownerSlider.getScaleLength()) :
+            0;
     }
 
     constructor(
@@ -22,33 +24,43 @@ export default class MarkupView {
     }
 
     private createWrap() {
-        this.wrap = document.createElement("div");
+        this._wrap = document.createElement("div");
 
-        addClasses(this.wrap, [`${this.defaultClass}Wrap`, this.ownerSlider.getOrientationClass()]);
+        addClasses(this._wrap, [`${this._defaultClass}Wrap`, this.ownerSlider.getOrientationClass()]);
 
-        this.ownerSlider.bodyElement.insertBefore(this.wrap, this.ownerSlider.handlersElement);
+        this.ownerSlider.bodyElement.insertBefore(this._wrap, this.ownerSlider.handlersElement);
     }
 
     private createMarkElement(): HTMLElement {
         let newMark = document.createElement("div");
-        addClasses(newMark, [this.defaultClass, this.ownerSlider.getOrientationClass()]);
-        this.wrap.appendChild(newMark);
+        addClasses(newMark, [this._defaultClass, this.ownerSlider.getOrientationClass()]);
+        this._wrap.appendChild(newMark);
 
         return newMark;
     }
 
     private calculateMarkOffset(relativePosition: number, relativeHandlerSize: number): Number {
-        return 100 * (relativePosition + relativeHandlerSize / 2 - this.getRelativeMarkSize() / 2);
+        return Number(
+            (
+                100 *
+                (
+                    relativePosition
+                    + (relativeHandlerSize / 2)
+                    - this.getRelativeMarkThickness() / 2
+                )
+            ).toFixed(4));
     }
 
     public clearAllMarks() {
+        this._marks = [];
+        this._wrap.innerHTML = "";
     }
 
     public addMark(relativePosition: number, relativeHandlerSize: number) {
         let newMark = this.createMarkElement();
-        this.marks.push(newMark);
+        this._marks.push(newMark);
 
-        newMark.style[this.ownerSlider.offsetDirection] =
-            this.calculateMarkOffset(relativePosition, relativeHandlerSize) + "%";
+        const markOffset = this.calculateMarkOffset(relativePosition, relativeHandlerSize);
+        newMark.style[this.ownerSlider.offsetDirection] = markOffset + "%";
     }
 }
