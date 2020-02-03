@@ -14,6 +14,7 @@ import MarkupView from "./_markup/markup";
 export default class Slider implements Listenable {
     listenDictionary: { function: Function, listeners: Function[] };
 
+    private static _defaultSliderClass = "liquidSlider";
     private _element: {
         wrap: HTMLElement,
         body: HTMLElement,
@@ -47,7 +48,7 @@ export default class Slider implements Listenable {
         );
     }
 
-    private _handlerSize: number;
+    private _handlerSize: number = 0;
 
     get shrinkCoeff() {
         return this.getWorkZoneLength() / this.getScaleLength();
@@ -93,7 +94,7 @@ export default class Slider implements Listenable {
     private _ranges: RangeView[] = [];
 
     public getScaleLength() {
-        return this.bodyElement.getBoundingClientRect()[this.expandDimension];
+        return this._element.scale.getBoundingClientRect()[this.expandDimension];
     }
 
     constructor(private _parentView: View,
@@ -153,7 +154,7 @@ export default class Slider implements Listenable {
     }
 
     public getOrientationClass(): string {
-        return this.isVertical ? `${defaultSliderClass}_vertical` : `${defaultSliderClass}_horizontal`;
+        return this.isVertical ? `${defaultSliderClass}_vertical` : `${Slider._defaultSliderClass}_horizontal`;
     }
 
     private setMouseEvents() {
@@ -322,11 +323,13 @@ export default class Slider implements Listenable {
         this._markup.clearAllMarks();
 
         if (this._withMarkup) {
-            for (let i = 0; i < 1; i += this._step) {
-                const standardPosition = standardize(i, {min: 0, max: 1, step: this._step});
-                const shrinkPosition = standardPosition * this.shrinkCoeff;
-                this._markup.addMark(shrinkPosition, this.calcRelativeHandlerSize());
-            }
+            requestAnimationFrame(() => {
+                for (let i = 0; i < 1; i += this._step) {
+                    const standardPosition = standardize(i, {min: 0, max: 1, step: this._step});
+                    const shrinkPosition = standardPosition * this.shrinkCoeff;
+                    this._markup.addMark(shrinkPosition, this.calcRelativeHandlerSize());
+                }
+            });
         }
     }
 
