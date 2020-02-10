@@ -4,7 +4,10 @@ export function parseClassesString(classesString: string): string[] {
     if (!classesString)
         return undefined;
 
-    return classesString.split(" ");
+    return classesString.split(" ").filter((value) => {
+        if (value.length > 0)
+            return value;
+    });
 }
 
 export function addClasses(element: HTMLElement, classes: string[]) {

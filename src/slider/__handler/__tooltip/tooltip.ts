@@ -9,7 +9,7 @@ export default class Tooltip {
         this.innerHTML = value;
     }
 
-    private _innerHTML = `${this._value}`;
+    private _innerHTML: string = "";
     set innerHTML(value) {
         this._innerHTML = `${value}`;
         this.updateHTML();
@@ -21,11 +21,10 @@ export default class Tooltip {
     }
 
     private readonly _defaultClass = defaultSliderClass + "__handlerTooltip";
-    private _currentPosition: string;
 
-    private _additionalClasses: string[];
-    set additionalClasses(classesString: string) {
-        this._additionalClasses = parseClassesString(classesString);
+    private _addClasses: string[] = [];
+    public addClassesFromString(classesString: string) {
+        this._addClasses = parseClassesString(classesString);
     }
 
     get width(): number {
@@ -50,29 +49,27 @@ export default class Tooltip {
     constructor(parentElement: HTMLElement,
                 public parentHandler: HandlerView,
                 params?: {
-                    additionalClass?: string,
+                    additionalClasses?: string[],
                     bodyHTML?: string,
                     value?: any,
                     visibilityState?: boolean,
                 }
     ) {
         let defaultParameters = this.initDefaultParameters();
-        let parameters = {...defaultParameters, ...arguments};
+        let parameters = {...defaultParameters, ...params};
 
-        this.additionalClasses = parameters.additionalClass;
-        this._currentPosition = parameters.position;
+        this._addClasses = parameters.additionalClasses;
         this.createElement(parentElement);
-        this.value = params?.value;
-        this.setVisibility(params.visibilityState);
+        this.value = parameters.value;
+        this.setVisibility(parameters.visibilityState !== undefined ? parameters.visibilityState : true);
     }
 
     private initDefaultParameters() {
         return {
-            additionalClass: "",
-            bodyHTML: this.innerHTML,
+            additionalClasses: [],
+            bodyHTML: this._innerHTML,
             withTooltip: true,
             isEnd: true,
-            position: undefined,
         };
     }
 
@@ -102,9 +99,5 @@ export default class Tooltip {
 
     public updateHTML() {
         this._element.innerHTML = this._innerHTML;
-    }
-
-    public updatePosition() {
-        this.updateHTML();
     }
 }

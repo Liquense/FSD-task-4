@@ -148,7 +148,7 @@ export default class HandlerView implements Listenable {
 
         this._element.wrap.style[this.ownerSlider.offsetDirection] = `${offset}px`;
 
-        this._tooltip?.updatePosition();
+        this._tooltip?.updateHTML();
     }
 
     public setPosition(newPositionPart: number) {
