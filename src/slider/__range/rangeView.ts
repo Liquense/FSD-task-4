@@ -62,13 +62,15 @@ export default class RangeView {
         }
     };
 
-    public addHandler(handler: HandlerView) {
-
-    }
-
-    public removeHandler(handler: HandlerView) {
-
-    }
+    //TODO
+    //
+    // public addHandler(handler: HandlerView) {
+    //
+    // }
+    //
+    // public removeHandler(handler: HandlerView) {
+    //
+    // }
 
     public hasHandler(handler: HandlerView) {
         return handler === this.startHandler || handler === this.endHandler;
