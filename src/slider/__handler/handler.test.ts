@@ -125,7 +125,7 @@ describe("Вспомогательные функции", () => {
         function testIsEndSetting(stateIsEnd: boolean) {
             expect(testHandler.isEnd).toBe(stateIsEnd);
             if ((stateIsEnd === null) || (stateIsEnd === undefined))
-                expect(testHandler.isStart).toBe(stateIsEnd);
+                expect(testHandler.isStart).toBe(null);
             else
                 expect(testHandler.isStart).not.toBe(stateIsEnd);
         }
