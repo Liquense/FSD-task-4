@@ -123,7 +123,11 @@ describe("Вспомогательные функции", () => {
 
     test("Установка роли в диапазоне", () => {
         function testIsEndSetting(stateIsEnd: boolean) {
-            expect(testHandler.isEnd).toBe(stateIsEnd);
+            if (stateIsEnd === undefined)
+                expect(testHandler.isEnd).toBe(null);
+            else
+                expect(testHandler.isEnd).toBe(stateIsEnd);
+
             if ((stateIsEnd === null) || (stateIsEnd === undefined))
                 expect(testHandler.isStart).toBe(null);
             else
