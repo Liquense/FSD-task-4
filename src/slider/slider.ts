@@ -338,7 +338,7 @@ export default class Slider implements Listenable {
             customHandlers: boolean,
             handlersArray: {
                 index: number,
-                position: number,
+                positionPart: number,
                 value: any,
             }[]
         }) {
@@ -351,9 +351,9 @@ export default class Slider implements Listenable {
             if (!handlersData.customHandlers) {
                 if (handlers.length === 2) {
                     if (index === 0)
-                        newHandler.isStart = (this.isReversed) === (handlers[0].position > handlers[1].position);
+                        newHandler.isStart = (this.isReversed) === (handlers[0].positionPart > handlers[1].positionPart);
                     if (index === 1)
-                        newHandler.isEnd = (this.isReversed) === (handlers[0].position > handlers[1].position);
+                        newHandler.isEnd = (this.isReversed) === (handlers[0].positionPart > handlers[1].positionPart);
                 } else {
                     newHandler.isStart = this.isReversed;
                 }
@@ -385,7 +385,7 @@ export default class Slider implements Listenable {
 
     public setHandlersData(handlers: { index: number, value: any, position: number }[]) {
         handlers.forEach(({index, value, position}) => {
-            this._handlers[index].value = value;
+            this._handlers[index].setValue(value);
             this._handlers[index].setPosition(position);
         })
     }

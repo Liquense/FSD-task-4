@@ -14,19 +14,18 @@ export default class HandlerView implements Listenable {
 
     private _defaultClass = `${defaultSliderClass}__handler`;
 
-    private _additionalClasses: string[];
-    set additionalClasses(classesString) {
-        this._additionalClasses = parseClassesString(classesString);
-    }
-
+    private _additionalClasses: string[] = [];
     private readonly _tooltip: Tooltip;
 
-    set value(value: any) {
-        if (this._tooltip)
-            this._tooltip.value = value;
+    public setValue(value: any) {
+        this._tooltip.value = value;
     }
 
-    get positionCoordinate() {
+    get value(): any {
+        return this._tooltip.value;
+    }
+
+    get positionCoordinate(): number {
         return calculateElementCenter(this._element.body, this.ownerSlider.isVertical);
     }
 
@@ -60,11 +59,11 @@ export default class HandlerView implements Listenable {
 
     private _isEnd: boolean = null;
     get isEnd() {
-        return this._isEnd === null ? null : this._isEnd;
+        return this._isEnd === undefined ? null : this._isEnd;
     };
 
     get isStart(): boolean {
-        return this._isEnd === null ? null : !this._isEnd;
+        return (this._isEnd === undefined) || (this._isEnd === null) ? null : !this._isEnd;
     }
 
     set isEnd(value: boolean) {
@@ -72,7 +71,7 @@ export default class HandlerView implements Listenable {
     };
 
     set isStart(value: boolean) {
-        this._isEnd = !value;
+        this._isEnd = value === null ? null : !value;
     }
 
 
@@ -82,23 +81,22 @@ export default class HandlerView implements Listenable {
                 params:
                     {
                         index: number,
-                        position: number,
+                        positionPart: number,
                         value: any,
                         withTooltip?: boolean,
                         isEnd?: boolean,
-                        tooltip?: object,
                     }
     ) {
         if (params.isEnd !== undefined)
             this._isEnd = params.isEnd;
+        this.index = params.index;
+        this._positionPart = params.positionPart;
 
         this.createElement(ownerSlider.handlersElement);
 
-        this._tooltip = new Tooltip(this._element.wrap, this, {visibilityState: params?.withTooltip});
-
-        this.index = params.index;
-        this._positionPart = params.position;
-        this.value = params.value;
+        const withTooltip = params.withTooltip === undefined ? true : params.withTooltip;
+        this._tooltip = new Tooltip(this._element.wrap, this, {visibilityState: withTooltip});
+        this.setValue(params.value);
 
         requestAnimationFrame(this.updatePosition.bind(this));
     }
@@ -143,12 +141,11 @@ export default class HandlerView implements Listenable {
         return this.centerShift(shift);
     }
 
-    public updatePosition(): void {
+    private updatePosition(): void {
         const offset = this.calculateAccurateOffset();
 
         this._element.wrap.style[this.ownerSlider.offsetDirection] = `${offset}px`;
-
-        this._tooltip?.updateHTML();
+        this._tooltip.updateHTML();
     }
 
     public setPosition(newPositionPart: number) {

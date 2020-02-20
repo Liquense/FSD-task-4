@@ -13,7 +13,7 @@ slider.getOrientationClass = jest.fn(() => {
     return defaultOrientationClass;
 });
 
-let handler = new HandlerView(null, {index: 0, position: 0, value: "test"});
+let handler = new HandlerView(null, {index: 0, positionPart: 0, value: "test"});
 handler.ownerSlider = slider;
 handler["_element"] = {body: document.body, wrap: null};
 

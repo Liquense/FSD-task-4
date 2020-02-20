@@ -8,7 +8,7 @@ export default class Controller {
 
     constructor(
         DOMElement: HTMLElement,
-        parameters: { handlers?: object[] },
+        parameters?: { handlers?: object[] },
     ) {
         this._view = new View(DOMElement, parameters);
         this._model = new Model(parameters);
@@ -18,7 +18,7 @@ export default class Controller {
         addListenerAfter("createHandler", this.viewAddHandler.bind(this), this._model);
 
         this.passSliderData(this._view);
-        this.passHandlersData(parameters.handlers);
+        this.passHandlersData(parameters?.handlers);
     }
 
 

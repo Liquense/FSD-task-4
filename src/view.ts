@@ -12,7 +12,10 @@ export default class View implements Listenable {
         this._slider = new Slider(this, parameters);
     }
 
-    public handlerPositionChanged(handlerIndex: number, standardizedPosition: number): { index: number, position: number } {
+    public handlerPositionChanged(
+        handlerIndex: number,
+        standardizedPosition: number
+    ): { index: number, position: number } {
         return {index: handlerIndex, position: standardizedPosition};
     }
 
@@ -24,7 +27,7 @@ export default class View implements Listenable {
                             customHandlers: boolean,
                             handlersArray: {
                                 index: number,
-                                position: number,
+                                positionPart: number,
                                 value: any,
                             }[]
                         }

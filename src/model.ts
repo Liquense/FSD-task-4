@@ -185,12 +185,12 @@ export default class Model implements Listenable {
     //для передачи контролеру
     public getHandlersData(): {
         customHandlers: boolean,
-        handlersArray: { index: number, value: any, position: number }[]
+        handlersArray: { index: number, value: any, positionPart: number }[]
     } {
         return {
             customHandlers: this.withCustomHandlers,
             handlersArray: this._handlers.map(
-                handler => ({index: handler.index, value: handler.value, position: handler.position})
+                handler => ({index: handler.index, value: handler.value, positionPart: handler.position})
             )
         };
     }

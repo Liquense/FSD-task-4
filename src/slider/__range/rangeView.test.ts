@@ -27,9 +27,6 @@ describe("Инициализация", () => {
         document.body.innerHTML = "";
         testRange = new RangeView(testSlider, document.body, firstHandler, secondHandler);
     });
-    afterAll(() => {
-        console.log(document.body.innerHTML);
-    });
 
     test("Установка значений полей", () => {
         expect(testRange.parentElement).toBe(document.body);
@@ -167,10 +164,10 @@ describe("Инициализация", () => {
 
         expect(mockUpdatePosition.mock.calls.length).toBe(0);
 
-        firstHandler.updatePosition();
+        firstHandler["updatePosition"]();
         expect(mockUpdatePosition.mock.calls.length).toBe(1);
 
-        secondHandler.updatePosition();
+        secondHandler["updatePosition"]();
         expect(mockUpdatePosition.mock.calls.length).toBe(2);
     });
 })
