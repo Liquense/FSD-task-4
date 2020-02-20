@@ -8,6 +8,9 @@ export default class Tooltip {
         this._value = value;
         this.innerHTML = value;
     }
+    get value() {
+        return this._value;
+    }
 
     private _innerHTML: string = "";
     set innerHTML(value) {
