@@ -1,5 +1,6 @@
 import Controller from "./controller";
+jest.mock("./controller");
 
 test("Инициализация контроллера", () => {
-    expect(new Controller()).toBe({});
+    const htmlElement = document.createElement("div");
 });

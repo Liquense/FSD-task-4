@@ -12,10 +12,14 @@ export default class RangeView {
         if (secondHandler)
             this.arrangeHandlers(firstHandler, secondHandler);
         else {
-            if (firstHandler.isStart)
+            if (firstHandler.isStart) {
                 this.startHandler = firstHandler;
-            else
+                this.endHandler = null;
+            }
+            else {
+                this.startHandler = null;
                 this.endHandler = firstHandler;
+            }
         }
 
         this.createElement();

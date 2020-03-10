@@ -70,7 +70,7 @@ function bindListeners(executor: string, listeners: Function[], executorContext:
     };
 }
 
-export function clamp(num: number, min: number, max: number) {
+export function clamp(num: number, min: number, max: number): number {
     return Math.min(Math.max(num, min), max);
 }
 
@@ -104,7 +104,8 @@ export function standardize(value: number, parameters: { min: number, max: numbe
         resultValue = value + (parameters.step - remainder); //ближе к верхней части
     }
 
-    return clamp(resultValue, parameters.min, parameters.max);
+    resultValue = clamp(resultValue, parameters.min, parameters.max);
+    return Math.round((resultValue + Number.EPSILON) * 10000) / 10000;
 }
 
 export function calculateElementCenter(DOMElement: Element, isVertical: boolean): number {

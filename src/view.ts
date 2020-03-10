@@ -41,6 +41,7 @@ export default class View implements Listenable {
     }
 
     public addHandler() {
+        //todo: добавление хэндлера
         this._slider.createRanges();
     }
 

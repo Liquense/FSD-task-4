@@ -10,6 +10,7 @@ import {
 } from "../common";
 import View from "../view";
 import MarkupView from "./_markup/markup";
+import {type} from "os";
 
 export default class Slider implements Listenable {
     listenDictionary: { function: Function, listeners: Function[] };
@@ -55,7 +56,7 @@ export default class Slider implements Listenable {
     }
 
     private setHandlerSize() {
-        const exemplarHandler = this._handlers?.[0];
+        const exemplarHandler = this._handlers[0];
         this._handlerSize = exemplarHandler.size;
     }
 
@@ -90,7 +91,7 @@ export default class Slider implements Listenable {
             return "width";
     }
 
-    private _step: number; //относительное значение
+    private _step: number = 0.01; //относительное значение
     private _ranges: RangeView[] = [];
 
     public getScaleLength() {
@@ -98,7 +99,7 @@ export default class Slider implements Listenable {
     }
 
     constructor(private _parentView: View,
-                parameters: {
+                parameters?: {
                     isVertical?: boolean,
                     showTooltips?: boolean,
                     isReversed?: boolean,
@@ -106,12 +107,14 @@ export default class Slider implements Listenable {
                     withMarkup?: boolean,
                 }
     ) {
-        this.isVertical = parameters.isVertical;
-        this.isReversed = parameters.isReversed;
-        if (parameters.showTooltips !== undefined) {
+        if (parameters?.isVertical !== undefined)
+            this.isVertical = parameters.isVertical;
+        if (parameters?.isReversed !== undefined)
+            this.isReversed = parameters.isReversed;
+        if (parameters?.showTooltips !== undefined)
             this._tooltipsAreVisible = parameters.showTooltips;
-        }
-        this._withMarkup = parameters.withMarkup;
+        if (parameters?.withMarkup !== undefined)
+            this._withMarkup = parameters.withMarkup;
 
         this.createElement(_parentView.element);
         this.setMouseEvents();
@@ -130,7 +133,7 @@ export default class Slider implements Listenable {
         parentElement.replaceWith(wrap);
 
         let body = this._element.body;
-        body.addEventListener("mousedown", (event) => event.preventDefault());
+        body.addEventListener("mousedown", (event) => event.preventDefault()); //чтобы не возникало drag & drop
         addClasses(body, [`${defaultSliderClass}__body`, orientationClass]);
         wrap.appendChild(body);
 
@@ -144,10 +147,10 @@ export default class Slider implements Listenable {
     };
 
     public setTooltipsVisibility(stateToSet?: boolean): void {
-        let stateToPass = (stateToSet !== undefined) ?
-            (stateToSet) :
-            (this._tooltipsAreVisible);
+        let stateToPass = (stateToSet === undefined) || (stateToSet === null) ?
+            (this._tooltipsAreVisible) : (stateToSet);
 
+        this._tooltipsAreVisible = stateToPass;
         this._handlers.forEach(handler => {
             handler.setTooltipVisibility(stateToPass);
         })
@@ -158,42 +161,48 @@ export default class Slider implements Listenable {
     }
 
     private setMouseEvents() {
-        window.addEventListener(
+        document.body.addEventListener(
             "mousedown",
-            this.handleWindowMouseDown.bind(this)
+            this.handleDocumentMouseDown.bind(this)
         );
         this._element.body.addEventListener(
             "mousedown",
-            this.handleMouseDown.bind(this)
+            this._handleMouseDown.bind(this)
         );
         document.body.addEventListener(
             "mouseup",
-            this.handleMouseUp.bind(this)
+            this._handleMouseUp.bind(this)
         );
     }
 
-    private handleWindowMouseDown(event: MouseEvent) {
+    private handleDocumentMouseDown(event: MouseEvent) {
         let targetElement = (event.target) as HTMLElement;
         if (!this._element.wrap.contains(targetElement)) {
             this.deactivateActiveHandler();
         }
     }
 
-    private _mouseMoveListener = this.handleMouseMove.bind(this); //хранится для корректного удаления слушателя
+    private _handleMouseMoveBound = this._handleMouseMove.bind(this); //хранится для корректного удаления слушателя
 
-    private handleMouseUp(event: MouseEvent): void {
-        document.body.removeEventListener("mousemove", this._mouseMoveListener);
+    private _handleMouseUp(event: MouseEvent): void {
+        document.body.removeEventListener("mousemove", this._handleMouseMoveBound);
     }
 
-    private handleMouseDown(event: MouseEvent): void {
-        this.activateHandler(this.getClosestToMouseHandler(event.pageX, event.pageY));
+    private _handleMouseDown(event: MouseEvent): MouseEvent {
+        const closestHandler = this.getClosestToMouseHandler(event.pageX, event.pageY);
+        if (!closestHandler)
+            return event;
+
+        this.activateHandler(closestHandler);
         this._activeHandler.body.focus();
 
-        this.handleMouseMove(event);
-        document.body.addEventListener("mousemove", this._mouseMoveListener);
+        this._handleMouseMove(event);
+        document.body.addEventListener("mousemove", this._handleMouseMoveBound);
+
+        return event; //для обработки события пользовательскими функциями
     }
 
-    private handleMouseMove(event: MouseEvent) {
+    private _handleMouseMove(event: MouseEvent) {
         const closestHandler = this.getClosestToMouseHandler(event.pageX, event.pageY);
 
         if (closestHandler !== this._activeHandler)
@@ -252,6 +261,7 @@ export default class Slider implements Listenable {
     }
 
     //возвращает хэндлеры не в ренджах
+    //(статичная, потому что массив может передаваться не обязательно тот, что хранится в экземпляре слайдера)
     private static getFreeHandlers(handlersArray: HandlerView[]): HandlerView[] {
         return handlersArray.filter(handler => !handler.inRange);
     }
@@ -260,13 +270,11 @@ export default class Slider implements Listenable {
         function handlersComparing(firstHandler: HandlerView, secondHandler: HandlerView) {
             if (firstHandler.positionPart > secondHandler.positionPart)
                 return 1;
-            if (firstHandler.positionPart < secondHandler.positionPart)
+            else
                 return -1;
-
-            return 0;
         }
 
-        let arrayToSort = [...this._handlers];
+        let arrayToSort = [...this._handlers]; //чтобы не менялся изначальный массив
         return arrayToSort.sort(handlersComparing);
     }
 
@@ -286,12 +294,17 @@ export default class Slider implements Listenable {
         return suitableHandler;
     }
 
+    public clearRanges(): void {
+        this._ranges = [];
+    }
+
     public createRanges(): void {
         let sortedHandlers = this.getSortedHandlersByPositionPart();
         let freeHandlers = Slider.getFreeHandlers(sortedHandlers);
 
         for (let i = 0; i < freeHandlers.length; i++) {
             const handler = freeHandlers[i];
+
             if (this._ranges.slice(-1)[0]?.hasHandler(handler))
                 continue;
             if (handler.isEnd === null)
@@ -314,7 +327,7 @@ export default class Slider implements Listenable {
         }
     }
 
-    private initMarkup() {
+    private _initMarkup() {
         this._markup = new MarkupView(this);
         this.updateMarkup();
     }
@@ -322,15 +335,13 @@ export default class Slider implements Listenable {
     private updateMarkup() {
         this._markup.clearAllMarks();
 
-        if (this._withMarkup) {
-            requestAnimationFrame(() => {
-                for (let i = 0; i < 1; i += this._step) {
-                    const standardPosition = standardize(i, {min: 0, max: 1, step: this._step});
-                    const shrinkPosition = standardPosition * this.shrinkCoeff;
-                    this._markup.addMark(shrinkPosition, this.calcRelativeHandlerSize());
-                }
-            });
-        }
+        requestAnimationFrame(() => {
+            for (let i = 0; i < 1; i += this._step) {
+                const standardPosition = standardize(i, {min: 0, max: 1, step: this._step});
+                const shrinkPosition = standardPosition * this.shrinkCoeff;
+                this._markup.addMark(shrinkPosition, this.calcRelativeHandlerSize());
+            }
+        });
     }
 
     public initHandlers(
@@ -340,6 +351,8 @@ export default class Slider implements Listenable {
                 index: number,
                 positionPart: number,
                 value: any,
+                withTooltip?: boolean,
+                isEnd?: boolean,
             }[]
         }) {
         this._handlers = handlersData.handlersArray.map((handler, index, handlers) => {
@@ -365,7 +378,7 @@ export default class Slider implements Listenable {
         this.setHandlerSize();
 
         if (this._withMarkup) {
-            this.initMarkup();
+            this._initMarkup();
         }
     }
 
@@ -385,22 +398,24 @@ export default class Slider implements Listenable {
 
     public setHandlersData(handlers: { index: number, value: any, position: number }[]) {
         handlers.forEach(({index, value, position}) => {
-            this._handlers[index].setValue(value);
-            this._handlers[index].setPosition(position);
+            const realIndex = this._handlers.findIndex(handler => handler.index === index);
+
+            this._handlers[realIndex].setValue(value);
+            this._handlers[realIndex].setPosition(position);
         })
     }
 
     public update(data: { step?: number }) {
-        if (data.step) {
+        if (Number.isFinite(data.step)) {
             this._step = data.step;
         }
     }
 
     public addOnMouseDownListener(listener: Function) {
-        this._element.body.removeEventListener("mousedown", this.handleMouseDown);
+        this._element.body.removeEventListener("mousedown", this._handleMouseDown);
 
-        addListenerAfter(this.handleMouseDown.name, listener, this);
+        addListenerAfter(this._handleMouseDown.name, listener, this);
 
-        this._element.body.addEventListener("mousedown", this.handleMouseDown);
+        this._element.body.addEventListener("mousedown", this._handleMouseDown);
     }
 }

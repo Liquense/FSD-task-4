@@ -23,7 +23,7 @@ export default class Tooltip {
         return this._element;
     }
 
-    private readonly _defaultClass = defaultSliderClass + "__handlerTooltip";
+    public static readonly defaultClass = defaultSliderClass + "__handlerTooltip";
 
     private _addClasses: string[] = [];
     public addClassesFromString(classesString: string) {
@@ -81,20 +81,20 @@ export default class Tooltip {
     }
 
     private show(): void {
-        addClass(this._element, `${this._defaultClass}_visible`);
-        removeClass(this._element, `${this._defaultClass}_hidden`);
+        addClass(this._element, `${Tooltip.defaultClass}_visible`);
+        removeClass(this._element, `${Tooltip.defaultClass}_hidden`);
     }
 
     private hide(): void {
-        addClass(this._element, `${this._defaultClass}_hidden`);
-        removeClass(this._element, `${this._defaultClass}_visible`);
+        addClass(this._element, `${Tooltip.defaultClass}_hidden`);
+        removeClass(this._element, `${Tooltip.defaultClass}_visible`);
     }
 
     private createElement(parentElement: HTMLElement) {
         const orientationClass = this.parentHandler.ownerSlider.getOrientationClass();
 
         this._element = document.createElement("div");
-        addClasses(this._element, [`${this._defaultClass}`, orientationClass]);
+        addClasses(this._element, [`${Tooltip.defaultClass}`, orientationClass]);
         this._element.innerHTML = this._innerHTML;
 
         parentElement.appendChild(this._element);
