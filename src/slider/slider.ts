@@ -216,7 +216,7 @@ export default class Slider implements Listenable {
         if (standardMousePosition === closestHandler.positionPart)
             return;
 
-        this._parentView.handlerPositionChanged(closestHandler.index, standardMousePosition);
+        this._parentView.handlerPositionChangedCallback(closestHandler.index, standardMousePosition);
     }
 
     private deactivateActiveHandler() {

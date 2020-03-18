@@ -12,7 +12,7 @@ export default class View implements Listenable {
         this._slider = new Slider(this, parameters);
     }
 
-    public handlerPositionChanged(
+    public handlerPositionChangedCallback(
         handlerIndex: number,
         standardizedPosition: number
     ): { index: number, position: number } {

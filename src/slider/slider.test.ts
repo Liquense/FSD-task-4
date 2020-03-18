@@ -12,7 +12,7 @@ jest.mock("../view");
 const testView = new View(null, null);
 //@ts-ignore
 testView["element"] = document.body.appendChild(document.createElement("div"));
-testView.handlerPositionChanged = jest.fn(() => undefined);
+testView.handlerPositionChangedCallback = jest.fn(() => undefined);
 let testSlider: Slider;
 
 function resetHTML() {
@@ -112,7 +112,7 @@ describe("Инициализация", () => {
 
                 testClicks = function () {
                     for (let i = 0; i <= 100; i++) {
-                        (testView.handlerPositionChanged as Mock).mockClear();
+                        (testView.handlerPositionChangedCallback as Mock).mockClear();
                         simulateMouseDown(i); //несмотря на клик, позиции хэндлеров остаются неизменными, потому что вью мокнут и нет обмена данными с моделью
 
                         if (i <= 65)
@@ -126,7 +126,7 @@ describe("Инициализация", () => {
                             testSlider.calculateMouseRelativePosition(testMouseDownEvent as MouseEvent) !== 0.4
                             && testSlider.calculateMouseRelativePosition(testMouseDownEvent as MouseEvent) !== 0.9
                         ) {
-                            expect(testView.handlerPositionChanged).toBeCalledWith(testSlider["_activeHandler"].index, i / 100);
+                            expect(testView.handlerPositionChangedCallback).toBeCalledWith(testSlider["_activeHandler"].index, i / 100);
                         }
 
                         //видимость тултипов
