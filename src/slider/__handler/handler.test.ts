@@ -25,7 +25,7 @@ function createTestHandler(index = 0, positionPart = 0.5, value: any = "test") {
 
 describe("Инициализация", () => {
     test("Установка значений полей", async () => {
-        const mockTooltip = (Tooltip as Mock);
+        const mockTooltip = (Tooltip as unknown as Mock);
         mockTooltip.mockClear();
         //только с обязательными параметрами
         const index = 0;
@@ -156,7 +156,7 @@ describe("Вспомогательные функции", () => {
     });
 
     test("Установка видимости тултипа", () => {
-        const mockTooltip = (Tooltip as Mock);
+        const mockTooltip = (Tooltip as unknown as Mock);
         mockTooltip.mockClear();
 
         let testingVisibilityState = true;
