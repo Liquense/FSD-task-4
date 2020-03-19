@@ -3,54 +3,53 @@ import Model from "./model"
 import {addListenerAfter} from "./common";
 
 export default class Controller {
-    private _view: View;
+    private readonly _view: View;
     private readonly _model: Model;
 
     constructor(
-        DOMElement: HTMLElement,
+        Element: HTMLElement,
         parameters?: { handlers?: object[] },
     ) {
-        this._view = new View(DOMElement, parameters);
+        this._view = new View(Element, parameters);
         this._model = new Model(parameters);
 
-        addListenerAfter("handlerValueChanged", this.passHandlerValueChange.bind(this), this._model);
-        addListenerAfter("handlerPositionChanged", this.passHandlerPositionChange.bind(this), this._view);
-        addListenerAfter("createHandler", this.viewAddHandler.bind(this), this._model);
+        addListenerAfter("handlerValueChanged", this._boundPassHandlerValueChange, this._model);
+        addListenerAfter("handlerPositionChangedCallback", this._boundPassHandlerPositionChange, this._view);
+        addListenerAfter("createHandler", this._boundViewAddHandler, this._model);
 
-        this.passSliderData(this._view);
-        this.passHandlersData(parameters?.handlers);
+        this.passSliderData();
+        this._passHandlersData(parameters?.handlers);
     }
 
 
-    private passSliderData(receiver: Model | View,) {
-        if (receiver instanceof Model) {
-
-        }
-        if (receiver instanceof View) {
-            this._view.setSliderData(this._model.getSliderData());
-        }
+    private passSliderData() {
+        this._view.setSliderData(this._model.getSliderData());
     }
 
-    private passHandlerPositionChange(data: { index: number, position: number }) {
+    private _boundPassHandlerPositionChange = this._passHandlerPositionChange.bind(this);
+    private _passHandlerPositionChange(data: { index: number, position: number }) {
         this._model.handleHandlerPositionChanged(data);
     }
 
-    private passHandlerValueChange(data: { index: number, position: number, value: any }): void {
+    private _boundPassHandlerValueChange = this._passHandlerValueChange.bind(this);
+    private _passHandlerValueChange(data: { index: number, position: number, value: any }): void {
         this._view.handlersValuesChangedListener(data);
     }
 
-    private passHandlersData(initHandlersData: object[]) {
+    private _passHandlersData(initHandlersData?: object[]) {
         let handlersData = this._model.getHandlersData();
 
-        if (initHandlersData)
+        if (initHandlersData) {
             handlersData.handlersArray.forEach((handlerData, index) => {
                 handlersData.handlersArray[index] = {...initHandlersData[index], ...handlerData};
             });
+        }
 
         this._view.initHandlers(handlersData);
     }
 
-    private viewAddHandler() {
+    private _boundViewAddHandler = this._addHandlerView.bind(this);
+    private _addHandlerView() {
         console.log("binding!");
         this._view.addHandler();
     }
