@@ -48,13 +48,10 @@ $.fn.liquidSlider = function liquidSlider(
             },
         }[],
     }) {
-    let pluginController: Controller;
     try {
-        pluginController = new Controller($(this).get()[0], parameters);
+        return new Controller($(this).get()[0], parameters);
     } catch (e) {
         console.log(e);
     }
-
-    return pluginController;
 };
 

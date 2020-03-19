@@ -55,15 +55,15 @@ export default class Model implements Listenable {
     ) {
         this.setMinMax(parameters);
         this.setStep(parameters);
-        this.setItems(parameters.items);
+        this.setItems(parameters?.items);
 
-        if (parameters.handlers?.length) {
+        if (parameters?.handlers?.length) {
             //если передаются кастомные хэндлеры
             this.withCustomHandlers = true;
             this.createCustomHandlers(parameters.handlers);
         } else {
             this.withCustomHandlers = false;
-            this.generateDefaultHandlers(parameters.isRange ? 2 : 1, parameters.values);
+            this.generateDefaultHandlers(parameters?.isRange ? 2 : 1, parameters?.values);
         }
     }
 
@@ -77,7 +77,7 @@ export default class Model implements Listenable {
     }
 
     private setStep(data: { step?: number, items?: Array<any> }) {
-        if (!data.step)
+        if (!data?.step)
             return;
 
         if (data.items) {
@@ -89,9 +89,9 @@ export default class Model implements Listenable {
 
 
     private setMinMax(data: { min?: number, max?: number, items?: Array<any> }) {
-        if (data.items?.length) {
+        if (data?.items?.length) {
             this.setNotNumericMinMax(data.items.length);
-        } else {
+        } else if (data?.min !== undefined && data?.max != undefined) {
             this.setNumericMinMax(data.min, data.max);
         }
     }

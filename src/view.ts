@@ -7,7 +7,7 @@ export default class View implements Listenable {
     public readonly element: HTMLElement;
     private readonly _slider: Slider;
 
-    constructor(element: HTMLElement, parameters: object) {
+    constructor(element: HTMLElement, parameters?: object) {
         this.element = element;
         this._slider = new Slider(this, parameters);
     }
