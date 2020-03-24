@@ -1,7 +1,7 @@
 export const defaultSliderClass = "liquidSlider";
 
 export function parseClassesString(classesString: string): string[] {
-    if (!classesString)
+    if (!classesString?.trim())
         return undefined;
 
     return classesString.split(" ").filter((value) => {
@@ -10,40 +10,23 @@ export function parseClassesString(classesString: string): string[] {
     });
 }
 
-export function addClasses(element: HTMLElement, classes: string[]) {
-    if (!classes)
-        return;
-
-    for (const className of classes) {
-        addClass(element, className);
-    }
-}
-
-export function addClass(element: HTMLElement, className: string) {
-    element.classList.add(className.trim());
-}
-
-export function removeClass(element: HTMLElement, className: string) {
-    element.classList.remove(className.trim());
-}
-
 export interface Listenable {
     listenDictionary: object;
 }
 
-export function addListenerAfter(executor: string, listener: Function, executorContext: Listenable) {
+export function addListenerAfter(executorName: string, listener: Function, executorContext: Listenable) {
     if (!executorContext)
         return;
     if (!executorContext.listenDictionary)
         executorContext.listenDictionary = {};
-    if (!executorContext.listenDictionary[executor]) {
-        executorContext.listenDictionary[executor] = {function: executorContext[executor], listeners: []};
+    if (!executorContext.listenDictionary[executorName]) {
+        executorContext.listenDictionary[executorName] = {function: executorContext[executorName], listeners: []};
     }
 
-    let {listeners} = executorContext.listenDictionary[executor];
+    let {listeners} = executorContext.listenDictionary[executorName];
     listeners.push(listener);
 
-    bindListeners(executor, listeners, executorContext);
+    bindListeners(executorName, listeners, executorContext);
 }
 
 export function removeListener(executor: string, listener: Function, executorContext: Listenable) {
@@ -74,26 +57,19 @@ export function clamp(num: number, min: number, max: number): number {
     return Math.min(Math.max(num, min), max);
 }
 
-export function getElementCenter(element: Element): { x: number, y: number } {
-    let result = {x: undefined, y: undefined};
-
-    const elementCoordinates = element.getBoundingClientRect();
-    result.x = 2;
-    result.y = 3;
-
-    return result;
-}
-
 export function standardize(value: number, parameters: { min: number, max: number, step: number }): number {
-    if (value > parameters.max) {
-        return parameters.max;
+    let min = Math.min(parameters.max, parameters.min);
+    let max = Math.max(parameters.max, parameters.min); //на всякий случай
+
+    if (value > max) {
+        return max;
     }
-    if (value < parameters.min) {
-        return parameters.min;
+    if (value < min) {
+        return min;
     }
 
     let resultValue: number;
-    let remainder = (value - parameters.min) % parameters.step;
+    let remainder = (value - min) % parameters.step;
 
     if (remainder === 0) {
         return value;
@@ -104,7 +80,7 @@ export function standardize(value: number, parameters: { min: number, max: numbe
         resultValue = value + (parameters.step - remainder); //ближе к верхней части
     }
 
-    resultValue = clamp(resultValue, parameters.min, parameters.max);
+    resultValue = clamp(resultValue, min, max);
     return Math.round((resultValue + Number.EPSILON) * 10000) / 10000;
 }
 
