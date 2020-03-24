@@ -1,5 +1,5 @@
 import SliderView from "../slider";
-import {addClasses, defaultSliderClass} from "../../common";
+import {defaultSliderClass} from "../../common";
 
 export default class MarkupView {
     private _marks: HTMLElement[] = [];
@@ -26,14 +26,14 @@ export default class MarkupView {
     private createWrap() {
         this._wrap = document.createElement("div");
 
-        addClasses(this._wrap, [`${this._defaultClass}Wrap`, this.ownerSlider.getOrientationClass()]);
+        this._wrap.classList.add(`${this._defaultClass}Wrap`, this.ownerSlider.getOrientationClass());
 
         this.ownerSlider.bodyElement.insertBefore(this._wrap, this.ownerSlider.handlersElement);
     }
 
     private createMarkElement(): HTMLElement {
         let newMark = document.createElement("div");
-        addClasses(newMark, [this._defaultClass, this.ownerSlider.getOrientationClass()]);
+        newMark.classList.add(this._defaultClass, this.ownerSlider.getOrientationClass());
         this._wrap.appendChild(newMark);
 
         return newMark;

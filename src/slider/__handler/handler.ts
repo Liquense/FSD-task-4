@@ -1,10 +1,4 @@
-import {
-    addClasses,
-    calculateElementCenter,
-    defaultSliderClass,
-    Listenable,
-    parseClassesString
-} from "../../common";
+import {calculateElementCenter, defaultSliderClass, Listenable, parseClassesString} from "../../common";
 import Tooltip from "./__tooltip/tooltip";
 import Slider from "../slider";
 
@@ -109,11 +103,14 @@ export default class HandlerView implements Listenable {
         this._element = {wrap, body};
         this._element.body.setAttribute("tabindex", "-1");
 
-        addClasses(wrap, [`${this._defaultClass}Container`, orientationClass]);
-        addClasses(wrap, this._additionalClasses);
+        wrap.classList.add(`${this._defaultClass}Container`, orientationClass);
+        //addClasses(wrap, [`${this._defaultClass}Container`, orientationClass]);
+        wrap.classList.add(...this._additionalClasses);
+        //addClasses(wrap, this._additionalClasses);
         parentElement.appendChild(wrap);
 
-        addClasses(body, [`${this._defaultClass}Body`, orientationClass]);
+        body.classList.add(`${this._defaultClass}Body`, orientationClass);
+        //addClasses(body, [`${this._defaultClass}Body`, orientationClass]);
         wrap.appendChild(body);
     };
 

@@ -1,13 +1,6 @@
 import HandlerView from "./__handler/handler";
 import RangeView from "./__range/rangeView";
-import {
-    addClasses,
-    addListenerAfter,
-    clamp,
-    defaultSliderClass,
-    Listenable,
-    standardize
-} from "../common";
+import {addListenerAfter, clamp, defaultSliderClass, Listenable, standardize} from "../common";
 import View from "../view";
 import MarkupView from "./_markup/markup";
 import {type} from "os";
@@ -129,20 +122,24 @@ export default class Slider implements Listenable {
             handlers: document.createElement("div"),
         };
         let wrap = this._element.wrap;
-        addClasses(wrap, [defaultSliderClass, orientationClass]);
+        wrap.classList.add(defaultSliderClass, orientationClass);
+        //addClasses(wrap, [defaultSliderClass, orientationClass]);
         parentElement.replaceWith(wrap);
 
         let body = this._element.body;
         body.addEventListener("mousedown", (event) => event.preventDefault()); //чтобы не возникало drag & drop
-        addClasses(body, [`${defaultSliderClass}__body`, orientationClass]);
+        body.classList.add(`${defaultSliderClass}__body`, orientationClass);
+        //addClasses(body, [`${defaultSliderClass}__body`, orientationClass]);
         wrap.appendChild(body);
 
         let scale = this._element.scale;
-        addClasses(scale, [`${defaultSliderClass}__scale`, orientationClass]);
+        scale.classList.add(`${defaultSliderClass}__scale`, orientationClass);
+        //addClasses(scale, [`${defaultSliderClass}__scale`, orientationClass]);
         body.appendChild(scale);
 
         const handlers = this._element.handlers;
-        addClasses(handlers, [`${defaultSliderClass}__handlers`, orientationClass]);
+        handlers.classList.add(`${defaultSliderClass}__handlers`, orientationClass);
+        //addClasses(handlers, [`${defaultSliderClass}__handlers`, orientationClass]);
         body.appendChild(handlers);
     };
 
