@@ -1,4 +1,5 @@
-import {clamp, Listenable, standardize} from "./common";
+import {Listenable, standardize} from "./common";
+import HandlerModel from "./handlerModel";
 
 export default class Model implements Listenable {
     private _items: Array<any>;
@@ -252,56 +253,5 @@ export default class Model implements Listenable {
         }
 
         return result;
-    }
-}
-
-class HandlerModel implements Listenable {
-    //позиция будет передаваться между моделью и видом в виде доли,
-    //потому что это обезличенные данные, которые они могут интерпретировать как им нужно
-    private _position: number;
-
-    public listenDictionary: { function: Function, listeners: Function[] };
-
-    get value(): any {
-        return this._value;
-    }
-
-    get position(): number {
-        return this._position;
-    }
-
-    constructor(
-        private _value: any, //непосредственно значение
-        public itemIndex: number, //нужно для вычисления положения
-        public index: number,
-        private readonly _parentModel: Model,
-    ) {
-        this.setItemIndex(itemIndex);
-    }
-
-    private calculatePosition() {
-        return clamp(
-            ((this.itemIndex - this._parentModel.min) / this._parentModel.range),
-            0,
-            1
-        );
-    }
-
-    private updatePosition() {
-        this._position = this.calculatePosition();
-        this._parentModel.handlerValueChanged(this);
-    }
-
-    public setItemIndex(newItemIndex: number,) {
-        const oldItemIndex = this.itemIndex;
-        if (this._parentModel.checkItemOccupancy(newItemIndex))
-            return;
-
-        this.itemIndex = newItemIndex;
-        this._value = this._parentModel.calculateValue(this.itemIndex);
-        this.updatePosition();
-
-        this._parentModel.releaseItem(oldItemIndex);
-        this._parentModel.occupyItem(newItemIndex, this.index);
     }
 }
