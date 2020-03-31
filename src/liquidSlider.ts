@@ -49,10 +49,6 @@ $.fn.liquidSlider = function liquidSlider(
             },
         }[],
     }) {
-    try {
-        return new Controller($(this).get()[0], parameters);
-    } catch (e) {
-        console.log(e);
-    }
+    return new Controller($(this).get()[0], parameters);
 };
 
