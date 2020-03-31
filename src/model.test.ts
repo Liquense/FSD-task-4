@@ -252,6 +252,14 @@ describe("Инициализация", () => {
             expect(spyGetValueIndexFromPosition).toBeCalledWith(testData.position);
             expect(spySetItemIndex)
                 .toBeCalledWith(spyGetValueIndexFromPosition.mock.results[0].value);
-        })
+        });
+
+        test("Обработчик изменения значения хэндлера", () => {
+            const testedHandler = testModel["_handlers"][0];
+
+            expect(testModel.handlerValueChanged(testedHandler)).toStrictEqual({
+                index: 0, position: testedHandler.position, value: testedHandler.value
+            });
+        });
     });
 });
