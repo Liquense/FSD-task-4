@@ -15,6 +15,7 @@ let mockAddListenerAfter = addListenerAfter as unknown as jest.Mock;
 let mockModel = Model as unknown as jest.Mock;
 let mockView = View as unknown as jest.Mock;
 
+const viewsParamName = "_views";
 describe("Инициализация контроллера", () => {
     beforeEach(() => {
         mockAddListenerAfter.mockClear();
@@ -25,7 +26,7 @@ describe("Инициализация контроллера", () => {
     test("Создание и присваивание экземпляров Model и View", () => {
         testController = new Controller(rootElement);
 
-        expect(testController["_view"]).toBe(mockView.mock.instances[0]);
+        expect(testController[viewsParamName][0]).toBe(mockView.mock.instances[0]);
         expect(testController["_model"]).toBe(mockModel.mock.instances[0]);
     });
 
@@ -35,7 +36,7 @@ describe("Инициализация контроллера", () => {
         expect(mockAddListenerAfter).toBeCalledWith(
             "handlerValueChanged", testController["_boundPassHandlerValueChange"], testController["_model"]);
         expect(mockAddListenerAfter).toBeCalledWith(
-            "handlerPositionChangedCallback", testController["_boundPassHandlerPositionChange"], testController["_view"]);
+            "handlerPositionChangedCallback", testController["_boundPassHandlerPositionChange"], testController[viewsParamName][0]);
         expect(mockAddListenerAfter).toBeCalledWith(
             "createHandler", testController["_boundViewAddHandler"], testController["_model"]);
     });
@@ -48,7 +49,7 @@ describe("Инициализация контроллера", () => {
         testController = new Controller(rootElement);
 
         expect(testController["_model"].getSliderData).toBeCalled();
-        expect(testController["_view"].setSliderData).toBeCalledWith(testData);
+        expect(testController[viewsParamName][0].setSliderData).toBeCalledWith(testData);
     });
 
     describe("Передача данных о хэндлерах в вид", () => {
@@ -56,7 +57,7 @@ describe("Инициализация контроллера", () => {
             testController = new Controller(rootElement);
 
             expect(testController["_model"].getHandlersData).toBeCalled();
-            expect(testController["_view"].initHandlers).toBeCalledWith(undefined);
+            expect(testController[viewsParamName][0].initHandlers).toBeCalledWith(undefined);
         });
 
         test("C опциональными параметрами", () => {
@@ -75,7 +76,7 @@ describe("Инициализация контроллера", () => {
             // @ts-ignore
             testController = new Controller(rootElement, testParameters);
             expect(testController["_model"].getHandlersData).toBeCalled();
-            expect(testController["_view"].initHandlers).toBeCalledWith(testHandlersData);
+            expect(testController[viewsParamName][0].initHandlers).toBeCalledWith(testHandlersData);
 
             //с кастомными хэндлерами
             let testHandlersData2 = [
@@ -89,7 +90,7 @@ describe("Инициализация контроллера", () => {
 
             testController = new Controller(rootElement, testParameters);
             expect(testController["_model"].getHandlersData).toBeCalled();
-            expect(testController["_view"].initHandlers).toBeCalledWith({
+            expect(testController[viewsParamName][0].initHandlers).toBeCalledWith({
                 customHandlers: false, handlersArray: [
                     {index: 0, value: "test1", positionPart: 0.5, withTooltip: true, isEnd: false},
                     {index: 1, value: "test2", positionPart: 1}
@@ -108,7 +109,7 @@ describe("Функции", () => {
         mockView.mockClear();
         testController["_addHandlerView"]();
 
-        expect(testController["_view"].addHandler).toBeCalled();
+        expect(testController[viewsParamName][0].addHandler).toBeCalled();
     });
 
     test("Передача позиции хэндлера в модель", () => {
@@ -126,6 +127,6 @@ describe("Функции", () => {
         const testData = {index: 0, position: 0.5, value: "test!"};
         testController["_passHandlerValueChange"](testData);
 
-        expect(testController["_view"].handlersValuesChangedListener).toBeCalledWith(testData);
+        expect(testController[viewsParamName][0].handlersValuesChangedListener).toBeCalledWith(testData);
     });
 });
