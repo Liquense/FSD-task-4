@@ -1,4 +1,4 @@
-import Controller from "./controller";
+import Controller, {SliderView} from "./controller";
 import Model from "./model";
 import View from "./view";
 import {addListenerAfter} from "./common";
@@ -105,6 +105,28 @@ describe("Функции", () => {
         testController = new Controller(rootElement);
     });
 
+    describe("Добавление новых видов", () => {
+        let testView: SliderView;
+        beforeEach(() => {
+            testView = new View(null, null);
+        });
+
+        test("Один", () => {
+            let oldViews = [...testController[viewsParamName]];
+            let testView = new View(null, null);
+            testController.addView(testView);
+            oldViews.push(testView);
+            expect(testController[viewsParamName]).toStrictEqual(oldViews);
+        });
+        test("Несколько", () => {
+            let oldViews = [...testController[viewsParamName]];
+            let testViews = [new View(null, null), new View(null, null)];
+            testController.addViews(testViews);
+            oldViews = [...oldViews, ...testViews];
+            expect(testController[viewsParamName]).toStrictEqual(oldViews);
+        });
+    });
+
     test("Добавление хэндлера в вид", () => {
         mockView.mockClear();
         testController["_addHandlerView"]();
@@ -116,7 +138,7 @@ describe("Функции", () => {
         mockModel.mockClear();
 
         const testData = {index: 0, position: 0.5};
-        testController["_passHandlerPositionChange"](testData);
+        testController["passHandlerPositionChange"](testData);
 
         expect(testController["_model"].handleHandlerPositionChanged).toBeCalledWith(testData);
     });

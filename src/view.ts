@@ -4,7 +4,7 @@ import {Listenable} from "./common";
 import {SliderView} from "./controller";
 
 export default class View implements Listenable, SliderView {
-    listenDictionary: { function: Function, listeners: Function[] };
+    listenDictionary: {[key: string] : { func: Function, listeners: Function[] }};
     public readonly element: HTMLElement;
     private readonly _slider: Slider;
 

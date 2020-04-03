@@ -2,6 +2,7 @@ import {Listenable, standardize} from "./common";
 import HandlerModel from "./handlerModel";
 
 export default class Model implements Listenable {
+    listenDictionary: {[key: string] : { func: Function, listeners: Function[] }};
     private _items: Array<any>;
 
     private _occupiedItems: { [key: number]: number } = {};
@@ -32,8 +33,6 @@ export default class Model implements Listenable {
     private _handlers: HandlerModel[] = [];
 
     public withCustomHandlers: boolean;
-
-    listenDictionary: { function: Function, listeners: Function[] };
 
     constructor(parameters?: {
                     isRange?: boolean,

@@ -1,24 +1,36 @@
 import View from "./view"
 import Model from "./model"
-import {addListenerAfter, Listenable} from "./common";
+import {addListenerAfter} from "./common";
 
 export default class Controller {
-    private _views: (SliderView & Listenable)[];
+    private _views: SliderView[];
     private readonly _model: Model;
 
     constructor(
         Element: HTMLElement,
         parameters?: { handlers?: object[] },
     ) {
-        this._views = [new View(Element, parameters)];
+        const newView = new View(Element, parameters);
+
+        this._views = [newView];
         this._model = new Model(parameters);
 
         addListenerAfter("handlerValueChanged", this._boundPassHandlerValueChange, this._model);
-        addListenerAfter("handlerPositionChangedCallback", this._boundPassHandlerPositionChange, this._views[0]);
         addListenerAfter("createHandler", this._boundViewAddHandler, this._model);
+        addListenerAfter("handlerPositionChangedCallback", this._boundPassHandlerPositionChange, newView);
 
         this.passSliderData();
         this._passHandlersData(parameters?.handlers);
+    }
+
+    public addViews(newViews: SliderView[]) {
+        newViews.forEach(view => {
+            this.addView(view)
+        });
+    }
+
+    public addView(newView: SliderView) {
+        this._views.push(newView);
     }
 
 
@@ -28,9 +40,9 @@ export default class Controller {
         });
     }
 
-    private _boundPassHandlerPositionChange = this._passHandlerPositionChange.bind(this);
+    private _boundPassHandlerPositionChange = this.passHandlerPositionChange.bind(this);
 
-    private _passHandlerPositionChange(data: { index: number, position: number }) {
+    public passHandlerPositionChange(data: { index: number, position: number }) {
         this._model.handleHandlerPositionChanged(data);
     }
 

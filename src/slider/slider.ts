@@ -6,7 +6,7 @@ import MarkupView from "./_markup/markup";
 import {type} from "os";
 
 export default class Slider implements Listenable {
-    listenDictionary: { function: Function, listeners: Function[] };
+    listenDictionary: {[key: string] : { func: Function, listeners: Function[] }};
 
     private static _defaultSliderClass = "liquidSlider";
     private _element: {

@@ -11,7 +11,7 @@ export function parseClassesString(classesString: string): string[] {
 }
 
 export interface Listenable {
-    listenDictionary: object;
+    listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };
 }
 
 export function addListenerAfter(executorName: string, listener: Function, executorContext: Listenable) {
@@ -20,9 +20,10 @@ export function addListenerAfter(executorName: string, listener: Function, execu
     if (!executorContext.listenDictionary)
         executorContext.listenDictionary = {};
     if (!executorContext.listenDictionary[executorName]) {
-        executorContext.listenDictionary[executorName] = {function: executorContext[executorName], listeners: []};
+        executorContext.listenDictionary[executorName] = {func: executorContext[executorName], listeners: []};
     }
 
+    console.log(executorContext.listenDictionary);
     let {listeners} = executorContext.listenDictionary[executorName];
     listeners.push(listener);
 
@@ -42,7 +43,7 @@ export function removeListener(executor: string, listener: Function, executorCon
 }
 
 function bindListeners(executor: string, listeners: Function[], executorContext: Listenable) {
-    const pureFunc = executorContext.listenDictionary[executor].function;
+    const pureFunc = executorContext.listenDictionary[executor].func;
     executorContext[executor] = function (...args) {
         const functionResult = pureFunc.call(executorContext, ...args);
 

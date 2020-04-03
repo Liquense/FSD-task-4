@@ -3,7 +3,7 @@ import Tooltip from "./__tooltip/tooltip";
 import Slider from "../slider";
 
 export default class HandlerView implements Listenable {
-    listenDictionary: { function: Function, listeners: Function[] };
+    listenDictionary: {[key: string] : { func: Function, listeners: Function[] }};
     public index: number;
 
     private _defaultClass = `${defaultSliderClass}__handler`;

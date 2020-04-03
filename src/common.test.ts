@@ -38,7 +38,7 @@ describe("Слушатель", () => {
     let testContext;
     beforeAll(() => {
         class TestContext implements Listenable {
-            public listenDictionary: { function: Function, listeners: Function[] };
+            public listenDictionary: {[key: string] : { func: Function, listeners: Function[] }};
 
             testExecutor = function () {
             };

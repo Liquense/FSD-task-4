@@ -6,7 +6,7 @@ export default class HandlerModel implements Listenable {
     //потому что это обезличенные данные, которые они могут интерпретировать как им нужно
     private _position: number;
 
-    public listenDictionary: { function: Function, listeners: Function[] };
+    public listenDictionary: {[key: string] : { func: Function, listeners: Function[] }};
 
     get value(): any {
         return this._value;
