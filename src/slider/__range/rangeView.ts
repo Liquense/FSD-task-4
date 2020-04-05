@@ -79,4 +79,8 @@ export default class RangeView {
     public hasHandler(handler: HandlerView) {
         return handler === this.startHandler || handler === this.endHandler;
     }
+
+    public remove() {
+        this._element.remove();
+    };
 }

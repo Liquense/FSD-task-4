@@ -3,10 +3,9 @@ import RangeView from "./__range/rangeView";
 import {addListenerAfter, clamp, defaultSliderClass, Listenable, standardize} from "../common";
 import View from "../view";
 import MarkupView from "./_markup/markup";
-import {type} from "os";
 
 export default class Slider implements Listenable {
-    listenDictionary: {[key: string] : { func: Function, listeners: Function[] }};
+    listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };
 
     private static _defaultSliderClass = "liquidSlider";
     private _element: {
@@ -292,6 +291,9 @@ export default class Slider implements Listenable {
     }
 
     public clearRanges(): void {
+        this._ranges.forEach((range) => {
+            range.remove()
+        });
         this._ranges = [];
     }
 
@@ -352,6 +354,7 @@ export default class Slider implements Listenable {
                 isEnd?: boolean,
             }[]
         }) {
+        this._clearHandlers();
         this._handlers = handlersData.handlersArray.map((handler, index, handlers) => {
             let newHandler = new HandlerView(
                 this,
@@ -377,6 +380,12 @@ export default class Slider implements Listenable {
         if (this._withMarkup) {
             this._initMarkup();
         }
+    }
+
+    private _clearHandlers() {
+        this.clearRanges();
+        this._element.handlers.innerHTML = "";
+        this._handlers = [];
     }
 
     public getWorkZoneLength(): number {
