@@ -85,7 +85,12 @@ export default class SliderPanel implements Listenable, SliderView {
 
     public handlerPositionChanged(event: Event): { index: number, position: number } {
         const valueInput = (event.target as HTMLInputElement);
-        return {index: 0, position: Number.parseFloat(valueInput.value)};
+        const inputIndex = this._HTMLElements.valueInputs.find((input) => {
+            if (input.element === valueInput)
+                return true;
+        }).index;
+
+        return {index: inputIndex, position: Number.parseFloat(valueInput.value)};
     };
 
     public handlersValuesChangedListener(data: { index: number, relativeValue: number, item: any }) {
