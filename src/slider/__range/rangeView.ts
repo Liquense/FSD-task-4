@@ -43,12 +43,16 @@ export default class RangeView {
 
     private _boundUpdatePosition = this.updatePosition.bind(this);
     public updatePosition() {
-        const startCoordinate = this.startHandler ?
+        const firstCoordinate = this.startHandler ?
             this.startHandler.positionCoordinate - this.parentSlider.scaleStart :
             this.parentSlider.scaleBorderWidth;
-        const endCoordinate = this.endHandler ?
+        const secondCoordinate = this.endHandler ?
             this.endHandler.positionCoordinate - this.parentSlider.scaleStart :
             this.parentSlider.scaleEnd - this.parentSlider.scaleStart - this.parentSlider.scaleBorderWidth;
+
+        const startCoordinate = Math.min(firstCoordinate, secondCoordinate);
+        const endCoordinate = Math.max(firstCoordinate, secondCoordinate);
+
         let offset = startCoordinate;
         let length = endCoordinate - startCoordinate;
 
