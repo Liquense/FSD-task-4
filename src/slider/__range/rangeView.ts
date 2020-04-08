@@ -1,5 +1,5 @@
 import HandlerView from "../__handler/handler";
-import {addListenerAfter, defaultSliderClass} from "../../common";
+import {addListenerAfter, defaultSliderClass, removeListener} from "../../common";
 import Slider from "../slider";
 
 export default class RangeView {
@@ -26,9 +26,9 @@ export default class RangeView {
         requestAnimationFrame(this.updatePosition.bind(this));
         //слушаем изменения хэндлеров, между которыми ренж
         if (this.startHandler)
-            addListenerAfter("updatePosition", this.updatePosition.bind(this), this.startHandler);
+            addListenerAfter("updatePosition", this._boundUpdatePosition, this.startHandler);
         if (this.endHandler)
-            addListenerAfter("updatePosition", this.updatePosition.bind(this), this.endHandler);
+            addListenerAfter("updatePosition", this._boundUpdatePosition, this.endHandler);
     }
 
     private createElement(): void {
@@ -41,6 +41,7 @@ export default class RangeView {
         this.parentElement.appendChild(body);
     }
 
+    private _boundUpdatePosition = this.updatePosition.bind(this);
     public updatePosition() {
         const startCoordinate = this.startHandler ?
             this.startHandler.positionCoordinate - this.parentSlider.scaleStart :
@@ -81,6 +82,8 @@ export default class RangeView {
     }
 
     public remove() {
+        removeListener("updatePosition", this._boundUpdatePosition, this.startHandler);
+        removeListener("updatePosition", this._boundUpdatePosition, this.endHandler);
         this._element.remove();
     };
 }
