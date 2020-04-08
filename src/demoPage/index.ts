@@ -1,15 +1,23 @@
 import "../liquidSlider"
 import "../slider/slider.scss"
+import SliderPanel from "./sliderPanel";
 
 const sliderInitSelector = ".initSliderHere";
+const panelSelector = ".panel";
+const panels = [];
 
-let $slider = $(sliderInitSelector).liquidSlider({
+$(panelSelector).get().forEach(panelWrap => {
+    panels.push(new SliderPanel(panelWrap));
+});
+
+let slider = $(sliderInitSelector).liquidSlider({
     min: -50,
     max: 20,
     step: 1,
 });
+slider.addView(panels[0]);
 
-let $slider2 = $(sliderInitSelector).liquidSlider({
+let slider2 = $(sliderInitSelector).liquidSlider({
     items: [
         1,
         {
@@ -26,8 +34,9 @@ let $slider2 = $(sliderInitSelector).liquidSlider({
     isReversed: false,
     isVertical: true,
 });
+slider2.addView(panels[1]);
 
-let $slider3 = $(sliderInitSelector).liquidSlider({
+let slider3 = $(sliderInitSelector).liquidSlider({
     handlers: [
         {isEnd: true},
         {value: 2, isEnd: false},
@@ -37,3 +46,4 @@ let $slider3 = $(sliderInitSelector).liquidSlider({
     showTooltips: false,
     withMarkup: true
 });
+slider3.addView(panels[2]);

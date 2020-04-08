@@ -4,23 +4,27 @@ import {Listenable} from "./common";
 import {SliderView} from "./controller";
 
 export default class View implements Listenable, SliderView {
-    listenDictionary: {[key: string] : { func: Function, listeners: Function[] }};
-    public readonly element: HTMLElement;
-    private readonly _slider: Slider;
+    listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };
+    public element: HTMLElement;
+    private _slider: Slider;
 
     constructor(element: HTMLElement, parameters?: object) {
-        this.element = element;
-        this._slider = new Slider(this, parameters);
+        this.setViewProps(element, parameters);
     }
 
-    public handlerPositionChangedCallback(
+    public setViewProps(element: HTMLElement, parameters?: object) {
+        this.element = element;
+        this._slider = new Slider(this, parameters);
+    };
+
+    public handlerPositionChanged(
         handlerIndex: number,
         standardizedPosition: number
     ): { index: number, position: number } {
         return {index: handlerIndex, position: standardizedPosition};
     }
 
-    public handlersValuesChangedListener(data: { index: number, position: number, value: any }): void {
+    public handlersValuesChangedListener(data: { index: number, relativeValue: number, item: any }): void {
         this._slider.setHandlersData([data]);
     }
 
@@ -37,7 +41,7 @@ export default class View implements Listenable, SliderView {
         this._slider.createRanges();
     }
 
-    public setSliderData(sliderData: object) {
+    public setSliderProps(sliderData: { step?: number }) {
         this._slider.update(sliderData);
     }
 

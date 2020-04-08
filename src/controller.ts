@@ -1,60 +1,98 @@
 import View from "./view"
 import Model from "./model"
-import {addListenerAfter} from "./common";
+import {addListenerAfter, Listenable} from "./common";
 
 export default class Controller {
-    private _views: SliderView[];
+    private _views: (SliderView & Listenable)[];
     private readonly _model: Model;
 
     constructor(
-        Element: HTMLElement,
-        parameters?: { handlers?: object[] },
+        private _element: HTMLElement,
+        private _parameters?: {
+            additionalClasses?: string,
+            items?: Array<any>,
+            values?: number[], //если не заданы handlers
+            isRange?: boolean, //если не заданы handlers
+            isVertical?: boolean,
+            isReversed?: boolean,
+            min?: number,
+            max?: number,
+            step?: number,
+            showTooltips?: boolean,
+            withMarkup?: boolean,
+            handlers?: {
+                value?: number,
+                additionalClasses?: string,
+                isEnd?: boolean,
+                withTooltip?: boolean,
+                tooltip?: {
+                    additionalClasses?: string,
+                    bodyHTML?: string,
+                },
+            }[],
+        },
     ) {
-        const newView = new View(Element, parameters);
-
+        const newView = new View(_element, _parameters);
         this._views = [newView];
-        this._model = new Model(parameters);
+        this._model = new Model(_parameters);
 
         addListenerAfter("handlerValueChanged", this._boundPassHandlerValueChange, this._model);
         addListenerAfter("createHandler", this._boundViewAddHandler, this._model);
-        addListenerAfter("handlerPositionChangedCallback", this._boundPassHandlerPositionChange, newView);
+        addListenerAfter("handlerPositionChanged", this._boundPassHandlerPositionChange, newView);
 
         this.passSliderData();
-        this._passHandlersData(parameters?.handlers);
+        this._passHandlersData(newView, _parameters?.handlers);
     }
 
-    public addViews(newViews: SliderView[]) {
-        newViews.forEach(view => {
+    public addViews(newViews: (SliderView & Listenable)[]) {
+        newViews.forEach((view) => {
             this.addView(view)
         });
     }
 
-    public addView(newView: SliderView) {
+    public addView(newView: SliderView & Listenable) {
         this._views.push(newView);
-    }
 
+        addListenerAfter("handlerPositionChanged", this._boundPassHandlerPositionChange, newView);
+        newView.setViewProps(this._element, this._parameters);
+
+        this.passSliderData();
+        this._passHandlersData(newView, this._parameters?.handlers);
+    }
 
     private passSliderData() {
         this._views.forEach(view => {
-            view.setSliderData(this._model.getSliderData());
+            view.setSliderProps(this._model.getSliderData());
         });
     }
 
-    private _boundPassHandlerPositionChange = this.passHandlerPositionChange.bind(this);
+    private _boundPassHandlerPositionChange = this._passHandlerPositionChange.bind(this);
 
-    public passHandlerPositionChange(data: { index: number, position: number }) {
+    /**
+     * Вызов обработки в модели, когда меняется позиция хэндлера в Виде
+     * @param data
+     */
+    private _passHandlerPositionChange(data: { index: number, position: number }) {
         this._model.handleHandlerPositionChanged(data);
     }
 
     private _boundPassHandlerValueChange = this._passHandlerValueChange.bind(this);
 
-    private _passHandlerValueChange(data: { index: number, position: number, value: any }): void {
+    /**
+     * Вызов обработчика в Виде, когда меняется значение хэндлера в Модели
+     * @param data
+     * @param data.index Индекс хэндлера
+     * @param data.relativeValue Относительное значение (от 0 до 1), которое Вид преобразует в смещение
+     * @param data.item Данные на этой позиции
+     * @private
+     */
+    private _passHandlerValueChange(data: { index: number, relativeValue: number, item: any }): void {
         this._views.forEach(view => {
             view.handlersValuesChangedListener(data);
         });
     }
 
-    private _passHandlersData(initHandlersData?: object[]) {
+    private _passHandlersData(targetView: SliderView, initHandlersData?: object[]) {
         let handlersData = this._model.getHandlersData();
 
         if (initHandlersData) {
@@ -63,10 +101,7 @@ export default class Controller {
             });
         }
 
-
-        this._views.forEach(view => {
-            view.initHandlers(handlersData);
-        });
+        targetView.initHandlers(handlersData);
     }
 
     private _boundViewAddHandler = this._addHandlerView.bind(this);
@@ -80,8 +115,22 @@ export default class Controller {
 }
 
 export interface SliderView {
-    setSliderData: Function;
-    handlersValuesChangedListener: Function;
-    initHandlers: Function;
-    addHandler: Function;
+    setViewProps(element: HTMLElement, parameters?: object): void;
+
+    setSliderProps(sliderData: { step?: number }): void;
+
+    handlerPositionChanged: Function;
+
+    handlersValuesChangedListener(data: { index: number, relativeValue: number, item: any }): void;
+
+    initHandlers(handlersData: {
+        customHandlers: boolean,
+        handlersArray: {
+            index: number,
+            positionPart: number,
+            value: any,
+        }[]
+    }): void;
+
+    addHandler();
 }

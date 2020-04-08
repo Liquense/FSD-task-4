@@ -212,7 +212,7 @@ export default class Slider implements Listenable {
         if (standardMousePosition === closestHandler.positionPart)
             return;
 
-        this._parentView.handlerPositionChangedCallback(closestHandler.index, standardMousePosition);
+        this._parentView.handlerPositionChanged(closestHandler.index, standardMousePosition);
     }
 
     private deactivateActiveHandler() {
@@ -402,12 +402,12 @@ export default class Slider implements Listenable {
         return this.handlerSize / this.getWorkZoneLength();
     }
 
-    public setHandlersData(handlers: { index: number, value: any, position: number }[]) {
-        handlers.forEach(({index, value, position}) => {
+    public setHandlersData(handlers: { index: number, item: any, relativeValue: number }[]) {
+        handlers.forEach(({index, item, relativeValue}) => {
             const realIndex = this._handlers.findIndex(handler => handler.index === index);
 
-            this._handlers[realIndex].setValue(value);
-            this._handlers[realIndex].setPosition(position);
+            this._handlers[realIndex].setValue(item);
+            this._handlers[realIndex].setPosition(relativeValue);
         })
     }
 

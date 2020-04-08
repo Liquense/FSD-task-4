@@ -49,7 +49,7 @@ describe("Инициализация контроллера", () => {
         testController = new Controller(rootElement);
 
         expect(testController["_model"].getSliderData).toBeCalled();
-        expect(testController[viewsParamName][0].setSliderData).toBeCalledWith(testData);
+        expect(testController[viewsParamName][0].setSliderProps).toBeCalledWith(testData);
     });
 
     describe("Передача данных о хэндлерах в вид", () => {
@@ -138,7 +138,7 @@ describe("Функции", () => {
         mockModel.mockClear();
 
         const testData = {index: 0, position: 0.5};
-        testController["passHandlerPositionChange"](testData);
+        testController["_passHandlerPositionChange"](testData);
 
         expect(testController["_model"].handleHandlerPositionChanged).toBeCalledWith(testData);
     });
@@ -146,7 +146,7 @@ describe("Функции", () => {
     test("Передача изменения значения хэндлера в вид", () => {
         mockView.mockClear();
 
-        const testData = {index: 0, position: 0.5, value: "test!"};
+        const testData = {index: 0, relativeValue: 0.5, item: "test!"};
         testController["_passHandlerValueChange"](testData);
 
         expect(testController[viewsParamName][0].handlersValuesChangedListener).toBeCalledWith(testData);

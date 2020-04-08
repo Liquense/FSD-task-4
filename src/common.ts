@@ -23,7 +23,6 @@ export function addListenerAfter(executorName: string, listener: Function, execu
         executorContext.listenDictionary[executorName] = {func: executorContext[executorName], listeners: []};
     }
 
-    console.log(executorContext.listenDictionary);
     let {listeners} = executorContext.listenDictionary[executorName];
     listeners.push(listener);
 

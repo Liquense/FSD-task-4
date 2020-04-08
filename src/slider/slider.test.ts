@@ -2,9 +2,6 @@ import Slider from "./slider";
 import View from "../view";
 import Mock = jest.Mock;
 import Tooltip from "./__handler/__tooltip/tooltip";
-import slider from "./slider";
-import handler from "./__handler/handler";
-import rangeView from "./__range/rangeView";
 import MarkupView from "./_markup/markup";
 
 jest.mock("../view");
@@ -12,7 +9,7 @@ jest.mock("../view");
 const testView = new View(null, null);
 //@ts-ignore
 testView["element"] = document.body.appendChild(document.createElement("div"));
-testView.handlerPositionChangedCallback = jest.fn(() => undefined);
+testView.handlerPositionChanged = jest.fn(() => undefined);
 let testSlider: Slider;
 
 function resetHTML() {
@@ -112,7 +109,7 @@ describe("Инициализация", () => {
 
                 testClicks = function () {
                     for (let i = 0; i <= 100; i++) {
-                        (testView.handlerPositionChangedCallback as Mock).mockClear();
+                        (testView.handlerPositionChanged as Mock).mockClear();
                         simulateMouseDown(i); //несмотря на клик, позиции хэндлеров остаются неизменными, потому что вью мокнут и нет обмена данными с моделью
 
                         if (i <= 65)
@@ -126,7 +123,7 @@ describe("Инициализация", () => {
                             testSlider.calculateMouseRelativePosition(testMouseDownEvent as MouseEvent) !== 0.4
                             && testSlider.calculateMouseRelativePosition(testMouseDownEvent as MouseEvent) !== 0.9
                         ) {
-                            expect(testView.handlerPositionChangedCallback).toBeCalledWith(testSlider["_activeHandler"].index, i / 100);
+                            expect(testView.handlerPositionChanged).toBeCalledWith(testSlider["_activeHandler"].index, i / 100);
                         }
 
                         //видимость тултипов
@@ -380,7 +377,8 @@ describe("Функции", () => {
         const newValue1 = "new test", newValue2 = "new test2";
         const newPosition1 = 0.1, newPosition2 = 0.8;
         testSlider.setHandlersData([
-            {index: 0, value: newValue1, position: newPosition1}, {index: 2, value: newValue2, position: newPosition2}
+            {index: 0, item: newValue1, relativeValue: newPosition1},
+            {index: 2, item: newValue2, relativeValue: newPosition2}
         ]);
         //
         expect(spySetValue1).toBeCalledWith(newValue1);
@@ -401,7 +399,8 @@ describe("Функции", () => {
     });
 
     test("Добавление пользовательского слушателя на стандартный обработчик нажатия кнопки мыши", () => {
-        const mockListener = jest.fn(() => {});
+        const mockListener = jest.fn(() => {
+        });
         const testEvent = new Event("mousedown");
 
         testSlider.addOnMouseDownListener(mockListener);

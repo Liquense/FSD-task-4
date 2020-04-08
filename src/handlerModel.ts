@@ -40,8 +40,10 @@ export default class HandlerModel implements Listenable {
 
     public setItemIndex(newItemIndex: number,) {
         const oldItemIndex = this.itemIndex;
-        if (this._parentModel.checkItemOccupancy(newItemIndex))
+        if (this._parentModel.checkItemOccupancy(newItemIndex)) {
+            this.updatePosition();
             return;
+        }
 
         this.itemIndex = newItemIndex;
         this._value = this._parentModel.calculateValue(this.itemIndex);

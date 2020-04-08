@@ -180,7 +180,7 @@ export default class Model implements Listenable {
 
 
     public handlerValueChanged(handler: HandlerModel) {
-        return {index: handler.handlerIndex, position: handler.position, value: handler.value}
+        return {index: handler.handlerIndex, relativeValue: handler.position, item: handler.value}
     };
 
     //для передачи контролеру

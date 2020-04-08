@@ -68,14 +68,14 @@ describe("Функции", () => {
     });
 
     test("Передача данных об изменении позиции хэндлера в виде объекта", () => {
-        let result = testView.handlerPositionChangedCallback(0, 0.5);
+        let result = testView.handlerPositionChanged(0, 0.5);
         expect(result).toStrictEqual({index: 0, position: 0.5});
     });
 
     test("Установка данных слайдера", () => {
-        testFunctionCall("update", "setSliderData", null);
-        testFunctionCall("update", "setSliderData", {});
-        testFunctionCall("update", "setSliderData", {something: "test"});
+        testFunctionCall("update", "setSliderProps", null);
+        testFunctionCall("update", "setSliderProps", {});
+        testFunctionCall("update", "setSliderProps", {something: "test"});
     });
 
     test("Добавление слушателя на нажатие мыши", () => {
