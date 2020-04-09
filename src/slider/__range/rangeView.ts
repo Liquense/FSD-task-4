@@ -60,7 +60,6 @@ export default class RangeView {
         this._element.style[this.parentSlider.expandDimension] = `${length}px`;
     }
 
-
     private arrangeHandlers(firstHandler: HandlerView, secondHandler: HandlerView) {
         if (firstHandler.positionPart <= secondHandler.positionPart) {
             this.startHandler = firstHandler;

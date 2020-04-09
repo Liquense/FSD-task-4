@@ -1,55 +1,106 @@
 import {Listenable} from "../common";
-import {SliderView} from "../controller";
+import Controller, {SliderView} from "../controller";
 
 export default class SliderPanel implements Listenable, SliderView {
     listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };
 
+    public boundController: Controller;
     private _handlers: { index: number, positionPart: number }[] = [];
 
-    private _elementsClasses = {
-        body: "panel__body",
-        valueWrap: "panel__valueWrap", valueLabel: "panel__valueLabel", valueInput: "panel__valueInput",
+    static readonly classPrefix = "panel__";
 
-    };
-    private _HTMLElements: {
+    private _elements: {
         wrap: HTMLElement, body: HTMLElement,
-        valueInputs: { index: number, element: HTMLElement }[], maxInput: HTMLElement, minInput: HTMLElement
+        handlerInputs: { index: number, positionElement: HTMLElement, itemIndexElement: HTMLElement }[], maxInput: HTMLElement, minInput: HTMLElement,
+        stepInput: HTMLElement, orientationInput: HTMLElement, tooltipsVisibilityInput: HTMLElement
     };
 
     constructor(parentElement: HTMLElement) {
-        this._HTMLElements = {
+        this._elements = {
             wrap: undefined, body: undefined,
-            valueInputs: [], maxInput: undefined, minInput: undefined
+            handlerInputs: [], maxInput: undefined, minInput: undefined,
+            stepInput: undefined, orientationInput: undefined, tooltipsVisibilityInput: undefined
         };
 
-        this._HTMLElements.wrap = parentElement;
+        this._elements.wrap = parentElement;
         this._createBody();
+        //
+        this._createPropertyElements(`Шаг:`, `step`);
+        this._createPropertyElements(`Минимум:`, `min`);
+        this._createPropertyElements(`Максимум:`, `max`);
+        this._createPropertyElements(`Ориентация:`, `orientation`, true);
+        this._createPropertyElements(`Отображение тултипов:`, `tooltipsVisibility`, true);
     }
 
     private _createBody() {
-        this._HTMLElements.body = document.createElement("div");
-        this._HTMLElements.body.classList.add(this._elementsClasses.body);
+        this._elements.body = document.createElement("div");
+        this._elements.body.classList.add(`${SliderPanel.classPrefix}body`);
 
-        this._HTMLElements.wrap.append(this._HTMLElements.body);
+        this._elements.wrap.append(this._elements.body);
     }
 
-    private _createValueSection(handlerIndex: number) {
-        const valueWrap = document.createElement("div");
-        valueWrap.classList.add(this._elementsClasses.valueWrap);
+    private static _createElement(elementName: string, classPostfix: string, wrap?: HTMLElement): HTMLElement {
+        const propElement = document.createElement(elementName);
+        propElement.classList.add(SliderPanel.classPrefix + classPostfix);
 
-        const valueLabel = document.createElement("label");
-        valueLabel.innerText = `Текущее положение ${handlerIndex + 1}: `;
-        valueLabel.classList.add(this._elementsClasses.valueLabel);
-        valueWrap.appendChild(valueLabel);
+        wrap?.append(propElement);
 
-        const valueInput = document.createElement("input");
-        this._HTMLElements.valueInputs.push({index: handlerIndex, element: valueInput});
-        valueInput.classList.add(this._elementsClasses.valueInput);
-        valueWrap.append(valueInput);
-        this._HTMLElements.valueInputs[this._HTMLElements.valueInputs.length - 1]
-            .element.addEventListener("change", this.handlerPositionChanged);
+        return propElement;
+    }
 
-        this._HTMLElements.body.append(valueWrap);
+    private _createWrap(elementClassName: string): HTMLElement {
+        return SliderPanel._createElement("div", elementClassName + `Wrap`, this._elements.body);
+    }
+
+    private static _createLabel(labelText: string, elementClassName: string, wrap?: HTMLElement): HTMLElement {
+        const propLabel = SliderPanel._createElement(`label`, elementClassName + `Label`, wrap);
+        propLabel.innerText = labelText;
+
+        return propLabel;
+    };
+
+    private static _createInput(elementClassName: string, wrap?: HTMLElement, isCheckbox?: boolean): HTMLElement {
+        const propInput = SliderPanel._createElement("input", elementClassName + "Input", wrap);
+
+        if (isCheckbox) propInput.setAttribute("type", "checkbox");
+
+        return propInput;
+    };
+
+    /**
+     * Создаёт элементы для свойств (обёртка, лейбл и инпут) и вставляет в обёртку панели.
+     * @param labelText - текст, который будет записан в лейбле
+     * @param elementName - имя элемента для указания класса (step, value и т.д.)
+     * @param isCheckbox если true, то инпут будет чекбоксом
+     * @private
+     */
+    private _createPropertyElements(labelText: string, elementName: string, isCheckbox?: boolean) {
+        const propWrap = this._createWrap(elementName);
+
+        SliderPanel._createLabel(labelText, elementName, propWrap);
+
+        this._elements[elementName + `Input`] = SliderPanel._createInput(elementName, propWrap, isCheckbox);
+    }
+
+    /**
+     * Создание инпутов для хэндлеров (проставляются ещё индексы)
+     * @param handlerIndex
+     * @private
+     */
+    private _createHandlerSection(handlerIndex: number) {
+        const valueWrap = this._createWrap("value");
+        SliderPanel._createLabel(`Текущее положение ${handlerIndex + 1}: `, `value`, valueWrap);
+        const positionInput = SliderPanel._createInput(`value`, valueWrap);
+
+        SliderPanel._createLabel(`Текущее значение ${handlerIndex + 1}: `, `value`, valueWrap);
+        const itemIndexInput = SliderPanel._createElement(`div`, `item`, valueWrap);
+
+
+        this._elements.handlerInputs.push({index: handlerIndex, positionElement: positionInput, itemIndexElement: itemIndexInput});
+        this._elements.handlerInputs[this._elements.handlerInputs.length - 1]
+            .positionElement.addEventListener("change", this.handlerPositionChanged);
+
+        this._elements.body.append(valueWrap);
     }
 
 
@@ -60,11 +111,11 @@ export default class SliderPanel implements Listenable, SliderView {
     };
 
     private setHandlerValue(index: number) {
-        let handler = this._HTMLElements.valueInputs.find((input) => {
+        let handler = this._elements.handlerInputs.find((input) => {
             return input.index === index;
         });
 
-        (handler.element as HTMLInputElement).value = `${this._handlers[index].positionPart.toFixed(2)}`;
+        (handler.positionElement as HTMLInputElement).value = `${this._handlers[index].positionPart.toFixed(2)}`;
     };
 
     public setViewProps(
@@ -85,8 +136,8 @@ export default class SliderPanel implements Listenable, SliderView {
 
     public handlerPositionChanged(event: Event): { index: number, position: number } {
         const valueInput = (event.target as HTMLInputElement);
-        const inputIndex = this._HTMLElements.valueInputs.find((input) => {
-            if (input.element === valueInput)
+        const inputIndex = this._elements.handlerInputs.find((input) => {
+            if (input.positionElement === valueInput)
                 return true;
         }).index;
 
@@ -99,7 +150,6 @@ export default class SliderPanel implements Listenable, SliderView {
         });
 
         handler.positionPart = data.relativeValue;
-        console.log(data);
         this.updateState();
     };
 
@@ -111,7 +161,7 @@ export default class SliderPanel implements Listenable, SliderView {
                 index: handler.index,
                 positionPart: handler.positionPart
             });
-            this._createValueSection(handler.index);
+            this._createHandlerSection(handler.index);
         });
 
         this.updateState();
