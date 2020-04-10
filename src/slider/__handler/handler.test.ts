@@ -58,7 +58,7 @@ describe("Инициализация", () => {
 
 test("Установка позиции", () => {
     testHandler = createTestHandler();
-    testHandler["_element"].body.getBoundingClientRect = jest.fn(function () {
+    testHandler["element"].body.getBoundingClientRect = jest.fn(function () {
         return {
             //поскольку в тестах ничего не рендерится и функция всегда будет возвращать нули, вручную зададим размер элемента (остальное не интересует)
             height: 10,
@@ -87,14 +87,14 @@ test("Установка позиции", () => {
     checkSettingPosition(false, 0.1);
 
     (testHandler["_tooltip"].updateHTML as Mock).mockClear();
-    testHandler["_element"] = undefined;
+    testHandler["element"] = undefined;
     testHandler.setPosition(0.5);
     expect(testHandler["_tooltip"].updateHTML).not.toBeCalled();
 });
 
 test("Получение центра хэндлера", () => {
     testHandler = createTestHandler();
-    testHandler["_element"].body.getBoundingClientRect = jest.fn(() => {
+    testHandler["element"].body.getBoundingClientRect = jest.fn(() => {
         return {
             //поскольку в тестах ничего не рендерится и функция всегда будет возвращать нули, вручную зададим размер элемента (остальное не интересует)
             height: 10, width: 10, left: 0, top: 10, //для рассчета центра элемента
