@@ -5,6 +5,7 @@ export default class SliderPanel implements Listenable, SliderView {
     listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };
 
     public boundController: Controller;
+    private _isVertical = false;
     private _handlers: { index: number, positionPart: number, item: any }[] = [];
 
     static readonly classPrefix = "panel__";
@@ -21,9 +22,10 @@ export default class SliderPanel implements Listenable, SliderView {
             handlerInputs: [], maxInput: undefined, minInput: undefined,
             stepInput: undefined, orientationInput: undefined, tooltipsVisibilityInput: undefined
         };
+        this._elements.wrap = parentElement.parentElement;
 
-        this._elements.wrap = parentElement;
-        this._createBody();
+        this._elements.body = parentElement;
+        this._elements.body.classList.add(`${SliderPanel.classPrefix}body`);
 
         this._createPropertyElements(`Шаг`, `step`);
 
@@ -41,13 +43,6 @@ export default class SliderPanel implements Listenable, SliderView {
 
     private _handleOrientationInputChange(event: Event) {
         this.setOrientation((event.target as HTMLInputElement).checked);
-    }
-
-    private _createBody() {
-        this._elements.body = document.createElement("div");
-        this._elements.body.classList.add(`${SliderPanel.classPrefix}body`);
-
-        this._elements.wrap.append(this._elements.body);
     }
 
     private static _createElement(elementName: string, classPostfix: string, wrap?: HTMLElement): HTMLElement {
@@ -118,15 +113,23 @@ export default class SliderPanel implements Listenable, SliderView {
         this._elements.body.append(valueWrap);
     }
 
+    private _refreshElements() {
+        this._refreshOrientation();
 
-    private updateState() {
         this._handlers.forEach((handler) => {
-            this.updateHandlerPosition(handler.index);
-            this.updateHandlerItem(handler.index);
+            this._refreshHandlerPosition(handler.index);
+            this._refreshHandlerItem(handler.index);
         })
     };
 
-    private updateHandlerItem(index: number) {
+    private _refreshOrientation() {
+        this._elements.wrap.classList.add(this._isVertical ? "vertical" : "horizontal");
+        this._elements.wrap.classList.remove(this._isVertical ? "horizontal" : "vertical");
+
+        (this._elements.orientationInput as HTMLInputElement).checked = this._isVertical; //отображение значения вертикальности на чекбоксе
+    }
+
+    private _refreshHandlerItem(index: number) {
         let handler = this._elements.handlerInputs.find((input) => {
             return input.index === index;
         });
@@ -134,7 +137,7 @@ export default class SliderPanel implements Listenable, SliderView {
         handler.itemIndexElement.innerText = this._handlers[index].item;
     }
 
-    private updateHandlerPosition(index: number) {
+    private _refreshHandlerPosition(index: number) {
         let handler = this._elements.handlerInputs.find((input) => {
             return input.index === index;
         });
@@ -151,7 +154,6 @@ export default class SliderPanel implements Listenable, SliderView {
     }
 
     public passViewProps(
-        element: HTMLElement,
         parameters?: {
             isVertical?: boolean,
             showTooltips?: boolean,
@@ -160,7 +162,10 @@ export default class SliderPanel implements Listenable, SliderView {
             withMarkup?: boolean,
         }
     ) {
-
+        if (parameters?.isVertical !== undefined) {
+            this._isVertical = parameters.isVertical;
+        }
+        this._refreshElements();
     };
 
     public addHandler() {
@@ -183,7 +188,7 @@ export default class SliderPanel implements Listenable, SliderView {
 
         handler.positionPart = data.relativeValue;
         handler.item = data.item;
-        this.updateState();
+        this._refreshElements();
     };
 
     public initHandlers(handlersData: { handlersArray: { index: number, positionPart: number, value: any }[] }) {
@@ -198,7 +203,7 @@ export default class SliderPanel implements Listenable, SliderView {
             this._createHandlerSection(handler.index);
         });
 
-        this.updateState();
+        this._refreshElements();
     };
 
     public setSliderProps() {
