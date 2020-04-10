@@ -117,7 +117,6 @@ export default class Slider implements Listenable {
     }
 
     private createElement(parentElement: HTMLElement) {
-        let orientationClass = this.getOrientationClass();
         this._element = {
             wrap: document.createElement("div"),
             body: document.createElement("div"),
@@ -125,22 +124,57 @@ export default class Slider implements Listenable {
             handlers: document.createElement("div"),
         };
         let wrap = this._element.wrap;
-        wrap.classList.add(defaultSliderClass, orientationClass);
+        wrap.classList.add(defaultSliderClass);
         parentElement.replaceWith(wrap);
 
         let body = this._element.body;
         body.addEventListener("mousedown", (event) => event.preventDefault()); //чтобы не возникало drag-n-drop (с ondragstart не работает)
-        body.classList.add(`${defaultSliderClass}__body`, orientationClass);
+        body.classList.add(`${defaultSliderClass}__body`);
         wrap.appendChild(body);
 
         let scale = this._element.scale;
-        scale.classList.add(`${defaultSliderClass}__scale`, orientationClass);
+        scale.classList.add(`${defaultSliderClass}__scale`);
         body.appendChild(scale);
 
         const handlers = this._element.handlers;
-        handlers.classList.add(`${defaultSliderClass}__handlers`, orientationClass);
+        handlers.classList.add(`${defaultSliderClass}__handlers`);
         body.appendChild(handlers);
+
+        this.setOrientation(this.isVertical);
     };
+
+    public setOrientation(newState: boolean) {
+        const operableObjects: object[] = [this._element];
+
+        if (this._markup?.wrap) {
+            console.log(this._markup);
+            operableObjects.push({wrap: this._markup.wrap});
+        }
+
+        this._handlers.forEach(handler => {
+            operableObjects.push(handler.element)
+            operableObjects.push(handler.tooltip.element);
+        });
+
+        this._ranges.forEach(range => {
+            operableObjects.push(range)
+        })
+
+        if (typeof newState === "boolean") {
+            const oldOrientClass = this.getOrientationClass();
+            this.isVertical = newState;
+            const newOrientClass = this.getOrientationClass();
+
+            operableObjects.forEach(obj => {
+                for (let key in obj) {
+                    if (obj[key]?.classList) {
+                        obj[key].classList.remove(oldOrientClass);
+                        obj[key].classList.add(newOrientClass);
+                    }
+                }
+            });
+        }
+    }
 
     public setTooltipsVisibility(stateToSet?: boolean): void {
         let stateToPass = (stateToSet === undefined) || (stateToSet === null) ?
@@ -333,6 +367,9 @@ export default class Slider implements Listenable {
     }
 
     private _updateMarkup() {
+        if (!this._markup)
+            return;
+
         this._markup.clearAllMarks();
 
         requestAnimationFrame(() => {
@@ -433,7 +470,7 @@ export default class Slider implements Listenable {
             this.setTooltipsVisibility(data.tooltipsVisible);
         }
         if (data.isVertical !== undefined) {
-            this.isVertical = data.isVertical;
+            this.setOrientation(data.isVertical);
             this._refreshElements();
         }
         if (data.withMarkup !== undefined) {
@@ -442,12 +479,13 @@ export default class Slider implements Listenable {
     }
 
     private _refreshElements() {
+
         this._updateMarkup();
 
         this._ranges.forEach(range => {
             range.refreshPosition();
         });
-        
+
         this._handlers.forEach(handler => {
             handler.refreshPosition();
         });

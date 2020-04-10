@@ -56,6 +56,11 @@ export default class RangeView {
         let offset = startCoordinate;
         let length = endCoordinate - startCoordinate;
 
+        this._element.style.removeProperty("left");
+        this._element.style.removeProperty("top");
+        this._element.style.removeProperty("width");
+        this._element.style.removeProperty("height");
+
         this._element.style[this.parentSlider.offsetDirection] = `${offset}px`;
         this._element.style[this.parentSlider.expandDimension] = `${length}px`;
     }

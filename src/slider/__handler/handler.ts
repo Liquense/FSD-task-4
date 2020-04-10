@@ -139,8 +139,11 @@ export default class HandlerView implements Listenable {
     public refreshPosition(): void {
         const offset = this.calculateAccurateOffset();
 
-        this._element.wrap.style[this.ownerSlider.offsetDirection] = `${offset}px`;
-        this._tooltip.updateHTML();
+        this.element.wrap.style.removeProperty("left");
+        this.element.wrap.style.removeProperty("top");
+
+        this.element.wrap.style[this.ownerSlider.offsetDirection] = `${offset}px`;
+        this.tooltip.updateHTML();
     }
 
     public setPosition(newPositionPart: number) {

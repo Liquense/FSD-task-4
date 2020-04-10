@@ -5,11 +5,11 @@ export default class SliderPanel implements Listenable, SliderView {
     listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };
 
     public boundController: Controller;
-    private _handlers: { index: number, positionPart: number }[] = [];
+    private _handlers: { index: number, positionPart: number, item: any }[] = [];
 
     static readonly classPrefix = "panel__";
 
-    private _elements: {
+    private readonly _elements: {
         wrap: HTMLElement, body: HTMLElement,
         handlerInputs: { index: number, positionElement: HTMLElement, itemIndexElement: HTMLElement }[], maxInput: HTMLElement, minInput: HTMLElement,
         stepInput: HTMLElement, orientationInput: HTMLElement, tooltipsVisibilityInput: HTMLElement
@@ -24,12 +24,23 @@ export default class SliderPanel implements Listenable, SliderView {
 
         this._elements.wrap = parentElement;
         this._createBody();
-        //
-        this._createPropertyElements(`Шаг:`, `step`);
-        this._createPropertyElements(`Минимум:`, `min`);
-        this._createPropertyElements(`Максимум:`, `max`);
-        this._createPropertyElements(`Ориентация:`, `orientation`, true);
-        this._createPropertyElements(`Отображение тултипов:`, `tooltipsVisibility`, true);
+
+        this._createPropertyElements(`Шаг`, `step`);
+
+        this._createPropertyElements(`Минимум`, `min`);
+
+        this._createPropertyElements(`Максимум`, `max`);
+
+        this._createPropertyElements(`Вертикальный?`, `orientation`, true);
+        this._elements.orientationInput.addEventListener("change", this._boundHandleOrientationInputChange);
+
+        this._createPropertyElements(`Тултипы видны?`, `tooltipsVisibility`, true);
+    }
+
+    private _boundHandleOrientationInputChange = this._handleOrientationInputChange.bind(this);
+
+    private _handleOrientationInputChange(event: Event) {
+        this.setOrientation((event.target as HTMLInputElement).checked);
     }
 
     private _createBody() {
@@ -89,14 +100,18 @@ export default class SliderPanel implements Listenable, SliderView {
      */
     private _createHandlerSection(handlerIndex: number) {
         const valueWrap = this._createWrap("value");
-        SliderPanel._createLabel(`Текущее положение ${handlerIndex + 1}: `, `value`, valueWrap);
+        SliderPanel._createLabel(`Текущее положение ${handlerIndex + 1} `, `value`, valueWrap);
         const positionInput = SliderPanel._createInput(`value`, valueWrap);
 
-        SliderPanel._createLabel(`Текущее значение ${handlerIndex + 1}: `, `value`, valueWrap);
+        SliderPanel._createLabel(`Текущее значение ${handlerIndex + 1} `, `item`, valueWrap);
         const itemIndexInput = SliderPanel._createElement(`div`, `item`, valueWrap);
 
 
-        this._elements.handlerInputs.push({index: handlerIndex, positionElement: positionInput, itemIndexElement: itemIndexInput});
+        this._elements.handlerInputs.push({
+            index: handlerIndex,
+            positionElement: positionInput,
+            itemIndexElement: itemIndexInput
+        });
         this._elements.handlerInputs[this._elements.handlerInputs.length - 1]
             .positionElement.addEventListener("change", this.handlerPositionChanged);
 
@@ -106,11 +121,20 @@ export default class SliderPanel implements Listenable, SliderView {
 
     private updateState() {
         this._handlers.forEach((handler) => {
-            this.setHandlerValue(handler.index);
+            this.updateHandlerPosition(handler.index);
+            this.updateHandlerItem(handler.index);
         })
     };
 
-    private setHandlerValue(index: number) {
+    private updateHandlerItem(index: number) {
+        let handler = this._elements.handlerInputs.find((input) => {
+            return input.index === index;
+        });
+
+        handler.itemIndexElement.innerText = this._handlers[index].item;
+    }
+
+    private updateHandlerPosition(index: number) {
         let handler = this._elements.handlerInputs.find((input) => {
             return input.index === index;
         });
@@ -118,7 +142,15 @@ export default class SliderPanel implements Listenable, SliderView {
         (handler.positionElement as HTMLInputElement).value = `${this._handlers[index].positionPart.toFixed(2)}`;
     };
 
-    public setViewProps(
+    /**
+     * Вызов функции контроллера для установки значения ориентации
+     * @param isVertical true - вертикально, false - горизонтально
+     */
+    private setOrientation(isVertical: boolean) {
+        this.boundController.setVertical(isVertical);
+    }
+
+    public passViewProps(
         element: HTMLElement,
         parameters?: {
             isVertical?: boolean,
@@ -150,16 +182,18 @@ export default class SliderPanel implements Listenable, SliderView {
         });
 
         handler.positionPart = data.relativeValue;
+        handler.item = data.item;
         this.updateState();
     };
 
-    public initHandlers(handlersData: { handlersArray: { index: number, positionPart: number }[] }) {
+    public initHandlers(handlersData: { handlersArray: { index: number, positionPart: number, value: any }[] }) {
         this._handlers = [];
 
         handlersData.handlersArray.forEach(handler => {
             this._handlers.push({
                 index: handler.index,
-                positionPart: handler.positionPart
+                positionPart: handler.positionPart,
+                item: handler.value
             });
             this._createHandlerSection(handler.index);
         });
@@ -168,5 +202,6 @@ export default class SliderPanel implements Listenable, SliderView {
     };
 
     public setSliderProps() {
+        return;
     };
 }
