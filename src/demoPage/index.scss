@@ -1,3 +1,112 @@
-.wrap {
+body > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  align-items: center;
+  justify-items: center;
+}
 
+.wrap {
+  height: fit-content;
+  border: solid 1px #333333;
+  border-radius: 10px;
+  padding: 25px;
+  width: fit-content;
+  margin: 20px;
+  display: flex;
+  align-items: center;
+
+  $slider-panelPadding: 25px;
+
+  &.horizontal {
+    flex-direction: column;
+
+    .panel {
+      padding-bottom: $slider-panelPadding/2;
+      margin-bottom: $slider-panelPadding;
+      border-bottom: dashed 1px black;
+    }
+  }
+
+  &.vertical {
+    flex-direction: row;
+
+    .panel {
+      padding-right: $slider-panelPadding/2;
+      margin-right: $slider-panelPadding;
+      border-right: dashed 1px black;
+    }
+  }
+
+  .panel {
+    .panel__body {
+      display: grid;
+      row-gap: 15px;
+      width: 500px;
+
+      .panel__valueWrap {
+        border-top: dashed 1px black;
+        padding-top: 10px;
+      }
+
+      > div {
+        display: grid;
+        grid-template-columns: minmax(200px, auto) 1fr;
+        column-gap: 10px;
+        row-gap: 5px;
+
+        :first-child, :nth-child(3) {
+          justify-self: end;
+        }
+
+        :nth-child(2) {
+          justify-self: start;
+        }
+
+        $inputTextWidth: 80px;
+
+        input {
+          width: $inputTextWidth;
+          border-radius: 10px;
+          padding: 3px 10px;
+          border: solid 1px #999999;
+          outline: none;
+          text-align: center;
+          vertical-align: baseline;
+
+          &:hover {
+            border: solid 1px #111111;
+          }
+        }
+
+        input[type="checkbox"] {
+          -webkit-appearance: none;
+          padding: 0;
+          margin: 0;
+          border-radius: 4px;
+          $checkboxSize: 15px;
+          width: $checkboxSize;
+          height: $checkboxSize;
+
+          margin-left: ($inputTextWidth - $checkboxSize)/2;
+
+          &:checked::after {
+            content: "";
+            transform: rotate(45deg);
+            display: block;
+            width: 4px;
+            height: 7px;
+            background-color: transparent;
+            border-color: black;
+            border-style: solid;
+            border-width: 0 1px 1px 0;
+            margin: 1px 0 0 4px;
+          }
+        }
+
+        .panel__item {
+          word-break: break-all;
+        }
+      }
+    }
+  }
 }
