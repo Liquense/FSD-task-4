@@ -23,12 +23,12 @@ export default class RangeView {
         }
 
         this.createElement();
-        requestAnimationFrame(this.updatePosition.bind(this));
+        requestAnimationFrame(this.refreshPosition.bind(this));
         //слушаем изменения хэндлеров, между которыми ренж
         if (this.startHandler)
-            addListenerAfter("updatePosition", this._boundUpdatePosition, this.startHandler);
+            addListenerAfter("refreshPosition", this._boundUpdatePosition, this.startHandler);
         if (this.endHandler)
-            addListenerAfter("updatePosition", this._boundUpdatePosition, this.endHandler);
+            addListenerAfter("refreshPosition", this._boundUpdatePosition, this.endHandler);
     }
 
     private createElement(): void {
@@ -41,8 +41,8 @@ export default class RangeView {
         this.parentElement.appendChild(body);
     }
 
-    private _boundUpdatePosition = this.updatePosition.bind(this);
-    public updatePosition() {
+    private _boundUpdatePosition = this.refreshPosition.bind(this);
+    public refreshPosition() {
         const firstCoordinate = this.startHandler ?
             this.startHandler.positionCoordinate - this.parentSlider.scaleStart :
             this.parentSlider.scaleBorderWidth;

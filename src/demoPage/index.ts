@@ -1,6 +1,7 @@
 import "../liquidSlider"
 import "../slider/slider.scss"
 import SliderPanel from "./sliderPanel";
+import "./index.scss"
 
 const sliderInitSelector = ".initSliderHere";
 const panelSelector = ".panel";
@@ -14,6 +15,7 @@ let slider = $(sliderInitSelector).liquidSlider({
     min: -50,
     max: 20,
     step: 1,
+    isVertical: true
 });
 slider.addView(panels[0]);
 panels[0].controller = slider;
@@ -46,7 +48,8 @@ let slider3 = $(sliderInitSelector).liquidSlider({
         {value: 6, isEnd: false}
     ],
     showTooltips: false,
-    withMarkup: true
+    withMarkup: true,
+    isVertical: false
 });
 slider3.addView(panels[2]);
 panels[2].controller = slider3;

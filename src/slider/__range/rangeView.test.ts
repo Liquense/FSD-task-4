@@ -156,18 +156,18 @@ describe("Инициализация", () => {
 
     test("Подписка на изменения хэндлеров", () => {
         const mockUpdatePosition = jest.fn();
-        const origUpdatePosition = RangeView.prototype.updatePosition;
+        const origUpdatePosition = RangeView.prototype.refreshPosition;
 
-        RangeView.prototype.updatePosition = mockUpdatePosition;
+        RangeView.prototype.refreshPosition = mockUpdatePosition;
         testRange = new RangeView(testSlider, document.body, firstHandler, secondHandler);
-        RangeView.prototype.updatePosition = origUpdatePosition;
+        RangeView.prototype.refreshPosition = origUpdatePosition;
 
         expect(mockUpdatePosition.mock.calls.length).toBe(0);
 
-        firstHandler["updatePosition"]();
+        firstHandler["refreshPosition"]();
         expect(mockUpdatePosition.mock.calls.length).toBe(1);
 
-        secondHandler["updatePosition"]();
+        secondHandler["refreshPosition"]();
         expect(mockUpdatePosition.mock.calls.length).toBe(2);
     });
 })

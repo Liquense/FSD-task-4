@@ -54,7 +54,7 @@ export default class Controller {
         this._views.push(newView);
 
         addListenerAfter("handlerPositionChanged", this._boundPassHandlerPositionChange, newView);
-        newView.setViewProps(this._element, this._parameters);
+        newView.passViewProps(this._element, this._parameters);
 
         this.passSliderData();
         this._passHandlersData(newView, this._parameters?.handlers);
@@ -112,10 +112,38 @@ export default class Controller {
             view.addHandler();
         });
     }
+
+    public setMin(newMin: number) {
+
+    }
+
+    public getMin() {
+
+    }
+
+    public setMax(newMax: number) {
+
+    }
+
+    public getMax() {
+
+    }
+
+    public setStep(newStep: number) {
+
+    }
+
+    public getStep() {
+
+    }
+
+    public setVertical(isVertical: boolean): void {
+        this._views
+    }
 }
 
 export interface SliderView {
-    setViewProps(element: HTMLElement, parameters?: object): void;
+    passViewProps(element: HTMLElement, parameters?: object): void;
 
     setSliderProps(sliderData: { step?: number }): void;
 

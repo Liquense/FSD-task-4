@@ -92,7 +92,7 @@ export default class HandlerView implements Listenable {
         this._tooltip = new Tooltip(this._element.wrap, this, {visibilityState: withTooltip});
         this.setValue(params.value);
 
-        requestAnimationFrame(this.updatePosition.bind(this));
+        requestAnimationFrame(this.refreshPosition.bind(this));
     }
 
     private createElement(parentElement: HTMLElement): void {
@@ -104,13 +104,10 @@ export default class HandlerView implements Listenable {
         this._element.body.setAttribute("tabindex", "-1");
 
         wrap.classList.add(`${this._defaultClass}Container`, orientationClass);
-        //addClasses(wrap, [`${this._defaultClass}Container`, orientationClass]);
         wrap.classList.add(...this._additionalClasses);
-        //addClasses(wrap, this._additionalClasses);
         parentElement.appendChild(wrap);
 
         body.classList.add(`${this._defaultClass}Body`, orientationClass);
-        //addClasses(body, [`${this._defaultClass}Body`, orientationClass]);
         wrap.appendChild(body);
     };
 
@@ -138,7 +135,7 @@ export default class HandlerView implements Listenable {
         return this.centerShift(shift);
     }
 
-    private updatePosition(): void {
+    public refreshPosition(): void {
         const offset = this.calculateAccurateOffset();
 
         this._element.wrap.style[this.ownerSlider.offsetDirection] = `${offset}px`;
@@ -148,7 +145,7 @@ export default class HandlerView implements Listenable {
     public setPosition(newPositionPart: number) {
         this._positionPart = newPositionPart;
         if (this._element)
-            this.updatePosition();
+            this.refreshPosition();
     }
 
     public setTooltipVisibility(stateToSet: boolean) {

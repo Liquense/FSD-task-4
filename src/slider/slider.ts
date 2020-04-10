@@ -84,6 +84,10 @@ export default class Slider implements Listenable {
     }
 
     private _step: number = 0.01; //относительное значение
+
+    private _min: number; //индексы первого и последнего значений
+    private _max: number;
+
     private _ranges: RangeView[] = [];
 
     public getScaleLength() {
@@ -122,23 +126,19 @@ export default class Slider implements Listenable {
         };
         let wrap = this._element.wrap;
         wrap.classList.add(defaultSliderClass, orientationClass);
-        //addClasses(wrap, [defaultSliderClass, orientationClass]);
         parentElement.replaceWith(wrap);
 
         let body = this._element.body;
-        body.addEventListener("mousedown", (event) => event.preventDefault()); //чтобы не возникало drag & drop
+        body.addEventListener("mousedown", (event) => event.preventDefault()); //чтобы не возникало drag-n-drop (с ondragstart не работает)
         body.classList.add(`${defaultSliderClass}__body`, orientationClass);
-        //addClasses(body, [`${defaultSliderClass}__body`, orientationClass]);
         wrap.appendChild(body);
 
         let scale = this._element.scale;
         scale.classList.add(`${defaultSliderClass}__scale`, orientationClass);
-        //addClasses(scale, [`${defaultSliderClass}__scale`, orientationClass]);
         body.appendChild(scale);
 
         const handlers = this._element.handlers;
         handlers.classList.add(`${defaultSliderClass}__handlers`, orientationClass);
-        //addClasses(handlers, [`${defaultSliderClass}__handlers`, orientationClass]);
         body.appendChild(handlers);
     };
 
@@ -326,12 +326,13 @@ export default class Slider implements Listenable {
         }
     }
 
+
     private _initMarkup() {
         this._markup = new MarkupView(this);
-        this.updateMarkup();
+        this._updateMarkup();
     }
 
-    private updateMarkup() {
+    private _updateMarkup() {
         this._markup.clearAllMarks();
 
         requestAnimationFrame(() => {
@@ -411,10 +412,45 @@ export default class Slider implements Listenable {
         })
     }
 
-    public update(data: { step?: number }) {
+    //обновление информации для отображения (для изменений после создания)
+    public update(
+        data:
+            {
+                min?: number, max?: number, step?: number,
+                isVertical?: boolean, tooltipsVisible?: boolean, withMarkup?: boolean
+            }
+    ) {
         if (Number.isFinite(data.step)) {
             this._step = data.step;
         }
+        if (Number.isFinite(data.min)) {
+            this._min = data.min;
+        }
+        if (Number.isFinite(data.max)) {
+            this._max = data.max;
+        }
+        if (data.tooltipsVisible !== undefined) {
+            this.setTooltipsVisibility(data.tooltipsVisible);
+        }
+        if (data.isVertical !== undefined) {
+            this.isVertical = data.isVertical;
+            this._refreshElements();
+        }
+        if (data.withMarkup !== undefined) {
+            this._updateMarkup();
+        }
+    }
+
+    private _refreshElements() {
+        this._updateMarkup();
+
+        this._ranges.forEach(range => {
+            range.refreshPosition();
+        });
+        
+        this._handlers.forEach(handler => {
+            handler.refreshPosition();
+        });
     }
 
     public addOnMouseDownListener(listener: Function) {

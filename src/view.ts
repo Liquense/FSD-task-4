@@ -9,12 +9,12 @@ export default class View implements Listenable, SliderView {
     private _slider: Slider;
 
     constructor(element: HTMLElement, parameters?: object) {
-        this.setViewProps(element, parameters);
-    }
-
-    public setViewProps(element: HTMLElement, parameters?: object) {
         this.element = element;
         this._slider = new Slider(this, parameters);
+    }
+
+    public passViewProps(element: HTMLElement, parameters?: { isVertical?: boolean, tooltipsVisible?: boolean  }) {
+        this._slider.update(parameters);
     };
 
     public handlerPositionChanged(
@@ -41,7 +41,7 @@ export default class View implements Listenable, SliderView {
         this._slider.createRanges();
     }
 
-    public setSliderProps(sliderData: { step?: number }) {
+    public setSliderProps(sliderData: {min?: number, max?: number, step?: number }) {
         this._slider.update(sliderData);
     }
 
