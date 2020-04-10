@@ -15,7 +15,7 @@ slider.getOrientationClass = jest.fn(() => {
 
 let handler = new HandlerView(null, {index: 0, positionPart: 0, value: "test"});
 handler.ownerSlider = slider;
-handler["_element"] = {body: document.body, wrap: null};
+handler["element"] = {body: document.body, wrap: null};
 
 
 beforeEach(() => {
@@ -44,7 +44,7 @@ describe("Создание экземпляра", () => {
     });
 
     test("Запуск функций для инициализации", () => {
-        new Tooltip(handler["_element"].body, handler);
+        new Tooltip(handler["element"].body, handler);
 
         expect(mockCreateElement).toBeCalled();
         expect(mockSetVisibility).toBeCalled();
@@ -52,12 +52,12 @@ describe("Создание экземпляра", () => {
     });
 
     test("Корректное заполнение свойств", () => {
-        let tooltip = new Tooltip(handler["_element"].body, handler);
+        let tooltip = new Tooltip(handler["element"].body, handler);
         expect(tooltip["_addClasses"]).toStrictEqual([]);
         expect(tooltip.value).toBe(undefined);
 
         mockSetVisibility.mock.calls = [];
-        tooltip = new Tooltip(handler["_element"].body, handler,
+        tooltip = new Tooltip(handler["element"].body, handler,
             {
                 additionalClasses: ["test0"],
                 visibilityState: false,
@@ -69,8 +69,8 @@ describe("Создание экземпляра", () => {
     });
 
     test("Создание элемента", () => {
-        let tooltip = new Tooltip(handler["_element"].body, handler);
-        expect(handler["_element"].body.innerHTML)
+        let tooltip = new Tooltip(handler["element"].body, handler);
+        expect(handler["element"].body.innerHTML)
             .toBe('<div class="liquidSlider__handlerTooltip defaultOrientClass">undefined</div>');
     });
 
@@ -91,7 +91,7 @@ describe("Функционал", () => {
         let tooltip: Tooltip;
 
         beforeAll(() => {
-            tooltip = new Tooltip(handler["_element"].body, handler);
+            tooltip = new Tooltip(handler["element"].body, handler);
         });
 
         test("Показать", () => {
@@ -108,7 +108,7 @@ describe("Функционал", () => {
     });
 
     test("Получение размера", () => {
-        let tooltip = new Tooltip(handler["_element"].body, handler);
+        let tooltip = new Tooltip(handler["element"].body, handler);
 
         slider.isVertical = false;
         expect(tooltip.getSize()).toBe(tooltip.element.getBoundingClientRect().width);
@@ -118,14 +118,14 @@ describe("Функционал", () => {
     });
 
     test("Добавление классов", () => {
-        let tooltip = new Tooltip(handler["_element"].body, handler);
+        let tooltip = new Tooltip(handler["element"].body, handler);
 
         tooltip.addClassesFromString("test1  test2 test3_anotherClass");
         expect(tooltip["_addClasses"]).toStrictEqual(["test1", "test2", "test3_anotherClass"]);
     });
 
     test("Установка значения", () => {
-        let tooltip = new Tooltip(handler["_element"].body, handler);
+        let tooltip = new Tooltip(handler["element"].body, handler);
 
         function testValueChange(testValue: any) {
             tooltip.value = testValue;

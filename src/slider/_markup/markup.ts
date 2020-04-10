@@ -3,7 +3,7 @@ import {defaultSliderClass} from "../../common";
 
 export default class MarkupView {
     private _marks: HTMLElement[] = [];
-    private _wrap: HTMLElement = undefined;
+    public wrap: HTMLElement = undefined;
     private _defaultClass = `${defaultSliderClass}__markup`;
 
     private getMarkThickness() {
@@ -24,17 +24,17 @@ export default class MarkupView {
     }
 
     private createWrap() {
-        this._wrap = document.createElement("div");
+        this.wrap = document.createElement("div");
 
-        this._wrap.classList.add(`${this._defaultClass}Wrap`, this.ownerSlider.getOrientationClass());
+        this.wrap.classList.add(`${this._defaultClass}Wrap`, this.ownerSlider.getOrientationClass());
 
-        this.ownerSlider.bodyElement.insertBefore(this._wrap, this.ownerSlider.handlersElement);
+        this.ownerSlider.bodyElement.insertBefore(this.wrap, this.ownerSlider.handlersElement);
     }
 
     private createMarkElement(): HTMLElement {
         let newMark = document.createElement("div");
         newMark.classList.add(this._defaultClass, this.ownerSlider.getOrientationClass());
-        this._wrap.appendChild(newMark);
+        this.wrap.appendChild(newMark);
 
         return newMark;
     }
@@ -53,7 +53,7 @@ export default class MarkupView {
 
     public clearAllMarks() {
         this._marks = [];
-        this._wrap.innerHTML = "";
+        this.wrap.innerHTML = "";
     }
 
     public addMark(relativePosition: number, relativeHandlerSize: number) {

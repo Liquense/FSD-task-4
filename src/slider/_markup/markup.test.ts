@@ -30,14 +30,14 @@ describe("Инициализация экземпляра разметки", fun
 describe("Функционал разметки", function () {
     beforeAll(() => {
         markup = new MarkupView(slider);
-        markup["_wrap"].outerHTML = "";
+        markup["wrap"].outerHTML = "";
     });
 
     test("Создание обертки на странице", () => {
         markup["createWrap"]();
         expect(
             slider.bodyElement.innerHTML
-                .includes(markup["_wrap"].outerHTML)
+                .includes(markup["wrap"].outerHTML)
         ).toBeTruthy();
     });
 
@@ -100,7 +100,7 @@ describe("Функционал разметки", function () {
             test("Создание элемента с правильным стилем", () => {
                 function expectOffsetStyle () {
                     markup.addMark(0.5, 0);
-                    expect(markup["_wrap"].innerHTML).toBe(
+                    expect(markup["wrap"].innerHTML).toBe(
                         `<div class="liquidSlider__markup ${slider.getOrientationClass()}" style="${slider.offsetDirection}: 50%;"></div>`
                     );
                 }
@@ -109,7 +109,7 @@ describe("Функционал разметки", function () {
                 expectOffsetStyle();
 
                 slider.isVertical = true;
-                markup["_wrap"].innerHTML = "";
+                markup["wrap"].innerHTML = "";
                 expectOffsetStyle();
             });
         })
@@ -124,6 +124,6 @@ describe("Функционал разметки", function () {
         markup.clearAllMarks();
 
         expect(markup["_marks"].length).toBe(0);
-        expect(markup["_wrap"].innerHTML).toBe("");
+        expect(markup["wrap"].innerHTML).toBe("");
     });
 });

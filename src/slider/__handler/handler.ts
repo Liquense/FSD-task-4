@@ -1,4 +1,4 @@
-import {calculateElementCenter, defaultSliderClass, Listenable, parseClassesString} from "../../common";
+import {calculateElementCenter, defaultSliderClass, Listenable} from "../../common";
 import Tooltip from "./__tooltip/tooltip";
 import Slider from "../slider";
 
@@ -9,18 +9,18 @@ export default class HandlerView implements Listenable {
     private _defaultClass = `${defaultSliderClass}__handler`;
 
     private _additionalClasses: string[] = [];
-    private readonly _tooltip: Tooltip;
+    public readonly tooltip: Tooltip;
 
     public setValue(value: any) {
-        this._tooltip.value = value;
+        this.tooltip.value = value;
     }
 
     get value(): any {
-        return this._tooltip.value;
+        return this.tooltip.value;
     }
 
     get positionCoordinate(): number {
-        return calculateElementCenter(this._element.body, this.ownerSlider.isVertical);
+        return calculateElementCenter(this.element.body, this.ownerSlider.isVertical);
     }
 
     private _positionPart: number;
@@ -29,25 +29,25 @@ export default class HandlerView implements Listenable {
     }
 
 
-    private _element: {
+    public element: {
         wrap: HTMLElement,
         body: HTMLElement,
     };
 
     get wrap(): HTMLElement {
-        return this._element.wrap;
+        return this.element.wrap;
     };
 
     get body(): HTMLElement {
-        return this._element.body;
+        return this.element.body;
     };
 
     get width(): number {
-        return this._element.body.getBoundingClientRect().width;
+        return this.element.body.getBoundingClientRect().width;
     }
 
     get height(): number {
-        return this._element.body.getBoundingClientRect().height;
+        return this.element.body.getBoundingClientRect().height;
     }
 
 
@@ -89,7 +89,7 @@ export default class HandlerView implements Listenable {
         this.createElement(ownerSlider.handlersElement);
 
         const withTooltip = params.withTooltip === undefined ? true : params.withTooltip;
-        this._tooltip = new Tooltip(this._element.wrap, this, {visibilityState: withTooltip});
+        this.tooltip = new Tooltip(this.element.wrap, this, {visibilityState: withTooltip});
         this.setValue(params.value);
 
         requestAnimationFrame(this.refreshPosition.bind(this));
@@ -100,8 +100,8 @@ export default class HandlerView implements Listenable {
         let body = document.createElement("div");
         const orientationClass = this.ownerSlider.getOrientationClass();
 
-        this._element = {wrap, body};
-        this._element.body.setAttribute("tabindex", "-1");
+        this.element = {wrap, body};
+        this.element.body.setAttribute("tabindex", "-1");
 
         wrap.classList.add(`${this._defaultClass}Container`, orientationClass);
         wrap.classList.add(...this._additionalClasses);
@@ -110,6 +110,7 @@ export default class HandlerView implements Listenable {
         body.classList.add(`${this._defaultClass}Body`, orientationClass);
         wrap.appendChild(body);
     };
+
 
     get size(): number {
         return this[this.ownerSlider.expandDimension];
@@ -122,7 +123,7 @@ export default class HandlerView implements Listenable {
     //добавляется смещение для правильного отображения хэндлера и тултипа, если тултип больше
     private centerShift(shift): number {
         let handlerSize = this.size;
-        let tooltipSize = this._tooltip.getSize();
+        let tooltipSize = this.tooltip.getSize();
 
         const tooltipExcess = Math.max(0, tooltipSize - handlerSize);
 
@@ -144,11 +145,11 @@ export default class HandlerView implements Listenable {
 
     public setPosition(newPositionPart: number) {
         this._positionPart = newPositionPart;
-        if (this._element)
+        if (this.element)
             this.refreshPosition();
     }
 
     public setTooltipVisibility(stateToSet: boolean) {
-        this._tooltip.setVisibility(stateToSet);
+        this.tooltip.setVisibility(stateToSet);
     }
 }
