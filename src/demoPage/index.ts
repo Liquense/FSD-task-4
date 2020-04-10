@@ -18,7 +18,7 @@ let slider = $(sliderInitSelector).liquidSlider({
     isVertical: true
 });
 slider.addView(panels[0]);
-panels[0].controller = slider;
+panels[0].boundController = slider;
 
 let slider2 = $(sliderInitSelector).liquidSlider({
     items: [
@@ -38,7 +38,7 @@ let slider2 = $(sliderInitSelector).liquidSlider({
     isVertical: true,
 });
 slider2.addView(panels[1]);
-panels[1].controller = slider2;
+panels[1].boundController = slider2;
 
 let slider3 = $(sliderInitSelector).liquidSlider({
     handlers: [
@@ -52,4 +52,4 @@ let slider3 = $(sliderInitSelector).liquidSlider({
     isVertical: false
 });
 slider3.addView(panels[2]);
-panels[2].controller = slider3;
+panels[2].boundController = slider3;
