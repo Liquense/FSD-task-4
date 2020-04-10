@@ -1,17 +1,17 @@
 body > div {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
   align-items: center;
-  justify-items: center;
 }
 
 .wrap {
+  margin-bottom: 30px;
   height: fit-content;
   border: solid 1px #333333;
   border-radius: 10px;
-  padding: 25px;
+  padding: 15px 20px 15px 15px;
   width: fit-content;
-  margin: 20px;
   display: flex;
   align-items: center;
 
@@ -37,75 +37,78 @@ body > div {
     }
   }
 
-  .panel {
-    .panel__body {
-      display: grid;
-      row-gap: 15px;
-      width: 500px;
+  .panel__body {
+    display: grid;
+    row-gap: 15px;
+    width: 500px;
 
-      .panel__valueWrap {
-        border-top: dashed 1px black;
-        padding-top: 10px;
+    .panel__valueWrap {
+      border-top: dashed 1px black;
+      padding-top: 10px;
+    }
+
+    > div {
+      display: grid;
+      grid-template-columns: minmax(200px, auto) 1fr;
+      column-gap: 10px;
+      row-gap: 10px;
+
+      :first-child, :nth-child(3) {
+        align-self: center;
+        justify-self: end;
       }
 
-      > div {
-        display: grid;
-        grid-template-columns: minmax(200px, auto) 1fr;
-        column-gap: 10px;
-        row-gap: 5px;
+      :nth-child(2) {
+        justify-self: start;
+      }
 
-        :first-child, :nth-child(3) {
-          justify-self: end;
+      $inputTextWidth: 80px;
+
+      input {
+        width: $inputTextWidth;
+        border-radius: 10px;
+        padding: 3px 10px;
+        border: solid 1px #999999;
+        outline: none;
+        text-align: center;
+        vertical-align: baseline;
+
+        &:hover {
+          border: solid 1px #111111;
         }
+      }
 
-        :nth-child(2) {
-          justify-self: start;
+      input[type="checkbox"] {
+        -webkit-appearance: none;
+        padding: 0;
+        margin: 0;
+        border-radius: 4px;
+        $checkboxSize: 15px;
+        width: $checkboxSize;
+        height: $checkboxSize;
+
+        margin-left: ($inputTextWidth - $checkboxSize)/2;
+
+        &:checked::after {
+          content: "";
+          transform: rotate(45deg);
+          display: block;
+          width: 4px;
+          height: 7px;
+          background-color: transparent;
+          border-color: black;
+          border-style: solid;
+          border-width: 0 1px 1px 0;
+          margin: 1px 0 0 4px;
         }
+      }
 
-        $inputTextWidth: 80px;
-
-        input {
-          width: $inputTextWidth;
-          border-radius: 10px;
-          padding: 3px 10px;
-          border: solid 1px #999999;
-          outline: none;
-          text-align: center;
-          vertical-align: baseline;
-
-          &:hover {
-            border: solid 1px #111111;
-          }
-        }
-
-        input[type="checkbox"] {
-          -webkit-appearance: none;
-          padding: 0;
-          margin: 0;
-          border-radius: 4px;
-          $checkboxSize: 15px;
-          width: $checkboxSize;
-          height: $checkboxSize;
-
-          margin-left: ($inputTextWidth - $checkboxSize)/2;
-
-          &:checked::after {
-            content: "";
-            transform: rotate(45deg);
-            display: block;
-            width: 4px;
-            height: 7px;
-            background-color: transparent;
-            border-color: black;
-            border-style: solid;
-            border-width: 0 1px 1px 0;
-            margin: 1px 0 0 4px;
-          }
-        }
-
-        .panel__item {
-          word-break: break-all;
-        }
+      .panel__item {
+        border-radius: 5px;
+        padding: 5px;
+        border: solid 1px #eeeeee;
+        color: #999999;
+        word-break: break-all;
       }
     }
   }

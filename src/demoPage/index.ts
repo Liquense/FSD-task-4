@@ -53,3 +53,7 @@ let slider3 = $(sliderInitSelector).liquidSlider({
 });
 slider3.addView(panels[2]);
 panels[2].boundController = slider3;
+
+let slider4 = $(sliderInitSelector).liquidSlider({});
+slider4.addView(panels[3]);
+panels[3].boundController = slider4;
