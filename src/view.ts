@@ -13,7 +13,7 @@ export default class View implements Listenable, SliderView {
         this._slider = new Slider(this, parameters);
     }
 
-    public passViewProps(element: HTMLElement, parameters?: { isVertical?: boolean, tooltipsVisible?: boolean  }) {
+    public passViewProps(parameters?: { isVertical?: boolean, tooltipsVisible?: boolean  }) {
         this._slider.update(parameters);
     };
 

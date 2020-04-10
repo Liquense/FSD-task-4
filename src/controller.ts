@@ -54,7 +54,7 @@ export default class Controller {
         this._views.push(newView);
 
         addListenerAfter("handlerPositionChanged", this._boundPassHandlerPositionChange, newView);
-        newView.passViewProps(this._element, this._parameters);
+        newView.passViewProps(this._parameters);
 
         this.passSliderData();
         this._passHandlersData(newView, this._parameters?.handlers);
@@ -138,12 +138,14 @@ export default class Controller {
     }
 
     public setVertical(isVertical: boolean): void {
-        this._views
+        this._views.forEach(view => {
+            view.passViewProps({ isVertical: isVertical});
+        })
     }
 }
 
 export interface SliderView {
-    passViewProps(element: HTMLElement, parameters?: object): void;
+    passViewProps(parameters?: object): void;
 
     setSliderProps(sliderData: { step?: number }): void;
 
