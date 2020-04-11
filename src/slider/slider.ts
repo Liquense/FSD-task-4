@@ -1,6 +1,6 @@
 import HandlerView from "./__handler/handler";
 import RangeView from "./__range/rangeView";
-import {addListenerAfter, clamp, defaultSliderClass, Listenable, standardize} from "../common";
+import {addListenerAfter, clamp, defaultSliderClass, Listenable, roundToDecimal, standardize} from "../common";
 import View from "../view";
 import MarkupView from "./_markup/markup";
 
@@ -375,7 +375,7 @@ export default class Slider implements Listenable {
         this._markup.clearAllMarks();
 
         requestAnimationFrame(() => {
-            for (let i = 0; i < 1; i += this._step) {
+            for (let i = 0; i <= 1; i = roundToDecimal(i + this._step, 5)) { //i округляется, чтобы не всплывало ошибок деления
                 const standardPosition = standardize(i, {min: 0, max: 1, step: this._step});
                 const shrinkPosition = standardPosition * this.shrinkCoeff;
                 this._markup.addMark(shrinkPosition, this.calcRelativeHandlerSize());
@@ -461,26 +461,22 @@ export default class Slider implements Listenable {
     ) {
         if (Number.isFinite(data.step)) {
             this._step = data.step;
-            this._updateMarkup();
         }
         if (Number.isFinite(data.min)) {
             this._min = data.min;
-            this._updateMarkup();
         }
         if (Number.isFinite(data.max)) {
             this._max = data.max;
-            this._updateMarkup();
         }
         if (data.tooltipsVisible !== undefined) {
             this.setTooltipsVisibility(data.tooltipsVisible);
         }
         if (data.isVertical !== undefined) {
             this.setOrientation(data.isVertical);
-            this._refreshElements();
         }
         if (data.withMarkup !== undefined) {
-            this._updateMarkup();
         }
+        this._refreshElements();
     }
 
     private _refreshElements() {
