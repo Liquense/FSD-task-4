@@ -81,7 +81,17 @@ export function standardize(value: number, parameters: { min: number, max: numbe
     }
 
     resultValue = clamp(resultValue, min, max);
-    return Math.round((resultValue + Number.EPSILON) * 10000) / 10000;
+    return roundToDecimal(resultValue, 4);
+}
+
+export function roundToDecimal(numToRound: number, decimalsCount: number) {
+    let multiplier = 1;
+
+    for (let i = 0; i < decimalsCount; i++) {
+        multiplier *= 10;
+    }
+
+    return  Math.round((numToRound + Number.EPSILON) * multiplier) / multiplier;
 }
 
 export function calculateElementCenter(DOMElement: Element, isVertical: boolean): number {
