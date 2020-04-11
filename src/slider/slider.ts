@@ -459,12 +459,15 @@ export default class Slider implements Listenable {
     ) {
         if (Number.isFinite(data.step)) {
             this._step = data.step;
+            this._updateMarkup();
         }
         if (Number.isFinite(data.min)) {
             this._min = data.min;
+            this._updateMarkup();
         }
         if (Number.isFinite(data.max)) {
             this._max = data.max;
+            this._updateMarkup();
         }
         if (data.tooltipsVisible !== undefined) {
             this.setTooltipsVisibility(data.tooltipsVisible);
@@ -479,7 +482,6 @@ export default class Slider implements Listenable {
     }
 
     private _refreshElements() {
-
         this._updateMarkup();
 
         this._ranges.forEach(range => {

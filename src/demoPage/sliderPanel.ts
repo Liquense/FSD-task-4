@@ -6,7 +6,8 @@ export default class SliderPanel implements Listenable, SliderView {
 
     public boundController: Controller;
     private _isVertical = false;
-    private _handlers: { index: number, positionPart: number, item: any }[] = [];
+    private _tooltipsAreVisible = true;
+    private _handlers: { index: number, positionPart: number, item: any, itemIndex: number }[] = [];
 
     static readonly classPrefix = "panel__";
 
@@ -28,21 +29,54 @@ export default class SliderPanel implements Listenable, SliderView {
         this._elements.body.classList.add(`${SliderPanel.classPrefix}body`);
 
         this._createPropertyElements(`Шаг`, `step`);
+        this._elements.stepInput.addEventListener("change", this._boundHandleStepInputChange);
 
         this._createPropertyElements(`Минимум`, `min`);
+        this._elements.minInput.addEventListener("change", this._boundHandleMinInputChange);
 
         this._createPropertyElements(`Максимум`, `max`);
+        this._elements.maxInput.addEventListener("change", this._boundHandleMaxInputChange);
 
         this._createPropertyElements(`Вертикальный?`, `orientation`, true);
         this._elements.orientationInput.addEventListener("change", this._boundHandleOrientationInputChange);
 
         this._createPropertyElements(`Тултипы видны?`, `tooltipsVisibility`, true);
+        this._elements.tooltipsVisibilityInput.addEventListener("change", this._boundHandleTooltipVisibilityInputChange);
     }
 
     private _boundHandleOrientationInputChange = this._handleOrientationInputChange.bind(this);
 
     private _handleOrientationInputChange(event: Event) {
         this.setOrientation((event.target as HTMLInputElement).checked);
+    }
+
+    private _boundHandleStepInputChange = this._handleStepInputChange.bind(this);
+
+    private _handleStepInputChange(event: Event) {
+        const stepInput = (this._elements.stepInput as HTMLInputElement);
+        this.boundController.setStep(Number.parseFloat(stepInput.value));
+    }
+
+    private _boundHandleMinInputChange = this._handleMinInputChange.bind(this);
+
+    private _handleMinInputChange(event: Event) {
+        const minInput = (this._elements.minInput as HTMLInputElement);
+        this.boundController.setMin(Number.parseFloat(minInput.value));
+    }
+
+    private _boundHandleTooltipVisibilityInputChange = this._handleTooltipVisibilityInputChange.bind(this);
+
+    private _handleTooltipVisibilityInputChange(event: Event) {
+        const tooltipVisibilityInput = (this._elements.tooltipsVisibilityInput as HTMLInputElement);
+        this._tooltipsAreVisible = tooltipVisibilityInput.checked;
+        this.boundController.setTooltipVisibility(tooltipVisibilityInput.checked);
+    }
+
+    private _boundHandleMaxInputChange = this._handleMaxInputChange.bind(this);
+
+    private _handleMaxInputChange(event: Event) {
+        const maxInput = (this._elements.maxInput as HTMLInputElement);
+        this.boundController.setMax(Number.parseFloat(maxInput.value));
     }
 
     private static _createElement(elementName: string, classPostfix: string, wrap?: HTMLElement): HTMLElement {
@@ -158,13 +192,16 @@ export default class SliderPanel implements Listenable, SliderView {
             isVertical?: boolean,
             showTooltips?: boolean,
             isReversed?: boolean,
-            isRange?: boolean,
             withMarkup?: boolean,
         }
     ) {
         if (parameters?.isVertical !== undefined) {
             this._isVertical = parameters.isVertical;
         }
+
+        (this._elements.tooltipsVisibilityInput as HTMLInputElement).checked =
+            parameters?.showTooltips === undefined ? this._tooltipsAreVisible : parameters.showTooltips;
+
         this._refreshElements();
     };
 
@@ -191,14 +228,15 @@ export default class SliderPanel implements Listenable, SliderView {
         this._refreshElements();
     };
 
-    public initHandlers(handlersData: { handlersArray: { index: number, positionPart: number, value: any }[] }) {
+    public initHandlers(handlersData: { handlersArray: { index: number, positionPart: number, value: any, valueIndex: number }[] }) {
         this._handlers = [];
 
         handlersData.handlersArray.forEach(handler => {
             this._handlers.push({
                 index: handler.index,
                 positionPart: handler.positionPart,
-                item: handler.value
+                item: handler.value,
+                itemIndex: handler.valueIndex
             });
             this._createHandlerSection(handler.index);
         });
@@ -206,7 +244,18 @@ export default class SliderPanel implements Listenable, SliderView {
         this._refreshElements();
     };
 
-    public setSliderProps() {
-        return;
+    public setSliderProps(props: { absoluteStep: number, min: number, max: number }) {
+        const maxInput = (this._elements.maxInput as HTMLInputElement);
+        if (!maxInput.value) {
+            maxInput.value = props.max.toFixed(2);
+        }
+        const minInput = (this._elements.minInput as HTMLInputElement);
+        if (!minInput.value) {
+            minInput.value = props.min.toFixed(2);
+        }
+        const stepInput = (this._elements.stepInput as HTMLInputElement);
+        if (!stepInput.value) {
+            stepInput.value = props.absoluteStep.toFixed(2);
+        }
     };
 }

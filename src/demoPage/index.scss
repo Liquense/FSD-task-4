@@ -39,6 +39,16 @@ body > div {
     }
   }
 
+  .liquidSlider {
+    .liquidSlider__body {
+      .liquidSlider__scale {
+        .liquidSlider__range {
+          background-color: #a4a4a4;
+        }
+      }
+    }
+  }
+
   .panel__body {
     display: grid;
     row-gap: 15px;

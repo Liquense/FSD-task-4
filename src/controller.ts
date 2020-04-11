@@ -114,27 +114,24 @@ export default class Controller {
     }
 
     public setMin(newMin: number) {
-
-    }
-
-    public getMin() {
-
+        this._model.setMinMax({min: newMin})
+        this.passSliderData();
     }
 
     public setMax(newMax: number) {
-
-    }
-
-    public getMax() {
-
+        this._model.setMinMax({max: newMax})
+        this.passSliderData();
     }
 
     public setStep(newStep: number) {
-
+        this._model.setStep({step: newStep});
+        this.passSliderData();
     }
 
-    public getStep() {
-
+    public setTooltipVisibility(newState: boolean) {
+        this._views.forEach(view => {
+            view.passViewProps({tooltipsVisible: newState});
+        });
     }
 
     public setVertical(isVertical: boolean): void {
@@ -147,7 +144,7 @@ export default class Controller {
 export interface SliderView {
     passViewProps(parameters?: object): void;
 
-    setSliderProps(sliderData: { step?: number }): void;
+    setSliderProps(sliderData: { step?: number, absoluteStep: number, min: number, max: number }): void;
 
     handlerPositionChanged: Function;
 
@@ -159,6 +156,7 @@ export interface SliderView {
             index: number,
             positionPart: number,
             value: any,
+            valueIndex: number
         }[]
     }): void;
 

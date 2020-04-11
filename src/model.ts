@@ -2,7 +2,7 @@ import {Listenable, standardize} from "./common";
 import HandlerModel from "./handlerModel";
 
 export default class Model implements Listenable {
-    listenDictionary: {[key: string] : { func: Function, listeners: Function[] }};
+    listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };
     private _items: Array<any>;
 
     private _occupiedItems: { [key: number]: number } = {};
@@ -46,8 +46,8 @@ export default class Model implements Listenable {
                     }[],
                 }
     ) {
-        this._setMinMax(parameters);
-        this._setStep(parameters);
+        this.setMinMax(parameters);
+        this.setStep(parameters);
         this.setItems(parameters?.items);
 
         if (parameters?.handlers?.length) {
@@ -60,11 +60,17 @@ export default class Model implements Listenable {
         }
     }
 
+    private updateHandlersPositions() {
+        this._handlers.forEach(handler => {
+            handler.setItemIndex(standardize(handler.itemIndex, this.standardizeParams));
+        });
+    }
+
     public setItems(items: any[]) {
         if (items?.length) {
             //если передаётся массив своих значений
             this._items = items;
-            this.setItemsMinMax(items.length);
+            this._initItemsMinMax(items.length);
         } else {
             this._items = null;
         }
@@ -76,7 +82,7 @@ export default class Model implements Listenable {
      *      @param data.items - пользовательские значения. Если переданы - шаг должен быть целым числом, поскольку работа будет с массивом.
      * @private
      */
-    private _setStep(data?: { step?: number, items?: Array<any> }) {
+    public setStep(data?: { step?: number, items?: Array<any> }) {
         if (!data?.step)
             return;
 
@@ -85,31 +91,28 @@ export default class Model implements Listenable {
         } else {
             this._step = data.step;
         }
-    }
 
+        this.updateHandlersPositions();
+    }
 
     /**
      * Устанавливает минимальное и максимальное значение слайдера.
-     * Если передаются items, то устанавливаются начальный  конечный индексы массива.
-     * Иначе назначаются переданные минимум и максимум.
      * Если ничего не передано, то остаются прежние значения.
      * @param data
      * @private
      */
-    private _setMinMax(data?: { min?: number, max?: number, items?: Array<any> }) {
-        if (data?.items?.length) {
-            this.setItemsMinMax(data.items.length);
-        } else {
-            if (data?.min !== undefined) {
-                this._min = data.min;
-            }
-            if (data?.max !== undefined) {
-                this._max = data.max;
-            }
+    public setMinMax(data?: { min?: number, max?: number }) {
+        if (data?.min !== undefined) {
+            this._min = data.min;
         }
+        if (data?.max !== undefined) {
+            this._max = data.max;
+        }
+
+        this.updateHandlersPositions();
     }
 
-    private setItemsMinMax(itemsCount: number) {
+    private _initItemsMinMax(itemsCount: number) {
         this._min = 0;
         this._max = itemsCount - 1;
     }
@@ -186,12 +189,15 @@ export default class Model implements Listenable {
     //для передачи контролеру
     public getHandlersData(): {
         customHandlers: boolean,
-        handlersArray: { index: number, value: any, positionPart: number }[]
+        handlersArray: { index: number, value: any, positionPart: number, valueIndex: number }[]
     } {
         return {
             customHandlers: this.withCustomHandlers,
             handlersArray: this._handlers.map(
-                handler => ({index: handler.handlerIndex, value: handler.value, positionPart: handler.position})
+                handler => ({
+                    index: handler.handlerIndex, value: handler.value,
+                    positionPart: handler.position, valueIndex: handler.itemIndex
+                })
             )
         };
     }
@@ -199,6 +205,9 @@ export default class Model implements Listenable {
     public getSliderData() {
         return {
             step: this._step / this.range,
+            absoluteStep: this._step,
+            min: this._min,
+            max: this._max,
         };
     }
 
