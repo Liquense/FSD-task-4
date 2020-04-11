@@ -265,9 +265,11 @@ export default class Slider implements Listenable {
 
     //возвращает позицию мыши относительно начала шкалы в стндартизированном виде
     public calculateMouseRelativePosition(mouseEvent: MouseEvent): number {
-        return this.isVertical ?
-            clamp((mouseEvent.pageY - this.scaleStart) / this.getScaleLength(), 0, 1) :
-            clamp((mouseEvent.pageX - this.scaleStart) / this.getScaleLength(), 0, 1);
+        const mouseCoordinate = this.isVertical ? mouseEvent.pageY : mouseEvent.pageX;
+        const initialOffset = this.handlerSize / 2;
+        const scaledCoordinate = (mouseCoordinate - this.scaleStart - initialOffset) / this.shrinkCoeff;
+
+        return clamp((scaledCoordinate) / this.getScaleLength(), 0, 1);
     }
 
     private getClosestToMouseHandler(mouseX: number, mouseY: number): HandlerView {
