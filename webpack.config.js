@@ -71,8 +71,8 @@ module.exports = {
 				loader: "html-loader",
 			},
 			{
-				test: /(?!.test)\.ts(x?)$/,
-				exclude: /node_modules/,
+				test: /\.ts(x?)$/,
+				exclude: [/node_modules/, /(\.(test)?)\.ts(x?)/],
 				loader: "ts-loader",
 			},
 			{

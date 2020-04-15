@@ -14,15 +14,17 @@ export default class SliderPanel implements Listenable, SliderView {
 
     private readonly _elements: {
         wrap: HTMLElement, body: HTMLElement,
-        handlerInputs: { index: number, positionElement: HTMLElement, itemIndexElement: HTMLElement }[], maxInput: HTMLElement, minInput: HTMLElement,
-        stepInput: HTMLElement, orientationInput: HTMLElement, tooltipsVisibilityInput: HTMLElement, markupVisibilityInput: HTMLElement
+        handlerInputs: { index: number, positionElement: HTMLInputElement, itemIndexElement: HTMLInputElement }[], maxInput: HTMLInputElement, minInput: HTMLInputElement,
+        stepInput: HTMLInputElement, orientationInput: HTMLInputElement, tooltipsVisibilityInput: HTMLInputElement, markupVisibilityInput: HTMLInputElement,
+        newHandlerElements: {itemIndexElement: HTMLInputElement, createButton: HTMLButtonElement}
     };
 
     constructor(parentElement: HTMLElement) {
         this._elements = {
             wrap: undefined, body: undefined,
             handlerInputs: [], maxInput: undefined, minInput: undefined, stepInput: undefined,
-            orientationInput: undefined, tooltipsVisibilityInput: undefined, markupVisibilityInput: undefined
+            orientationInput: undefined, tooltipsVisibilityInput: undefined, markupVisibilityInput: undefined,
+            newHandlerElements: undefined
         };
         this._elements.wrap = parentElement.parentElement;
 
@@ -46,7 +48,16 @@ export default class SliderPanel implements Listenable, SliderView {
 
         this._createPropertyElements(`Разметка видна?`, `markupVisibility`, true);
         this._elements.markupVisibilityInput.addEventListener("change", this._boundMarkupInputChange);
+
+        this._createNewHandlerSection();
     }
+
+    private _boundNewHandlerElementsClick = this._newHandlerElementsClick.bind(this);
+
+    private _newHandlerElementsClick() {
+        const itemIndex = Number.parseFloat(this._elements.newHandlerElements.itemIndexElement.value);
+        this.boundController.addHandler(itemIndex, true);
+    };
 
     private _boundMarkupInputChange = this._handleMarkupInputChange.bind(this);
 
@@ -65,21 +76,21 @@ export default class SliderPanel implements Listenable, SliderView {
     private _boundHandleStepInputChange = this._handleStepInputChange.bind(this);
 
     private _handleStepInputChange(event: Event) {
-        const stepInput = (this._elements.stepInput as HTMLInputElement);
+        const stepInput = this._elements.stepInput;
         this.boundController.setStep(Number.parseFloat(stepInput.value));
     }
 
     private _boundHandleMinInputChange = this._handleMinInputChange.bind(this);
 
     private _handleMinInputChange(event: Event) {
-        const minInput = (this._elements.minInput as HTMLInputElement);
+        const minInput = this._elements.minInput;
         this.boundController.setMin(Number.parseFloat(minInput.value));
     }
 
     private _boundHandleTooltipVisibilityInputChange = this._handleTooltipVisibilityInputChange.bind(this);
 
     private _handleTooltipVisibilityInputChange(event: Event) {
-        const tooltipVisibilityInput = (this._elements.tooltipsVisibilityInput as HTMLInputElement);
+        const tooltipVisibilityInput = this._elements.tooltipsVisibilityInput;
         this._tooltipsAreVisible = tooltipVisibilityInput.checked;
         this.boundController.setTooltipVisibility(tooltipVisibilityInput.checked);
     }
@@ -87,8 +98,25 @@ export default class SliderPanel implements Listenable, SliderView {
     private _boundHandleMaxInputChange = this._handleMaxInputChange.bind(this);
 
     private _handleMaxInputChange(event: Event) {
-        const maxInput = (this._elements.maxInput as HTMLInputElement);
+        const maxInput = this._elements.maxInput;
         this.boundController.setMax(Number.parseFloat(maxInput.value));
+    }
+
+    private _createNewHandlerSection() {
+        const baseClass = `newHandler`;
+
+        const newHandlerWrap = this._createWrap("newHandler");
+
+        SliderPanel._createLabel("Значение", baseClass, newHandlerWrap);
+        const newHandlerInput = SliderPanel._createInput(baseClass, newHandlerWrap);
+
+        const newHandlerButton = document.createElement(`button`);
+        newHandlerButton.innerText = `Создать новый хэндлер`;
+        newHandlerButton.classList.add(`${SliderPanel.classPrefix}newHandlerButton`);
+        newHandlerButton.addEventListener("click", this._boundNewHandlerElementsClick);
+        newHandlerWrap.append(newHandlerButton);
+
+        this._elements.newHandlerElements = {itemIndexElement: newHandlerInput, createButton: newHandlerButton};
     }
 
     private static _createElement(elementName: string, classPostfix: string, wrap?: HTMLElement): HTMLElement {
@@ -111,16 +139,17 @@ export default class SliderPanel implements Listenable, SliderView {
         return propLabel;
     };
 
-    private static _createInput(elementClassName: string, wrap?: HTMLElement, isCheckbox?: boolean): HTMLElement {
+    private static _createInput(elementClassName: string, wrap?: HTMLElement, isCheckbox?: boolean): HTMLInputElement {
         const propInput = SliderPanel._createElement("input", elementClassName + "Input", wrap);
 
         if (isCheckbox) propInput.setAttribute("type", "checkbox");
 
-        return propInput;
+        return (propInput as HTMLInputElement);
     };
 
     /**
      * Создаёт элементы для свойств (обёртка, лейбл и инпут) и вставляет в обёртку панели.
+     * Возвращает обёртку, если в неё нужно добавить ещё что-то
      * @param labelText - текст, который будет записан в лейбле
      * @param elementName - имя элемента для указания класса (step, value и т.д.)
      * @param isCheckbox если true, то инпут будет чекбоксом
@@ -132,6 +161,8 @@ export default class SliderPanel implements Listenable, SliderView {
         SliderPanel._createLabel(labelText, elementName, propWrap);
 
         this._elements[elementName + `Input`] = SliderPanel._createInput(elementName, propWrap, isCheckbox);
+
+        return propWrap;
     }
 
     /**
@@ -141,11 +172,11 @@ export default class SliderPanel implements Listenable, SliderView {
      */
     private _createHandlerSection(handlerIndex: number) {
         const valueWrap = this._createWrap("value");
-        SliderPanel._createLabel(`Текущее положение ${handlerIndex + 1} `, `value`, valueWrap);
-        const positionInput = SliderPanel._createInput(`value`, valueWrap);
+        SliderPanel._createLabel(`Положение ${handlerIndex + 1} `, `value`, valueWrap);
+        const positionInput = SliderPanel._createInput(`value`, valueWrap) as HTMLInputElement;
 
-        SliderPanel._createLabel(`Текущее значение ${handlerIndex + 1} `, `item`, valueWrap);
-        const itemIndexInput = SliderPanel._createElement(`div`, `item`, valueWrap);
+        SliderPanel._createLabel(`Значение ${handlerIndex + 1} `, `item`, valueWrap);
+        const itemIndexInput = SliderPanel._createElement(`div`, `item`, valueWrap) as HTMLInputElement;
 
 
         this._elements.handlerInputs.push({
@@ -224,8 +255,19 @@ export default class SliderPanel implements Listenable, SliderView {
         this._refreshElements();
     };
 
-    public addHandler() {
+    public addHandler(handlerParams: { positionPart: number, value: any, handlerIndex: number, itemIndex: number }) {
+        this._handlers.push({
+            index: handlerParams.handlerIndex,
+            positionPart: handlerParams.positionPart,
+            item: handlerParams.value,
+            itemIndex: handlerParams.itemIndex
+        });
+        this._createHandlerSection(handlerParams.handlerIndex);
+        this._refreshElements();
     };
+
+    public removeHandler() {
+    }
 
     public handlerPositionChanged(event: Event): { index: number, position: number } {
         const valueInput = (event.target as HTMLInputElement);
@@ -241,6 +283,8 @@ export default class SliderPanel implements Listenable, SliderView {
         let handler = this._handlers.find((handler) => {
             return handler.index === data.index;
         });
+        if (!handler)
+            return;
 
         handler.positionPart = data.relativeValue;
         handler.item = data.item;

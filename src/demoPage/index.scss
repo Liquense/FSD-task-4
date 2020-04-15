@@ -54,14 +54,9 @@ body > div {
     row-gap: 15px;
     width: 500px;
 
-    .panel__valueWrap {
-      border-top: dashed 1px black;
-      padding-top: 10px;
-    }
-
     > div {
       display: grid;
-      grid-template-columns: minmax(200px, auto) 1fr;
+      grid-template-columns: 1fr 1fr;
       column-gap: 10px;
       row-gap: 10px;
 
@@ -126,7 +121,47 @@ body > div {
         border: solid 1px #eeeeee;
         color: #999999;
         word-break: break-all;
+        text-align: center;
       }
+    }
+
+    .panel__valueWrap {
+      grid-template-columns: 100px max-content 100px 1fr;
+      border-top: dashed 1px black;
+      padding-top: 10px;
+    }
+
+    .panel__newHandlerWrap {
+      grid-template-columns: 1fr 1fr 1fr;
+      border: dashed 1px black;
+      border-radius: 5px;
+      padding: $slider-panelPadding $slider-panelPadding*2;
+      order: 1;
+      text-align: center;
+      align-items: center;
+
+      .panel__newHandlerButton {
+        width: min-content;
+        justify-self: center;
+        border-radius: 10px;
+        border: solid 1px black;
+        background-color: #ffffff;
+        outline: none;
+
+        &:hover {
+          background-color: #eeeeee;
+        }
+
+        &:active {
+          border: solid 1px white;
+          color: white;
+          background-color: black;
+        }
+      }
+    }
+
+    .panel__valueWrap {
+
     }
   }
 }

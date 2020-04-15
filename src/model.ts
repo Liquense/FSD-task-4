@@ -139,6 +139,23 @@ export default class Model implements Listenable {
         this._handlers = handlersItemIndexes.reduce(reducer, []);
     }
 
+    public addHandler(itemIndex: number): { positionPart: number, value: any, handlerIndex: number, itemIndex: number } {
+        const indexes = this._handlers.map(handler => handler.handlerIndex);
+        const newHandlerIndex = Math.max(...indexes) + 1;
+
+        const newHandler = this._createHandler(itemIndex, newHandlerIndex);
+        if (newHandler) {
+            this._handlers.push(newHandler);
+            return {
+                positionPart: newHandler.position,
+                value: newHandler.value,
+                handlerIndex: newHandler.handlerIndex,
+                itemIndex: newHandler.itemIndex
+            }
+        } else
+            return undefined;
+    }
+
     public calculateValue(valueOrIndex: number): any {
         return this._items ? this._items[valueOrIndex] : valueOrIndex;
     }

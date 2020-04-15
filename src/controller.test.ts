@@ -129,7 +129,7 @@ describe("Функции", () => {
 
     test("Добавление хэндлера в вид", () => {
         mockView.mockClear();
-        testController["_addHandlerView"]();
+        //testController["_addHandlerView"]();
 
         expect(testController[viewsParamName][0].addHandler).toBeCalled();
     });

@@ -363,6 +363,7 @@ export default class Slider implements Listenable {
     public createRanges(): void {
         let sortedHandlers = this.getSortedHandlersByPositionPart();
         let freeHandlers = Slider.getFreeHandlers(sortedHandlers);
+        console.log(freeHandlers);
 
         for (let i = 0; i < freeHandlers.length; i++) {
             const handler = freeHandlers[i];
@@ -425,11 +426,9 @@ export default class Slider implements Listenable {
             }[]
         }) {
         this._clearHandlers();
+
         this._handlers = handlersData.handlersArray.map((handler, index, handlers) => {
-            let newHandler = new HandlerView(
-                this,
-                {...handler, withTooltip: this._tooltipsAreVisible}
-            );
+            let newHandler = new HandlerView(this, {...handler, withTooltip: this._tooltipsAreVisible});
 
             if (!handlersData.customHandlers) {
                 if (handlers.length === 2) {
@@ -446,8 +445,29 @@ export default class Slider implements Listenable {
         });
 
         this.setHandlerSize();
-
         this._initMarkup();
+    }
+
+    public addHandler(handlerParams: { positionPart: number, value: any, handlerIndex: number, isEnd: boolean }) {
+        if (!handlerParams)
+            return;
+
+        const newHandler = new HandlerView(
+            this,
+            {
+                index: handlerParams.handlerIndex,
+                value: handlerParams.value, positionPart: handlerParams.positionPart,
+                isEnd: handlerParams.isEnd,
+                withTooltip: this._tooltipsAreVisible
+            }
+        );
+        newHandler.inRange = false;
+
+        this._handlers.push(newHandler);
+    }
+
+    public removeHandler() {
+
     }
 
     private _clearHandlers() {
@@ -473,6 +493,8 @@ export default class Slider implements Listenable {
     public setHandlersData(handlers: { index: number, item: any, relativeValue: number }[]) {
         handlers.forEach(({index, item, relativeValue}) => {
             const realIndex = this._handlers.findIndex(handler => handler.index === index);
+            if (realIndex === -1)
+                return;
 
             this._handlers[realIndex].setValue(item);
             this._handlers[realIndex].setPosition(relativeValue);

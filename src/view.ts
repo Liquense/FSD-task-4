@@ -46,13 +46,19 @@ export default class View implements Listenable, SliderView {
         this._slider.createRanges();
     }
 
-    public passDataProps(sliderData: {min?: number, max?: number, step?: number }) {
+    public passDataProps(sliderData: { min?: number, max?: number, step?: number }) {
         this._slider.update(sliderData);
     }
 
-    public addHandler() {
-        //todo: добавление хэндлера
+    public addHandler(handlerParams: {
+        positionPart: number, value: any, handlerIndex: number, itemIndex: number, isEnd: boolean
+    }) {
+        this._slider.addHandler(handlerParams);
         this._slider.createRanges();
+    }
+
+    public removeHandler() {
+
     }
 
     public addSliderMousedownListener(listener: Function) {

@@ -37,7 +37,6 @@ export default class Controller {
         this._model = new Model(_parameters);
 
         addListenerAfter("handlerValueChanged", this._boundPassHandlerValueChange, this._model);
-        addListenerAfter("createHandler", this._boundViewAddHandler, this._model);
         addListenerAfter("handlerPositionChanged", this._boundPassHandlerPositionChange, newView);
 
         this.passSliderData();
@@ -104,12 +103,14 @@ export default class Controller {
         targetView.initHandlers(handlersData);
     }
 
-    private _boundViewAddHandler = this._addHandlerView.bind(this);
+    public addHandler(itemIndex: number, isEnd: boolean) {
+        const handlerData = this._model.addHandler(itemIndex);
+        this._addHandlerView({isEnd: isEnd, ...handlerData});
+    }
 
-    private _addHandlerView() {
-        console.log("binding!");
+    private _addHandlerView(handlerParams: { positionPart: number, value: any, handlerIndex: number, isEnd: boolean}) {
         this._views.forEach(view => {
-            view.addHandler();
+            view.addHandler(handlerParams);
         });
     }
 
@@ -169,5 +170,7 @@ export interface SliderView {
         }[]
     }): void;
 
-    addHandler();
+    addHandler(handlerParams: { positionPart: number, value: any, handlerIndex: number }): void;
+
+    removeHandler();
 }
