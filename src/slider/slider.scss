@@ -25,24 +25,56 @@ $markupLength: $scaleThickness + 6px;
 .liquidSlider {
   width: fit-content;
   outline: none;
+  display: flex;
+  align-items: center;
+
 
   &.liquidSlider_horizontal {
+    flex-direction: row;
     padding-top: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipPadding*2;
     padding-bottom: $handlerAddition/2 + $handlerBorderWidth;
   }
 
   &.liquidSlider_vertical {
+    flex-direction: column;
     padding-left: $handlerAddition/2 + $handlerBorderWidth;
     padding-right: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipPadding*2;
   }
 
-  .liquidSlider__data {
-    text-align: right;
-    margin-bottom: $tooltipHeight + $tooltipMargin + 3px;
-    max-width: $sliderLength;
+  $minMaxFontSize: 10px;
+
+  .liquidSlider__min, .liquidSlider__max {
+    font-size: $minMaxFontSize;
+  }
+
+  $minmaxMargin: 5px;
+  .liquidSlider__min {
+    order: 0;
+
+    &.liquidSlider_horizontal {
+      margin-right: $minmaxMargin;
+    }
+
+    &.liquidSlider_vertical {
+      margin-bottom: $minmaxMargin;
+    }
+  }
+
+  .liquidSlider__max {
+    order: 2;
+
+    &.liquidSlider_horizontal {
+      margin-left: $minmaxMargin;
+    }
+
+    &.liquidSlider_vertical {
+      margin-top: $minmaxMargin;
+    }
   }
 
   .liquidSlider__body {
+    order: 1;
+
     &.liquidSlider_horizontal {
       width: $sliderLength;
     }
@@ -119,60 +151,75 @@ $markupLength: $scaleThickness + 6px;
       }
     }
 
-    .liquidSlider__handlerContainer {
+    .liquidSlider__handlers {
       position: absolute;
-      display: flex;
+      top: 0;
 
       &.liquidSlider_horizontal {
-        flex-direction: column-reverse;
-        bottom: - abs($scaleThickness - $handlerSize) / 2;
+        height: $scaleThickness;
+        width: $sliderLength;
       }
 
       &.liquidSlider_vertical {
-        flex-direction: row;
-        left: - abs($scaleThickness - $handlerSize) / 2;
+        width: $scaleThickness;
+        height: $sliderLength;
       }
 
-      justify-content: start;
-      align-items: center;
+      .liquidSlider__handlerContainer {
+        position: absolute;
+        display: flex;
 
-      .liquidSlider__handlerTooltip {
-        height: $tooltipHeight + $tooltipPadding * 2;
-        padding: $tooltipPadding;
-        background-color: rgba(255, 255, 255, 0.75);
-        border: solid $tooltipBorderWidth rgba(0, 0, 0, 0.25);
-        border-radius: 20%;
-        font-size: 14px;
-        line-height: $tooltipHeight - $tooltipBorderWidth*2;
-        text-align: center;
-        user-select: none;
-
-        > * {
-          height: $tooltipHeight;
+        &.liquidSlider_horizontal {
+          flex-direction: column-reverse;
+          bottom: - abs($scaleThickness - $handlerSize) / 2;
         }
 
-        &.liquidSlider__handlerTooltip_visible {
-          visibility: visible;
+        &.liquidSlider_vertical {
+          flex-direction: row;
+          left: - abs($scaleThickness - $handlerSize) / 2;
         }
 
-        &.liquidSlider__handlerTooltip_hidden {
-          visibility: hidden;
-        }
-      }
+        justify-content: start;
+        align-items: center;
 
-      .liquidSlider__handlerBody {
-        height: $handlerSize;
-        width: $handlerSize;
-        border-radius: 50%;
-        background-color: #ffb6b0;
-        border: solid $handlerBorderWidth darkgrey;
-        outline: none;
+        .liquidSlider__handlerTooltip {
+          height: $tooltipHeight + $tooltipPadding * 2;
+          padding: $tooltipPadding;
+          background-color: rgba(255, 255, 255, 0.75);
+          border: solid $tooltipBorderWidth rgba(0, 0, 0, 0.25);
+          border-radius: 20%;
+          font-size: 14px;
+          line-height: $tooltipHeight - $tooltipBorderWidth*2;
+          text-align: center;
+          user-select: none;
 
-        &:hover, &:focus {
-          border-color: #593832;
+          > * {
+            height: $tooltipHeight;
+          }
 
-          + .liquidSlider__handlerTooltip {
+          &.liquidSlider__handlerTooltip_visible {
             visibility: visible;
+          }
+
+          &.liquidSlider__handlerTooltip_hidden {
+            visibility: hidden;
+          }
+        }
+
+        .liquidSlider__handlerBody {
+          height: $handlerSize;
+          width: $handlerSize;
+          border-radius: 50%;
+          background-color: #ffb6b0;
+          border: solid $handlerBorderWidth darkgrey;
+          outline: none;
+
+          &:hover, &:focus {
+            border-color: #593832;
+
+            + .liquidSlider__handlerTooltip {
+              visibility: visible;
+            }
           }
         }
       }

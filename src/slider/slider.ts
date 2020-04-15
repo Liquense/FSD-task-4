@@ -143,6 +143,9 @@ export default class Slider implements Listenable {
                     element.addEventListener("mousedown", (event) => event.preventDefault()); //чтобы не возникало drag-n-drop (с ondragstart не работает)
                     wrap.append(element);
                     break;
+                case "min": case "max":
+                    wrap.append(element);
+                    break;
                 default:
                     this._elements.body.append(element);
                     break;
@@ -500,6 +503,9 @@ export default class Slider implements Listenable {
         this._handlers.forEach(handler => {
             handler.refreshPosition();
         });
+
+        this._elements.min.innerText = this._min.toFixed(2);
+        this._elements.max.innerText = this._max.toFixed(2);
     }
 
     public addOnMouseDownListener(listener: Function) {
