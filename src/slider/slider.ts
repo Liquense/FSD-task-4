@@ -218,6 +218,14 @@ export default class Slider implements Listenable {
         );
     }
 
+    private _boundHandleDocumentMouseOut = this._handleDocumentMouseOut.bind(this);
+
+    private _handleDocumentMouseOut(event: MouseEvent) {
+        const from = event.target as HTMLElement;
+        if (from.nodeName === "HTML")
+            document.body.removeEventListener("mousemove", this._handleMouseMoveBound);
+    }
+
     private handleDocumentMouseDown(event: MouseEvent) {
         let targetElement = (event.target) as HTMLElement;
         if (!this._elements.wrap.contains(targetElement)) {
@@ -229,6 +237,7 @@ export default class Slider implements Listenable {
 
     private _handleMouseUp(event: MouseEvent): void {
         document.body.removeEventListener("mousemove", this._handleMouseMoveBound);
+        document.body.removeEventListener("mouseout", this._handleDocumentMouseOut);
     }
 
     private _handleMouseDown(event: MouseEvent): MouseEvent {
@@ -242,6 +251,9 @@ export default class Slider implements Listenable {
 
         this._handleMouseMove(event);
         document.body.addEventListener("mousemove", this._handleMouseMoveBound);
+
+        //проверка на выход за пределы окна браузера
+        window.addEventListener("mouseout", this._boundHandleDocumentMouseOut);
 
         return event; //для обработки события пользовательскими функциями
     }
