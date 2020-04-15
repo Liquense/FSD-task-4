@@ -8,36 +8,38 @@ export default class Slider implements Listenable {
     listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };
 
     private static _defaultSliderClass = "liquidSlider";
-    private _element: {
+    private _elements: {
         wrap: HTMLElement,
         body: HTMLElement,
         scale: HTMLElement,
         handlers: HTMLElement,
+        min: HTMLElement,
+        max: HTMLElement
     };
 
     get bodyElement(): HTMLElement {
-        return this._element.body;
+        return this._elements.body;
     }
 
     get handlersElement(): HTMLElement {
-        return this._element.handlers;
+        return this._elements.handlers;
     }
 
     get scaleStart(): number {
         return this.isVertical ?
-            this._element.scale.getBoundingClientRect().top :
-            this._element.scale.getBoundingClientRect().left;
+            this._elements.scale.getBoundingClientRect().top :
+            this._elements.scale.getBoundingClientRect().left;
     }
 
     get scaleEnd(): number {
         return this.isVertical ?
-            this._element.scale.getBoundingClientRect().bottom :
-            this._element.scale.getBoundingClientRect().right;
+            this._elements.scale.getBoundingClientRect().bottom :
+            this._elements.scale.getBoundingClientRect().right;
     }
 
     get scaleBorderWidth(): number {
         return Number.parseFloat(
-            getComputedStyle(this._element.scale).getPropertyValue(`border-${this.offsetDirection}-width`)
+            getComputedStyle(this._elements.scale).getPropertyValue(`border-${this.offsetDirection}-width`)
         );
     }
 
@@ -91,7 +93,7 @@ export default class Slider implements Listenable {
     private _ranges: RangeView[] = [];
 
     public getScaleLength() {
-        return this._element.scale.getBoundingClientRect()[this.expandDimension];
+        return this._elements.scale.getBoundingClientRect()[this.expandDimension];
     }
 
     constructor(private _parentView: View,
@@ -112,39 +114,46 @@ export default class Slider implements Listenable {
         if (parameters?.withMarkup !== undefined)
             this._withMarkup = parameters.withMarkup;
 
-        this.createElement(_parentView.element);
+        this._createElements(_parentView.element);
         this.setMouseEvents();
     }
 
-    private createElement(parentElement: HTMLElement) {
-        this._element = {
+    private _createElements(parentElement: HTMLElement) {
+        this._elements = {
             wrap: document.createElement("div"),
             body: document.createElement("div"),
             scale: document.createElement("div"),
             handlers: document.createElement("div"),
+            min: document.createElement("span"),
+            max: document.createElement("span"),
         };
-        let wrap = this._element.wrap;
+
+        let wrap = this._elements.wrap;
         wrap.classList.add(defaultSliderClass);
         parentElement.replaceWith(wrap);
 
-        let body = this._element.body;
-        body.addEventListener("mousedown", (event) => event.preventDefault()); //чтобы не возникало drag-n-drop (с ondragstart не работает)
-        body.classList.add(`${defaultSliderClass}__body`);
-        wrap.appendChild(body);
+        Object.keys(this._elements).forEach((elementName) => {
+            const element = this._elements[elementName];
+            element.classList.add(`${defaultSliderClass}__${elementName}`);
 
-        let scale = this._element.scale;
-        scale.classList.add(`${defaultSliderClass}__scale`);
-        body.appendChild(scale);
-
-        const handlers = this._element.handlers;
-        handlers.classList.add(`${defaultSliderClass}__handlers`);
-        body.appendChild(handlers);
+            switch (elementName) {
+                case "wrap":
+                    break;
+                case "body":
+                    element.addEventListener("mousedown", (event) => event.preventDefault()); //чтобы не возникало drag-n-drop (с ondragstart не работает)
+                    wrap.append(element);
+                    break;
+                default:
+                    this._elements.body.append(element);
+                    break;
+            }
+        });
 
         this.setOrientation(this.isVertical);
     };
 
     public setOrientation(newState: boolean) {
-        const operableObjects: object[] = [this._element];
+        const operableObjects: object[] = [this._elements];
 
         if (this._markup?.wrap) {
             console.log(this._markup);
@@ -195,7 +204,7 @@ export default class Slider implements Listenable {
             "mousedown",
             this.handleDocumentMouseDown.bind(this)
         );
-        this._element.body.addEventListener(
+        this._elements.body.addEventListener(
             "mousedown",
             this._handleMouseDown.bind(this)
         );
@@ -207,7 +216,7 @@ export default class Slider implements Listenable {
 
     private handleDocumentMouseDown(event: MouseEvent) {
         let targetElement = (event.target) as HTMLElement;
-        if (!this._element.wrap.contains(targetElement)) {
+        if (!this._elements.wrap.contains(targetElement)) {
             this.deactivateActiveHandler();
         }
     }
@@ -355,7 +364,7 @@ export default class Slider implements Listenable {
             if (secondHandler === undefined)
                 continue;
 
-            this._ranges.push(new RangeView(this, this._element.scale, handler, secondHandler));
+            this._ranges.push(new RangeView(this, this._elements.scale, handler, secondHandler));
             handler.inRange = true;
             if (secondHandler)
                 secondHandler.inRange = true;
@@ -425,7 +434,7 @@ export default class Slider implements Listenable {
 
     private _clearHandlers() {
         this.clearRanges();
-        this._element.handlers.innerHTML = "";
+        this._elements.handlers.innerHTML = "";
         this._handlers = [];
     }
 
@@ -494,10 +503,10 @@ export default class Slider implements Listenable {
     }
 
     public addOnMouseDownListener(listener: Function) {
-        this._element.body.removeEventListener("mousedown", this._handleMouseDown);
+        this._elements.body.removeEventListener("mousedown", this._handleMouseDown);
 
         addListenerAfter(this._handleMouseDown.name, listener, this);
 
-        this._element.body.addEventListener("mousedown", this._handleMouseDown);
+        this._elements.body.addEventListener("mousedown", this._handleMouseDown);
     }
 }
