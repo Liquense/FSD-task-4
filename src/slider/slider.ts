@@ -143,7 +143,8 @@ export default class Slider implements Listenable {
                     element.addEventListener("mousedown", (event) => event.preventDefault()); //чтобы не возникало drag-n-drop (с ondragstart не работает)
                     wrap.append(element);
                     break;
-                case "min": case "max":
+                case "min":
+                case "max":
                     wrap.append(element);
                     break;
                 default:
@@ -231,7 +232,8 @@ export default class Slider implements Listenable {
     }
 
     private _handleMouseDown(event: MouseEvent): MouseEvent {
-        const closestHandler = this.getClosestToMouseHandler(event.pageX, event.pageY);
+        const closestHandler = this.getClosestToMouseHandler(event.clientX, event.clientY);
+
         if (!closestHandler)
             return event;
 
@@ -245,7 +247,7 @@ export default class Slider implements Listenable {
     }
 
     private _handleMouseMove(event: MouseEvent) {
-        const closestHandler = this.getClosestToMouseHandler(event.pageX, event.pageY);
+        const closestHandler = this.getClosestToMouseHandler(event.clientX, event.clientY);
 
         if (closestHandler !== this._activeHandler)
             return;
@@ -255,8 +257,9 @@ export default class Slider implements Listenable {
         const mousePosition = this.calculateMouseRelativePosition(event);
         const standardMousePosition = standardize(mousePosition, {min: 0, max: 1, step: this._step});
 
-        if (standardMousePosition === closestHandler.positionPart)
+        if (standardMousePosition === roundToDecimal(closestHandler.positionPart, 4))
             return;
+
 
         this._parentView.handlerPositionChanged(closestHandler.index, standardMousePosition);
     }
@@ -277,7 +280,7 @@ export default class Slider implements Listenable {
 
     //возвращает позицию мыши относительно начала шкалы в стндартизированном виде
     public calculateMouseRelativePosition(mouseEvent: MouseEvent): number {
-        const mouseCoordinate = this.isVertical ? mouseEvent.pageY : mouseEvent.pageX;
+        const mouseCoordinate = this.isVertical ? mouseEvent.clientY : mouseEvent.clientX;
         const initialOffset = this.handlerSize / 2;
         const scaledCoordinate = (mouseCoordinate - this.scaleStart - initialOffset) / this.shrinkCoeff;
 
