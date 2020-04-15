@@ -20,7 +20,11 @@ let slider = $(sliderInitSelector).liquidSlider({
 slider.addView(panels[0]);
 panels[0].boundController = slider;
 
-let slider2 = $(sliderInitSelector).liquidSlider({
+let slider2 = $(sliderInitSelector).liquidSlider();
+slider2.addView(panels[1]);
+panels[1].boundController = slider2;
+
+let slider3 = $(sliderInitSelector).liquidSlider({
     items: [
         1,
         {
@@ -37,10 +41,10 @@ let slider2 = $(sliderInitSelector).liquidSlider({
     isReversed: false,
     isVertical: true,
 });
-slider2.addView(panels[1]);
-panels[1].boundController = slider2;
+slider3.addView(panels[2]);
+panels[2].boundController = slider3;
 
-let slider3 = $(sliderInitSelector).liquidSlider({
+let slider4 = $(sliderInitSelector).liquidSlider({
     handlers: [
         {isEnd: true},
         {value: 2, isEnd: false},
@@ -51,9 +55,5 @@ let slider3 = $(sliderInitSelector).liquidSlider({
     withMarkup: true,
     isVertical: false
 });
-slider3.addView(panels[2]);
-panels[2].boundController = slider3;
-
-let slider4 = $(sliderInitSelector).liquidSlider({});
 slider4.addView(panels[3]);
 panels[3].boundController = slider4;
