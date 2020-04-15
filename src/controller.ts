@@ -54,7 +54,7 @@ export default class Controller {
         this._views.push(newView);
 
         addListenerAfter("handlerPositionChanged", this._boundPassHandlerPositionChange, newView);
-        newView.passViewProps(this._parameters);
+        newView.passVisualProps(this._parameters);
 
         this.passSliderData();
         this._passHandlersData(newView, this._parameters?.handlers);
@@ -62,7 +62,7 @@ export default class Controller {
 
     private passSliderData() {
         this._views.forEach(view => {
-            view.setSliderProps(this._model.getSliderData());
+            view.passDataProps(this._model.getSliderData());
         });
     }
 
@@ -130,22 +130,31 @@ export default class Controller {
 
     public setTooltipVisibility(newState: boolean) {
         this._views.forEach(view => {
-            view.passViewProps({tooltipsVisible: newState});
+            view.passVisualProps({tooltipsVisible: newState});
         });
     }
 
     public setVertical(isVertical: boolean): void {
         this._views.forEach(view => {
-            view.passViewProps({ isVertical: isVertical});
+            view.passVisualProps({isVertical: isVertical});
+        })
+    }
+
+    public setMarkupVisibility(isVisible: boolean): void {
+        this._views.forEach(view => {
+            view.passVisualProps({withMarkup: isVisible});
         })
     }
 }
 
 export interface SliderView {
-    passViewProps(parameters?: object): void;
+    passVisualProps(parameters?: { isVertical?: boolean, tooltipsVisible?: boolean, withMarkup?: boolean }): void;
 
-    setSliderProps(sliderData: { step?: number, absoluteStep: number, min: number, max: number }): void;
+    passDataProps(sliderData: { step?: number, absoluteStep: number, min: number, max: number }): void;
 
+    /**
+     * Функция, которую слушает контроллер
+     */
     handlerPositionChanged: Function;
 
     handlersValuesChangedListener(data: { index: number, relativeValue: number, item: any }): void;

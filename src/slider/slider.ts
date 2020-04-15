@@ -374,6 +374,9 @@ export default class Slider implements Listenable {
 
         this._markup.clearAllMarks();
 
+        if (!this._withMarkup)
+            return;
+
         requestAnimationFrame(() => {
             for (let i = 0; i <= 1; i = roundToDecimal(i + this._step, 5)) { //i округляется, чтобы не всплывало ошибок деления
                 const standardPosition = standardize(i, {min: 0, max: 1, step: this._step});
@@ -417,9 +420,7 @@ export default class Slider implements Listenable {
 
         this.setHandlerSize();
 
-        if (this._withMarkup) {
-            this._initMarkup();
-        }
+        this._initMarkup();
     }
 
     private _clearHandlers() {
@@ -475,6 +476,7 @@ export default class Slider implements Listenable {
             this.setOrientation(data.isVertical);
         }
         if (data.withMarkup !== undefined) {
+            this._withMarkup = data.withMarkup;
         }
         this._refreshElements();
     }

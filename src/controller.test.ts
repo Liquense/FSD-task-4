@@ -49,7 +49,7 @@ describe("Инициализация контроллера", () => {
         testController = new Controller(rootElement);
 
         expect(testController["_model"].getSliderData).toBeCalled();
-        expect(testController[viewsParamName][0].setSliderProps).toBeCalledWith(testData);
+        expect(testController[viewsParamName][0].passDataProps).toBeCalledWith(testData);
     });
 
     describe("Передача данных о хэндлерах в вид", () => {

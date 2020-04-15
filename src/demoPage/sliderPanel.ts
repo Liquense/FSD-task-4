@@ -7,6 +7,7 @@ export default class SliderPanel implements Listenable, SliderView {
     public boundController: Controller;
     private _isVertical = false;
     private _tooltipsAreVisible = true;
+    private _withMarkup = false;
     private _handlers: { index: number, positionPart: number, item: any, itemIndex: number }[] = [];
 
     static readonly classPrefix = "panel__";
@@ -14,14 +15,14 @@ export default class SliderPanel implements Listenable, SliderView {
     private readonly _elements: {
         wrap: HTMLElement, body: HTMLElement,
         handlerInputs: { index: number, positionElement: HTMLElement, itemIndexElement: HTMLElement }[], maxInput: HTMLElement, minInput: HTMLElement,
-        stepInput: HTMLElement, orientationInput: HTMLElement, tooltipsVisibilityInput: HTMLElement
+        stepInput: HTMLElement, orientationInput: HTMLElement, tooltipsVisibilityInput: HTMLElement, markupVisibilityInput: HTMLElement
     };
 
     constructor(parentElement: HTMLElement) {
         this._elements = {
             wrap: undefined, body: undefined,
-            handlerInputs: [], maxInput: undefined, minInput: undefined,
-            stepInput: undefined, orientationInput: undefined, tooltipsVisibilityInput: undefined
+            handlerInputs: [], maxInput: undefined, minInput: undefined, stepInput: undefined,
+            orientationInput: undefined, tooltipsVisibilityInput: undefined, markupVisibilityInput: undefined
         };
         this._elements.wrap = parentElement.parentElement;
 
@@ -42,6 +43,17 @@ export default class SliderPanel implements Listenable, SliderView {
 
         this._createPropertyElements(`Тултипы видны?`, `tooltipsVisibility`, true);
         this._elements.tooltipsVisibilityInput.addEventListener("change", this._boundHandleTooltipVisibilityInputChange);
+
+        this._createPropertyElements(`Разметка видна?`, `markupVisibility`, true);
+        this._elements.markupVisibilityInput.addEventListener("change", this._boundMarkupInputChange);
+    }
+
+    private _boundMarkupInputChange = this._handleMarkupInputChange.bind(this);
+
+    private _handleMarkupInputChange(event: Event) {
+        this._withMarkup = (event.target as HTMLInputElement).checked;
+
+        this.boundController.setMarkupVisibility(this._withMarkup);
     }
 
     private _boundHandleOrientationInputChange = this._handleOrientationInputChange.bind(this);
@@ -147,6 +159,10 @@ export default class SliderPanel implements Listenable, SliderView {
         this._elements.body.append(valueWrap);
     }
 
+    /**
+     * Для обработки изменений, происходящих в других видах (перемещение хэндлеров на самом слайдере в данном случае)
+     * @private
+     */
     private _refreshElements() {
         this._refreshOrientation();
 
@@ -187,7 +203,7 @@ export default class SliderPanel implements Listenable, SliderView {
         this.boundController.setVertical(isVertical);
     }
 
-    public passViewProps(
+    public passVisualProps(
         parameters?: {
             isVertical?: boolean,
             showTooltips?: boolean,
@@ -201,6 +217,9 @@ export default class SliderPanel implements Listenable, SliderView {
 
         (this._elements.tooltipsVisibilityInput as HTMLInputElement).checked =
             parameters?.showTooltips === undefined ? this._tooltipsAreVisible : parameters.showTooltips;
+
+        (this._elements.markupVisibilityInput as HTMLInputElement).checked =
+            parameters?.withMarkup === undefined ? this._withMarkup : parameters.withMarkup;
 
         this._refreshElements();
     };
@@ -244,7 +263,7 @@ export default class SliderPanel implements Listenable, SliderView {
         this._refreshElements();
     };
 
-    public setSliderProps(props: { absoluteStep: number, min: number, max: number }) {
+    public passDataProps(props: { absoluteStep: number, min: number, max: number }) {
         const maxInput = (this._elements.maxInput as HTMLInputElement);
         if (!maxInput.value) {
             maxInput.value = props.max.toFixed(2);
