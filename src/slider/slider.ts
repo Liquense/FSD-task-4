@@ -167,7 +167,6 @@ export default class Slider implements Listenable {
         const operableObjects: object[] = [this._elements];
 
         if (this._markup?.wrap) {
-            console.log(this._markup);
             operableObjects.push({wrap: this._markup.wrap});
         }
 
@@ -338,22 +337,29 @@ export default class Slider implements Listenable {
     }
 
     public createRanges(): void {
+        this.clearRanges();
+
         this._handlers.forEach((handler) => {
-            if (handler.rangePair == null)
-                return;
-
-            let secondHandler = this.findSuitableHandler(handler);
-
-            //если хэндлера с нужным индексом не находится и пара не нужна
-            if (!secondHandler
-                && (handler.rangePair !== this.rangePairStartKey && handler.rangePair !== this.rangePairEndKey)
-            )
-                return;
-
-            this._ranges.push(new RangeView(this, this._elements.scale, handler, secondHandler));
+            const newRange = this._createRange(handler);
+            if (newRange)
+                this._ranges.push();
         });
     }
 
+    private _createRange(handler: HandlerView): RangeView {
+        if (handler.rangePair == null)
+            return;
+
+        let secondHandler = this.findSuitableHandler(handler);
+
+        //если хэндлера с нужным индексом не находится и пара не нужна
+        if (!secondHandler
+            && (handler.rangePair !== this.rangePairStartKey && handler.rangePair !== this.rangePairEndKey)
+        )
+            return;
+
+        return new RangeView(this, this._elements.scale, handler, secondHandler);
+    }
 
     private _initMarkup() {
         this._markup = new MarkupView(this);
@@ -427,6 +433,7 @@ export default class Slider implements Listenable {
         );
 
         this._handlers.push(newHandler);
+        this._createRange(newHandler);
     }
 
     public removeHandler() {
