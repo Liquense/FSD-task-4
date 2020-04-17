@@ -9,7 +9,7 @@ export default class SliderPanel implements Listenable, SliderView {
     private _tooltipsAreVisible = true;
     private _withMarkup = false;
     private _handlers: { index: number, positionPart: number, item: any, itemIndex: number }[] = [];
-    private options = new Map().set(`Одиночный`, null).set(`Начало`, `start`).set(`Конец`, `end`);
+    private options = new Map().set(`Один`, null).set(`Начало`, `start`).set(`Конец`, `end`);
 
     static readonly classPrefix = "panel__";
 

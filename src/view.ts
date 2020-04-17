@@ -51,7 +51,7 @@ export default class View implements Listenable, SliderView {
     }
 
     public addHandler(handlerParams: {
-        positionPart: number, value: any, handlerIndex: number, itemIndex: number, isEnd: boolean
+        positionPart: number, value: any, handlerIndex: number, itemIndex: number, rangePair: number | string
     }) {
         this._slider.addHandler(handlerParams);
         this._slider.createRanges();

@@ -49,7 +49,7 @@ describe("Инициализация", () => {
         mockTooltip.mockClear();
         const withTooltip = false;
         const isEnd = false;
-        testHandler = new HandlerView(testSlider, {index, positionPart, value, withTooltip, isEnd});
+        testHandler = new HandlerView(testSlider, {index, positionPart, value, withTooltip});
 
         expect(testHandler["_isEnd"]).toBe(isEnd);
         expect(mockTooltip).toBeCalledWith(testHandler.wrap, testHandler, {visibilityState: withTooltip});
@@ -121,38 +121,8 @@ describe("Вспомогательные функции", () => {
         expect(testHandler.body).toBe(body);
     });
 
-    test("Установка роли в диапазоне", () => {
-        function testIsEndSetting(stateIsEnd: boolean) {
-            if (stateIsEnd === undefined)
-                expect(testHandler.isEnd).toBe(null);
-            else
-                expect(testHandler.isEnd).toBe(stateIsEnd);
+    test("Установка парного элемента в диапазоне", () => {
 
-            if ((stateIsEnd === null) || (stateIsEnd === undefined))
-                expect(testHandler.isStart).toBe(null);
-            else
-                expect(testHandler.isStart).not.toBe(stateIsEnd);
-        }
-
-        testHandler.isEnd = true;
-        testIsEndSetting(true);
-        testHandler.isEnd = false;
-        testIsEndSetting(false);
-
-        testHandler.isStart = true;
-        testIsEndSetting(false);
-        testHandler.isStart = false;
-        testIsEndSetting(true);
-
-        testHandler.isStart = null;
-        testIsEndSetting(null);
-
-        testHandler.isEnd = true;
-        testHandler.isEnd = null;
-        testIsEndSetting(null);
-
-        testHandler.isEnd = undefined;
-        testIsEndSetting(undefined);
     });
 
     test("Установка видимости тултипа", () => {

@@ -35,11 +35,11 @@ describe("Инициализация", () => {
 
     describe("Правильное назначение хэндлеров", () => {
         test("Один хэндлер", () => {
-            firstHandler.isStart = false;
+            //firstHandler.isStart = false;
             testRange = new RangeView(testSlider, document.body, firstHandler);
             expect(testRange.endHandler).toBe(firstHandler);
 
-            firstHandler.isStart = true;
+            //firstHandler.isStart = true;
             testRange = new RangeView(testSlider, document.body, firstHandler);
             expect(testRange.startHandler).toBe(firstHandler);
         });
@@ -91,7 +91,7 @@ describe("Инициализация", () => {
             test("Один хэндлер", async () => {
                 function initTest(handlerSide, offsetDirection, expandDimension) {
                     return new Promise(resolve => {
-                        firstHandler.isStart = handlerSide;
+                        //firstHandler.isStart = handlerSide;
                         //@ts-ignore
                         testSlider.offsetDirection = offsetDirection;
                         //@ts-ignore

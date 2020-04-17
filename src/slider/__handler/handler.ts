@@ -51,25 +51,7 @@ export default class HandlerView implements Listenable {
     }
 
 
-    private _isEnd: boolean = null;
-    get isEnd() {
-        return this._isEnd === undefined ? null : this._isEnd;
-    };
-
-    get isStart(): boolean {
-        return (this._isEnd === undefined) || (this._isEnd === null) ? null : !this._isEnd;
-    }
-
-    set isEnd(value: boolean) {
-        this._isEnd = value;
-    };
-
-    set isStart(value: boolean) {
-        this._isEnd = value === null ? null : !value;
-    }
-
-
-    public inRange: boolean = false;
+    public rangePair: number | string;
 
     constructor(public ownerSlider: Slider,
                 params:
@@ -78,11 +60,10 @@ export default class HandlerView implements Listenable {
                         positionPart: number,
                         value: any,
                         withTooltip?: boolean,
-                        isEnd?: boolean,
+                        rangePair?: number | string,
                     }
     ) {
-        if (params.isEnd !== undefined)
-            this._isEnd = params.isEnd;
+        this.rangePair = params.rangePair;
         this.index = params.index;
         this._positionPart = params.positionPart;
 

@@ -41,7 +41,7 @@ $.fn.liquidSlider = function liquidSlider(
         handlers?: {
             value?: number,
             additionalClasses?: string,
-            isEnd?: boolean,
+            rangePair?: number | string,
             withTooltip?: boolean,
             tooltip?: {
                 additionalClasses?: string,

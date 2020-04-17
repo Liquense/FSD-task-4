@@ -12,14 +12,8 @@ export default class RangeView {
         if (secondHandler)
             this.arrangeHandlers(firstHandler, secondHandler);
         else {
-            if (firstHandler.isStart) {
-                this.startHandler = firstHandler;
-                this.endHandler = null;
-            }
-            else {
-                this.startHandler = null;
-                this.endHandler = firstHandler;
-            }
+            this.startHandler = parentSlider.rangePairOptions.get(firstHandler.rangePair) ? firstHandler : null;
+            this.endHandler = parentSlider.rangePairOptions.get(firstHandler.rangePair) ? null : firstHandler;
         }
 
         this.createElement();
@@ -42,6 +36,7 @@ export default class RangeView {
     }
 
     private _boundUpdatePosition = this.refreshPosition.bind(this);
+
     public refreshPosition() {
         const firstCoordinate = this.startHandler ?
             this.startHandler.positionCoordinate - this.parentSlider.scaleStart :

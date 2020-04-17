@@ -17,6 +17,13 @@ export default class Slider implements Listenable {
         max: HTMLElement
     };
 
+    public rangePairOptions = new Map()
+        .set(null, null)
+        .set(`start`, false)
+        .set(`end`, true);
+    private rangePairStartKey = `start`;
+    private rangePairEndKey = `end`;
+
     get bodyElement(): HTMLElement {
         return this._elements.body;
     }
@@ -319,38 +326,8 @@ export default class Slider implements Listenable {
         return closestHandler;
     }
 
-    //возвращает хэндлеры не в ренджах
-    //(статичная, потому что массив может передаваться не обязательно тот, что хранится в экземпляре слайдера)
-    private static getFreeHandlers(handlersArray: HandlerView[]): HandlerView[] {
-        return handlersArray.filter(handler => !handler.inRange);
-    }
-
-    private getSortedHandlersByPositionPart(): HandlerView[] {
-        function handlersComparing(firstHandler: HandlerView, secondHandler: HandlerView) {
-            if (firstHandler.positionPart > secondHandler.positionPart)
-                return 1;
-            else
-                return -1;
-        }
-
-        let arrayToSort = [...this._handlers]; //чтобы не менялся изначальный массив
-        return arrayToSort.sort(handlersComparing);
-    }
-
-    private findSuitableHandler(firstHandlerIndex: number, firstHandler: HandlerView, handlers: HandlerView[]): HandlerView {
-        let suitableHandler: HandlerView = undefined;
-
-        handlers.some(((handler, i) => {
-                if (!handler.inRange)
-                    if (((firstHandler.isEnd) && (i < firstHandlerIndex) && handler.isStart) ||
-                        (firstHandler.isStart && (i > firstHandlerIndex) && handler.isEnd)) {
-                        suitableHandler = handler;
-                        return true;
-                    }
-            }
-        ));
-
-        return suitableHandler;
+    private findSuitableHandler(firstHandler: HandlerView): HandlerView {
+        return this._handlers.find(handler => handler.index === firstHandler.rangePair);
     }
 
     public clearRanges(): void {
@@ -361,32 +338,20 @@ export default class Slider implements Listenable {
     }
 
     public createRanges(): void {
-        let sortedHandlers = this.getSortedHandlersByPositionPart();
-        let freeHandlers = Slider.getFreeHandlers(sortedHandlers);
+        this._handlers.forEach((handler) => {
+            if (handler.rangePair == null)
+                return;
 
-        for (let i = 0; i < freeHandlers.length; i++) {
-            const handler = freeHandlers[i];
+            let secondHandler = this.findSuitableHandler(handler);
 
-            if (this._ranges.slice(-1)[0]?.hasHandler(handler))
-                continue;
-            if (handler.isEnd === null)
-                continue;
-
-            let secondHandler: HandlerView = undefined;
-            //от начала координат до первого хэндлера || от последнего хэндлера до конца координат
-            if (((i === 0) && handler.isEnd) || ((i === freeHandlers.length - 1) && handler.isStart)) {
-                secondHandler = null;
-            } else { //остальные случаи
-                secondHandler = this.findSuitableHandler(i, handler, freeHandlers);
-            }
-            if (secondHandler === undefined)
-                continue;
+            //если хэндлера с нужным индексом не находится и пара не нужна
+            if (!secondHandler
+                && (handler.rangePair !== this.rangePairStartKey && handler.rangePair !== this.rangePairEndKey)
+            )
+                return;
 
             this._ranges.push(new RangeView(this, this._elements.scale, handler, secondHandler));
-            handler.inRange = true;
-            if (secondHandler)
-                secondHandler.inRange = true;
-        }
+        });
     }
 
 
@@ -421,7 +386,6 @@ export default class Slider implements Listenable {
                 positionPart: number,
                 value: any,
                 withTooltip?: boolean,
-                isEnd?: boolean,
             }[]
         }) {
         this._clearHandlers();
@@ -429,14 +393,15 @@ export default class Slider implements Listenable {
         this._handlers = handlersData.handlersArray.map((handler, index, handlers) => {
             let newHandler = new HandlerView(this, {...handler, withTooltip: this._tooltipsAreVisible});
 
+            //если хэндлеры дефолтные, то им присваиваются подходящие пары
             if (!handlersData.customHandlers) {
                 if (handlers.length === 2) {
                     if (index === 0)
-                        newHandler.isStart = (this.isReversed) === (handlers[0].positionPart > handlers[1].positionPart);
+                        newHandler.rangePair = this.isReversed ? this.rangePairStartKey : 1;
                     if (index === 1)
-                        newHandler.isEnd = (this.isReversed) === (handlers[0].positionPart > handlers[1].positionPart);
+                        newHandler.rangePair = this.isReversed ? this.rangePairEndKey : 0;
                 } else {
-                    newHandler.isStart = this.isReversed;
+                    newHandler.rangePair = this.isReversed ? this.rangePairStartKey : this.rangePairEndKey;
                 }
             }
 
@@ -447,7 +412,7 @@ export default class Slider implements Listenable {
         this._initMarkup();
     }
 
-    public addHandler(handlerParams: { positionPart: number, value: any, handlerIndex: number, isEnd: boolean }) {
+    public addHandler(handlerParams: { positionPart: number, value: any, handlerIndex: number, rangePair: number | string }) {
         if (!handlerParams)
             return;
 
@@ -456,11 +421,10 @@ export default class Slider implements Listenable {
             {
                 index: handlerParams.handlerIndex,
                 value: handlerParams.value, positionPart: handlerParams.positionPart,
-                isEnd: handlerParams.isEnd,
+                rangePair: handlerParams.rangePair,
                 withTooltip: this._tooltipsAreVisible
             }
         );
-        newHandler.inRange = false;
 
         this._handlers.push(newHandler);
     }

@@ -46,10 +46,10 @@ panels[2].boundController = slider3;
 
 let slider4 = $(sliderInitSelector).liquidSlider({
     handlers: [
-        {isEnd: true},
-        {value: 2, isEnd: false},
-        {value: 3, isEnd: true},
-        {value: 6, isEnd: false}
+        {isEnd: true, rangePair: `start`},
+        {value: 2, rangePair: 0},
+        {value: 3, rangePair: 3},
+        {value: 6}
     ],
     showTooltips: false,
     withMarkup: true,
