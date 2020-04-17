@@ -103,12 +103,12 @@ export default class Controller {
         targetView.initHandlers(handlersData);
     }
 
-    public addHandler(itemIndex: number, isEnd: boolean) {
+    public addHandler(itemIndex: number, rangePair?: number | string) {
         const handlerData = this._model.addHandler(itemIndex);
-        this._addHandlerView({isEnd: isEnd, ...handlerData});
+        this._addHandlerView({...handlerData, rangePair: rangePair});
     }
 
-    private _addHandlerView(handlerParams: { positionPart: number, value: any, handlerIndex: number, isEnd: boolean}) {
+    private _addHandlerView(handlerParams: { positionPart: number, value: any, handlerIndex: number, rangePair: number | string}) {
         this._views.forEach(view => {
             view.addHandler(handlerParams);
         });

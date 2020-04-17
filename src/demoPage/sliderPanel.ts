@@ -17,7 +17,7 @@ export default class SliderPanel implements Listenable, SliderView {
         wrap: HTMLElement, body: HTMLElement,
         handlerInputs: { index: number, positionElement: HTMLInputElement, itemIndexElement: HTMLInputElement }[], maxInput: HTMLInputElement, minInput: HTMLInputElement,
         stepInput: HTMLInputElement, orientationInput: HTMLInputElement, tooltipsVisibilityInput: HTMLInputElement, markupVisibilityInput: HTMLInputElement,
-        newHandlerElements: {itemIndexInput: HTMLInputElement, createButton: HTMLButtonElement, handlerPairSelect: HTMLSelectElement}
+        newHandlerElements: { itemIndexInput: HTMLInputElement, createButton: HTMLButtonElement, handlerPairSelect: HTMLSelectElement }
     };
 
     constructor(parentElement: HTMLElement) {
@@ -57,11 +57,9 @@ export default class SliderPanel implements Listenable, SliderView {
 
     private _newHandlerElementsClick() {
         const itemIndex = Number.parseFloat(this._elements.newHandlerElements.itemIndexInput.value);
+        const rangePair = this.options.get(this._elements.newHandlerElements.handlerPairSelect.selectedOptions[0].value);
 
-        const isEnd = this.options.get(this._elements.newHandlerElements.handlerPairSelect.selectedOptions[0].value);
-
-        if (!Number.isNaN(itemIndex))
-            this.boundController.addHandler(itemIndex, isEnd);
+        this.boundController.addHandler(itemIndex, rangePair);
     };
 
     private _boundMarkupInputChange = this._handleMarkupInputChange.bind(this);
@@ -126,7 +124,11 @@ export default class SliderPanel implements Listenable, SliderView {
         newHandlerButton.addEventListener("click", this._boundNewHandlerElementsClick);
         newHandlerWrap.append(newHandlerButton);
 
-        this._elements.newHandlerElements = {itemIndexInput: newHandlerInput, createButton: newHandlerButton, handlerPairSelect: newHandlerPairSelect};
+        this._elements.newHandlerElements = {
+            itemIndexInput: newHandlerInput,
+            createButton: newHandlerButton,
+            handlerPairSelect: newHandlerPairSelect
+        };
         this._fillHandlerBindingSelect();
     }
 
