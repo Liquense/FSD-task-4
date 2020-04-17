@@ -9,6 +9,7 @@ export default class SliderPanel implements Listenable, SliderView {
     private _tooltipsAreVisible = true;
     private _withMarkup = false;
     private _handlers: { index: number, positionPart: number, item: any, itemIndex: number }[] = [];
+    private options = new Map().set(`Одиночный`, null).set(`Начало`, `start`).set(`Конец`, `end`);
 
     static readonly classPrefix = "panel__";
 
@@ -16,7 +17,7 @@ export default class SliderPanel implements Listenable, SliderView {
         wrap: HTMLElement, body: HTMLElement,
         handlerInputs: { index: number, positionElement: HTMLInputElement, itemIndexElement: HTMLInputElement }[], maxInput: HTMLInputElement, minInput: HTMLInputElement,
         stepInput: HTMLInputElement, orientationInput: HTMLInputElement, tooltipsVisibilityInput: HTMLInputElement, markupVisibilityInput: HTMLInputElement,
-        newHandlerElements: {itemIndexElement: HTMLInputElement, createButton: HTMLButtonElement}
+        newHandlerElements: {itemIndexInput: HTMLInputElement, createButton: HTMLButtonElement, handlerPairSelect: HTMLSelectElement}
     };
 
     constructor(parentElement: HTMLElement) {
@@ -55,8 +56,12 @@ export default class SliderPanel implements Listenable, SliderView {
     private _boundNewHandlerElementsClick = this._newHandlerElementsClick.bind(this);
 
     private _newHandlerElementsClick() {
-        const itemIndex = Number.parseFloat(this._elements.newHandlerElements.itemIndexElement.value);
-        this.boundController.addHandler(itemIndex, true);
+        const itemIndex = Number.parseFloat(this._elements.newHandlerElements.itemIndexInput.value);
+
+        const isEnd = this.options.get(this._elements.newHandlerElements.handlerPairSelect.selectedOptions[0].value);
+
+        if (!Number.isNaN(itemIndex))
+            this.boundController.addHandler(itemIndex, isEnd);
     };
 
     private _boundMarkupInputChange = this._handleMarkupInputChange.bind(this);
@@ -110,13 +115,44 @@ export default class SliderPanel implements Listenable, SliderView {
         SliderPanel._createLabel("Значение", baseClass, newHandlerWrap);
         const newHandlerInput = SliderPanel._createInput(baseClass, newHandlerWrap);
 
+        SliderPanel._createLabel("Роль в диапазоне", baseClass, newHandlerWrap);
+        const newHandlerPairSelect = document.createElement(`select`);
+        newHandlerPairSelect.classList.add(`${SliderPanel.classPrefix}newHandlerPairSelect`);
+        newHandlerWrap.append(newHandlerPairSelect);
+
         const newHandlerButton = document.createElement(`button`);
-        newHandlerButton.innerText = `Создать новый хэндлер`;
+        newHandlerButton.innerText = `Создать \n новый хэндлер`;
         newHandlerButton.classList.add(`${SliderPanel.classPrefix}newHandlerButton`);
         newHandlerButton.addEventListener("click", this._boundNewHandlerElementsClick);
         newHandlerWrap.append(newHandlerButton);
 
-        this._elements.newHandlerElements = {itemIndexElement: newHandlerInput, createButton: newHandlerButton};
+        this._elements.newHandlerElements = {itemIndexInput: newHandlerInput, createButton: newHandlerButton, handlerPairSelect: newHandlerPairSelect};
+        this._fillHandlerBindingSelect();
+    }
+
+    private _fillHandlerBindingSelect() {
+        this.options.forEach((optionValue, optionKey) => {
+            this._addHandlerRangePairOption(optionKey, optionValue);
+        });
+    }
+
+    private _addHandlerRangePairOption(optionKey, optionValue) {
+        const handlerPairSelect = this._elements.newHandlerElements.handlerPairSelect;
+
+        let textToShow: string;
+        if (typeof optionKey === `number`) {
+            textToShow = (optionKey + 1).toString()
+        } else {
+            textToShow = optionKey;
+        }
+
+        this.options.set(textToShow, optionValue);
+
+        const optionElement = document.createElement(`option`);
+        optionElement.value = textToShow;
+        optionElement.innerText = textToShow;
+
+        handlerPairSelect.options.add(optionElement);
     }
 
     private static _createElement(elementName: string, classPostfix: string, wrap?: HTMLElement): HTMLElement {
@@ -263,6 +299,7 @@ export default class SliderPanel implements Listenable, SliderView {
             itemIndex: handlerParams.itemIndex
         });
         this._createHandlerSection(handlerParams.handlerIndex);
+        this._addHandlerRangePairOption(handlerParams.handlerIndex, handlerParams.handlerIndex);
         this._refreshElements();
     };
 
@@ -294,7 +331,7 @@ export default class SliderPanel implements Listenable, SliderView {
     public initHandlers(handlersData: { handlersArray: { index: number, positionPart: number, value: any, valueIndex: number }[] }) {
         this._handlers = [];
 
-        handlersData.handlersArray.forEach(handler => {
+        handlersData.handlersArray.forEach((handler, index) => {
             this._handlers.push({
                 index: handler.index,
                 positionPart: handler.positionPart,
@@ -302,6 +339,7 @@ export default class SliderPanel implements Listenable, SliderView {
                 itemIndex: handler.valueIndex
             });
             this._createHandlerSection(handler.index);
+            this._addHandlerRangePairOption(index, index);
         });
 
         this._refreshElements();

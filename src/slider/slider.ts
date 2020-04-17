@@ -363,7 +363,6 @@ export default class Slider implements Listenable {
     public createRanges(): void {
         let sortedHandlers = this.getSortedHandlersByPositionPart();
         let freeHandlers = Slider.getFreeHandlers(sortedHandlers);
-        console.log(freeHandlers);
 
         for (let i = 0; i < freeHandlers.length; i++) {
             const handler = freeHandlers[i];
