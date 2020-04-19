@@ -9,13 +9,13 @@ export default class SliderPanel implements Listenable, SliderView {
     private _tooltipsAreVisible = true;
     private _withMarkup = false;
     private _handlers: { index: number, positionPart: number, item: any, itemIndex: number }[] = [];
-    private options = new Map().set(`Один`, null).set(`Начало`, `start`).set(`Конец`, `end`);
+    private options = new Map().set(`Никем`, null).set(`Началом`, `start`).set(`Концом`, `end`);
 
     static readonly classPrefix = "panel__";
 
     private readonly _elements: {
         wrap: HTMLElement, body: HTMLElement,
-        handlerInputs: { index: number, positionElement: HTMLInputElement, itemIndexElement: HTMLInputElement }[], maxInput: HTMLInputElement, minInput: HTMLInputElement,
+        handlerInputs: { wrap: HTMLElement, index: number, positionElement: HTMLInputElement, itemIndexElement: HTMLInputElement }[], maxInput: HTMLInputElement, minInput: HTMLInputElement,
         stepInput: HTMLInputElement, orientationInput: HTMLInputElement, tooltipsVisibilityInput: HTMLInputElement, markupVisibilityInput: HTMLInputElement,
         newHandlerElements: { itemIndexInput: HTMLInputElement, createButton: HTMLButtonElement, handlerPairSelect: HTMLSelectElement }
     };
@@ -57,7 +57,7 @@ export default class SliderPanel implements Listenable, SliderView {
 
     private _newHandlerElementsClick() {
         const itemIndex = Number.parseFloat(this._elements.newHandlerElements.itemIndexInput.value);
-        const rangePair = this.options.get(this._elements.newHandlerElements.handlerPairSelect.selectedOptions[0].value);
+        const rangePair = this.options.get(this._elements.newHandlerElements.handlerPairSelect.selectedOptions[0].text);
 
         this.boundController.addHandler(itemIndex, rangePair);
     };
@@ -113,7 +113,7 @@ export default class SliderPanel implements Listenable, SliderView {
         SliderPanel._createLabel("Значение", baseClass, newHandlerWrap);
         const newHandlerInput = SliderPanel._createInput(baseClass, newHandlerWrap);
 
-        SliderPanel._createLabel("Роль в диапазоне", baseClass, newHandlerWrap);
+        SliderPanel._createLabel("Соединить с...", baseClass, newHandlerWrap);
         const newHandlerPairSelect = document.createElement(`select`);
         newHandlerPairSelect.classList.add(`${SliderPanel.classPrefix}newHandlerPairSelect`);
         newHandlerWrap.append(newHandlerPairSelect);
@@ -151,7 +151,7 @@ export default class SliderPanel implements Listenable, SliderView {
         this.options.set(textToShow, optionValue);
 
         const optionElement = document.createElement(`option`);
-        optionElement.value = textToShow;
+        optionElement.value = optionKey;
         optionElement.innerText = textToShow;
 
         handlerPairSelect.options.add(optionElement);
@@ -185,6 +185,13 @@ export default class SliderPanel implements Listenable, SliderView {
         return (propInput as HTMLInputElement);
     };
 
+    private static _createButton(text: string, elementClassName: string, wrap?: HTMLElement): HTMLButtonElement {
+        const newButton = this._createElement(`button`, elementClassName + `button`, wrap) as HTMLButtonElement;
+        newButton.innerText = text;
+
+        return newButton;
+    }
+
     /**
      * Создаёт элементы для свойств (обёртка, лейбл и инпут) и вставляет в обёртку панели.
      * Возвращает обёртку, если в неё нужно добавить ещё что-то
@@ -216,8 +223,13 @@ export default class SliderPanel implements Listenable, SliderView {
         SliderPanel._createLabel(`Значение ${handlerIndex + 1} `, `item`, valueWrap);
         const itemIndexInput = SliderPanel._createElement(`div`, `item`, valueWrap) as HTMLInputElement;
 
+        const itemDeleteButton = SliderPanel._createButton(`х`, `delete`, valueWrap);
+        itemDeleteButton.addEventListener("click", () => {
+            this.boundController.removeHandler(handlerIndex);
+        });
 
         this._elements.handlerInputs.push({
+            wrap: valueWrap,
             index: handlerIndex,
             positionElement: positionInput,
             itemIndexElement: itemIndexInput
@@ -249,19 +261,17 @@ export default class SliderPanel implements Listenable, SliderView {
     }
 
     private _refreshHandlerItem(index: number) {
-        let handler = this._elements.handlerInputs.find((input) => {
-            return input.index === index;
-        });
+        const handlerIndex = this._elements.handlerInputs.findIndex((input) => input.index === index);
+        const handler = this._elements.handlerInputs[handlerIndex];
 
-        handler.itemIndexElement.innerText = this._handlers[index].item;
+        handler.itemIndexElement.innerText = this._handlers[handlerIndex].item;
     }
 
     private _refreshHandlerPosition(index: number) {
-        let handler = this._elements.handlerInputs.find((input) => {
-            return input.index === index;
-        });
+        const handlerIndex = this._elements.handlerInputs.findIndex((input) => input.index === index);
+        const handler = this._elements.handlerInputs[handlerIndex];
 
-        (handler.positionElement as HTMLInputElement).value = `${this._handlers[index].positionPart.toFixed(2)}`;
+        (handler.positionElement as HTMLInputElement).value = `${this._handlers[handlerIndex].positionPart.toFixed(2)}`;
     };
 
     /**
@@ -300,12 +310,27 @@ export default class SliderPanel implements Listenable, SliderView {
             item: handlerParams.value,
             itemIndex: handlerParams.itemIndex
         });
+
         this._createHandlerSection(handlerParams.handlerIndex);
         this._addHandlerRangePairOption(handlerParams.handlerIndex, handlerParams.handlerIndex);
         this._refreshElements();
     };
 
-    public removeHandler() {
+    public removeHandler(handlerIndex: number) {
+        const handlerToRemoveIndex = this._handlers.findIndex(handler => handler.index === handlerIndex);
+        this._handlers.splice(handlerToRemoveIndex, 1);
+
+        const handlerInputToRemoveIndex = this._elements.handlerInputs.findIndex(handlerInput => handlerInput.index === handlerIndex);
+        const handlerInputToRemove = this._elements.handlerInputs[handlerInputToRemoveIndex];
+        handlerInputToRemove.wrap.remove();
+        this._elements.handlerInputs.splice(handlerInputToRemoveIndex, 1);
+
+        const pairSelectOptions = this._elements.newHandlerElements.handlerPairSelect.options;
+        for (let option of pairSelectOptions) {
+            if (option.value === handlerIndex.toString()) {
+                pairSelectOptions.remove(option.index);
+            }
+        }
     }
 
     public handlerPositionChanged(event: Event): { index: number, position: number } {

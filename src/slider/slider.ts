@@ -342,12 +342,12 @@ export default class Slider implements Listenable {
         this._handlers.forEach((handler) => {
             const newRange = this._createRange(handler);
             if (newRange)
-                this._ranges.push();
+                this._ranges.push(newRange);
         });
     }
 
     private _createRange(handler: HandlerView): RangeView {
-        if (handler.rangePair == null)
+        if (handler.rangePair === null)
             return;
 
         let secondHandler = this.findSuitableHandler(handler);
@@ -433,11 +433,31 @@ export default class Slider implements Listenable {
         );
 
         this._handlers.push(newHandler);
-        this._createRange(newHandler);
+        const newRange = this._createRange(newHandler);
+        if (newRange)
+            this._ranges.push(newRange);
     }
 
-    public removeHandler() {
+    public removeHandler(handlerIndex: number) {
+        const handlerToRemoveIndex = this._handlers.findIndex(handler => handler.index === handlerIndex);
+        const handlerToRemove = this._handlers[handlerToRemoveIndex];
 
+        const rangesToRemove = this._ranges.map((range) => {
+            if (range.hasHandler(handlerToRemove)) {
+                return range;
+            }
+        });
+
+        rangesToRemove.forEach(range => {
+            if (!range)
+                return;
+
+            const rangeIndex = this._ranges.indexOf(range);
+            range.remove();
+            this._ranges.splice(rangeIndex, 1);
+        });
+        handlerToRemove.remove();
+        this._handlers.splice(handlerToRemoveIndex, 1);
     }
 
     private _clearHandlers() {

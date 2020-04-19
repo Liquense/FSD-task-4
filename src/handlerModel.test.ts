@@ -5,14 +5,14 @@ let testModel = new Model();
 let testHandlerModel: HandlerModel;
 
 beforeEach(() => {
-    testHandlerModel = new HandlerModel("testVal", 5, 0, testModel);
+    testHandlerModel = new HandlerModel("testVal", 5, testModel, 0);
 });
 
 test("Инициализация", () => {
     const origSetItemIndex = HandlerModel.prototype.setItemIndex;
     HandlerModel.prototype.setItemIndex = jest.fn();
 
-    testHandlerModel = new HandlerModel("testVal", 5, 0, testModel);
+    testHandlerModel = new HandlerModel("testVal", 5, testModel, 0);
     expect(testHandlerModel.value).toBe("testVal");
     expect(testHandlerModel.itemIndex).toBe(5);
     expect(testHandlerModel.handlerIndex).toBe(0);

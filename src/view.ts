@@ -56,8 +56,8 @@ export default class View implements Listenable, SliderView {
         this._slider.addHandler(handlerParams);
     }
 
-    public removeHandler() {
-
+    public removeHandler(handlerIndex: number) {
+        this._slider.removeHandler(handlerIndex);
     }
 
     public addSliderMousedownListener(listener: Function) {

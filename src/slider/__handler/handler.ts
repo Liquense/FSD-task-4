@@ -50,7 +50,6 @@ export default class HandlerView implements Listenable {
         return this.element.body.getBoundingClientRect().height;
     }
 
-
     public rangePair: number | string;
 
     constructor(public ownerSlider: Slider,
@@ -135,5 +134,9 @@ export default class HandlerView implements Listenable {
 
     public setTooltipVisibility(stateToSet: boolean) {
         this.tooltip.setVisibility(stateToSet);
+    }
+
+    public remove() {
+        this.element.wrap.remove();
     }
 }

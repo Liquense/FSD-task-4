@@ -124,12 +124,13 @@ export default class Model implements Listenable {
 
         this._occupiedItems = [];
         this._handlers = [];
-        const reducer = (newValueIndexes, handler, handlerIndex) => {
+        const reducer = (newValueIndexes, handler) => {
             const itemIndex = standardize(handler.value, this.standardizeParams);
 
-            const newHandler = this._createHandler(itemIndex, handlerIndex);
+            const newHandler = this._createHandler(itemIndex);
             if (newHandler !== null) {
                 newValueIndexes.push(newHandler);
+                newHandler.handlerIndex = newValueIndexes.length - 1;
             }
 
             return newValueIndexes;
@@ -141,11 +142,14 @@ export default class Model implements Listenable {
 
     public addHandler(itemIndex: number): { positionPart: number, value: any, handlerIndex: number, itemIndex: number } {
         const indexes = this._handlers.map(handler => handler.handlerIndex);
-        const newHandlerIndex = Math.max(...indexes) + 1;
+        const newHandlerIndex = Math.max(-1, ...indexes) + 1;
+        console.log(newHandlerIndex);
 
-        const newHandler = this._createHandler(itemIndex, newHandlerIndex);
+        const newHandler = this._createHandler(itemIndex);
         if (newHandler) {
             this._handlers.push(newHandler);
+            newHandler.handlerIndex = newHandlerIndex;
+
             return {
                 positionPart: newHandler.position,
                 value: newHandler.value,
@@ -154,6 +158,15 @@ export default class Model implements Listenable {
             }
         } else
             return undefined;
+    }
+
+    public removeHandler(handlerIndex: number) {
+        const handlerToRemoveIndex = this._handlers.findIndex(handler => handler.handlerIndex === handlerIndex);
+        if (handlerToRemoveIndex < 0)
+            return;
+
+        this.releaseItem(this._handlers[handlerToRemoveIndex].itemIndex);
+        this._handlers.splice(handlerToRemoveIndex, 1);
     }
 
     public calculateValue(valueOrIndex: number): any {
@@ -186,7 +199,7 @@ export default class Model implements Listenable {
      * @param itemIndex
      * @param handlerIndex
      */
-    private _createHandler(itemIndex: number, handlerIndex: number): HandlerModel {
+    private _createHandler(itemIndex: number): HandlerModel {
         let freeItemIndex: number;
 
         freeItemIndex = this.getFirstFreeItemIndex(itemIndex);
@@ -195,7 +208,7 @@ export default class Model implements Listenable {
         }
 
         const handlerValue = this._items?.length > 0 ? (this._items[freeItemIndex]) : (freeItemIndex);
-        return new HandlerModel(handlerValue, freeItemIndex, handlerIndex, this);
+        return new HandlerModel(handlerValue, freeItemIndex, this);
     };
 
 
@@ -241,7 +254,8 @@ export default class Model implements Listenable {
     public handleHandlerPositionChanged(data: { index: number, position: number }): void {
         const newStandardPosition = this._getItemIndexFromPosition(data.position);
 
-        this._handlers[data.index].setItemIndex(newStandardPosition);
+        const movingHandlerIndex = this._handlers.findIndex(handler => handler.handlerIndex === data.index);
+        this._handlers[movingHandlerIndex].setItemIndex(newStandardPosition);
     }
 
     public checkItemOccupancy(itemIndex): boolean {

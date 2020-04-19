@@ -108,10 +108,18 @@ export default class Controller {
         this._addHandlerView({...handlerData, rangePair: rangePair});
     }
 
-    private _addHandlerView(handlerParams: { positionPart: number, value: any, handlerIndex: number, rangePair: number | string}) {
+    private _addHandlerView(handlerParams: { positionPart: number, value: any, handlerIndex: number, rangePair: number | string }) {
         this._views.forEach(view => {
             view.addHandler(handlerParams);
         });
+    }
+
+    public removeHandler(handlerIndex: number) {
+        this._model.removeHandler(handlerIndex);
+
+        this._views.forEach(view => {
+            view.removeHandler(handlerIndex);
+        })
     }
 
     public setMin(newMin: number) {
@@ -172,5 +180,5 @@ export interface SliderView {
 
     addHandler(handlerParams: { positionPart: number, value: any, handlerIndex: number }): void;
 
-    removeHandler();
+    removeHandler(handlerIndex: number);
 }

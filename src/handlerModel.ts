@@ -19,8 +19,8 @@ export default class HandlerModel implements Listenable {
     constructor(
         private _value: any, //непосредственно значение
         public itemIndex: number, //нужно для вычисления положения
-        public handlerIndex: number,
         private readonly _parentModel: Model,
+        public handlerIndex?: number,
     ) {
         this.setItemIndex(itemIndex);
     }
