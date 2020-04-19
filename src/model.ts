@@ -127,25 +127,23 @@ export default class Model implements Listenable {
         const reducer = (newValueIndexes, handler) => {
             const itemIndex = standardize(handler.value, this.standardizeParams);
 
-            const newHandler = this._createHandler(itemIndex);
+            const newHandler = this._createHandler(itemIndex, newValueIndexes.length);
             if (newHandler !== null) {
                 newValueIndexes.push(newHandler);
-                newHandler.handlerIndex = newValueIndexes.length - 1;
             }
 
             return newValueIndexes;
         };
 
-        //Значение хэндлера - номер значения в массиве значений (если они заданы), либо число
+        //.value у хэндлера - номер значения в массиве значений (если они заданы), либо число
         this._handlers = handlersItemIndexes.reduce(reducer, []);
     }
 
     public addHandler(itemIndex: number): { positionPart: number, value: any, handlerIndex: number, itemIndex: number } {
         const indexes = this._handlers.map(handler => handler.handlerIndex);
         const newHandlerIndex = Math.max(-1, ...indexes) + 1;
-        console.log(newHandlerIndex);
 
-        const newHandler = this._createHandler(itemIndex);
+        const newHandler = this._createHandler(itemIndex, newHandlerIndex);
         if (newHandler) {
             this._handlers.push(newHandler);
             newHandler.handlerIndex = newHandlerIndex;
@@ -199,7 +197,7 @@ export default class Model implements Listenable {
      * @param itemIndex
      * @param handlerIndex
      */
-    private _createHandler(itemIndex: number): HandlerModel {
+    private _createHandler(itemIndex: number, handlerIndex: number): HandlerModel {
         let freeItemIndex: number;
 
         freeItemIndex = this.getFirstFreeItemIndex(itemIndex);
@@ -208,7 +206,7 @@ export default class Model implements Listenable {
         }
 
         const handlerValue = this._items?.length > 0 ? (this._items[freeItemIndex]) : (freeItemIndex);
-        return new HandlerModel(handlerValue, freeItemIndex, this);
+        return new HandlerModel(handlerValue, freeItemIndex, this, handlerIndex);
     };
 
 

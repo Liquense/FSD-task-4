@@ -20,7 +20,7 @@ export default class HandlerModel implements Listenable {
         private _value: any, //непосредственно значение
         public itemIndex: number, //нужно для вычисления положения
         private readonly _parentModel: Model,
-        public handlerIndex?: number,
+        public handlerIndex: number,
     ) {
         this.setItemIndex(itemIndex);
     }
