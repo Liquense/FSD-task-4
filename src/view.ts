@@ -13,10 +13,6 @@ export default class View implements Listenable, SliderView {
         this._slider = new Slider(this, parameters);
     }
 
-    public passVisualProps(parameters?: { isVertical?: boolean, tooltipsVisible?: boolean, withMarkup?: boolean }) {
-        this._slider.update(parameters);
-    };
-
     /**
      * Вызывается из слайдера, контроллер должен слушать данную функцию и получать результат для передачи в Модель
      * @param handlerIndex
@@ -45,6 +41,10 @@ export default class View implements Listenable, SliderView {
         this._slider.initHandlers(handlersData);
         this._slider.createRanges();
     }
+
+    public passVisualProps(parameters?: { isVertical?: boolean, tooltipsVisible?: boolean, withMarkup?: boolean }) {
+        this._slider.update(parameters);
+    };
 
     public passDataProps(sliderData: { min?: number, max?: number, step?: number }) {
         this._slider.update(sliderData);
