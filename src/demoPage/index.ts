@@ -20,7 +20,7 @@ let slider = $(sliderInitSelector).liquidSlider({
 slider.addView(panels[0]);
 panels[0].boundController = slider;
 
-let slider2 = $(sliderInitSelector).liquidSlider();
+let slider2 = $(sliderInitSelector).liquidSlider({isReversed: true});
 slider2.addView(panels[1]);
 panels[1].boundController = slider2;
 
