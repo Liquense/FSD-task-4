@@ -392,6 +392,7 @@ export default class Slider implements Listenable {
                 positionPart: number,
                 value: any,
                 withTooltip?: boolean,
+                rangePair?: string,
             }[]
         }) {
         this._clearHandlers();
@@ -407,7 +408,7 @@ export default class Slider implements Listenable {
                     if (index === 1)
                         newHandler.rangePair = this.isReversed ? this.rangePairEndKey : 0;
                 } else {
-                    newHandler.rangePair = this.isReversed ? this.rangePairStartKey : this.rangePairEndKey;
+                    newHandler.rangePair = this.isReversed ? this.rangePairEndKey : this.rangePairStartKey;
                 }
             }
 
