@@ -36,11 +36,11 @@ describe("Инициализация", () => {
         expect(testHandler.index).toBe(index);
         expect(testHandler.positionPart).toBe(positionPart);
         expect(testHandler.value).toBe(value);
-        expect(testHandler["_isEnd"]).toBe(null);
-        expect(mockTooltip).toBeCalledWith(testHandler.wrap, testHandler, {visibilityState: true});
+        expect(testHandler.rangePair).toBe(undefined);
+        expect(mockTooltip).toBeCalledWith(testHandler.element.wrap, testHandler, {visibilityState: true});
         await new Promise(resolve => {
             requestAnimationFrame(() => {
-                expect(testHandler["_tooltip"].updateHTML).toBeCalled();
+                expect(testHandler.tooltip.updateHTML).toBeCalled();
                 resolve();
             });
         });
@@ -49,10 +49,11 @@ describe("Инициализация", () => {
         mockTooltip.mockClear();
         const withTooltip = false;
         const isEnd = false;
-        testHandler = new HandlerView(testSlider, {index, positionPart, value, withTooltip});
+        const rangePair = null;
+        testHandler = new HandlerView(testSlider, {index, positionPart, value, withTooltip, rangePair});
 
-        expect(testHandler["_isEnd"]).toBe(isEnd);
-        expect(mockTooltip).toBeCalledWith(testHandler.wrap, testHandler, {visibilityState: withTooltip});
+        expect(testHandler.rangePair).toBe(rangePair);
+        expect(mockTooltip).toBeCalledWith(testHandler.element.wrap, testHandler, {visibilityState: withTooltip});
     });
 });
 
@@ -67,7 +68,7 @@ test("Установка позиции", () => {
         };
     });
 
-    testHandler["_tooltip"].getSize = function () {
+    testHandler.tooltip.getSize = function () {
         return 10;
     };
 
@@ -77,19 +78,19 @@ test("Установка позиции", () => {
         //@ts-ignore
         testSlider.offsetDirection = isVertical ? "top" : "left";
 
-        (testHandler["_tooltip"].updateHTML as Mock).mockClear();
+        (testHandler.tooltip.updateHTML as Mock).mockClear();
         testHandler.setPosition(parseFloat(value));
-        expect(testHandler.wrap.style[testSlider.offsetDirection]).toBe(`${parseFloat(value) * 100}px`);
-        expect(testHandler["_tooltip"].updateHTML).toBeCalled();
+        expect(testHandler.element.wrap.style[testSlider.offsetDirection]).toBe(`${parseFloat(value) * 100}px`);
+        expect(testHandler.tooltip.updateHTML).toBeCalled();
     }
 
     checkSettingPosition(true, 0.5);
     checkSettingPosition(false, 0.1);
 
-    (testHandler["_tooltip"].updateHTML as Mock).mockClear();
+    (testHandler.tooltip.updateHTML as Mock).mockClear();
     testHandler["element"] = undefined;
     testHandler.setPosition(0.5);
-    expect(testHandler["_tooltip"].updateHTML).not.toBeCalled();
+    expect(testHandler.tooltip.updateHTML).not.toBeCalled();
 });
 
 test("Получение центра хэндлера", () => {
@@ -121,20 +122,22 @@ describe("Вспомогательные функции", () => {
         expect(testHandler.body).toBe(body);
     });
 
-    test("Установка парного элемента в диапазоне", () => {
-
-    });
-
     test("Установка видимости тултипа", () => {
         const mockTooltip = (Tooltip as unknown as Mock);
         mockTooltip.mockClear();
 
         let testingVisibilityState = true;
         testHandler.setTooltipVisibility(testingVisibilityState);
-        expect(testHandler["_tooltip"].setVisibility).toBeCalledWith(testingVisibilityState);
+        expect(testHandler.tooltip.setVisibility).toBeCalledWith(testingVisibilityState);
 
         testingVisibilityState = false;
         testHandler.setTooltipVisibility(testingVisibilityState);
-        expect(testHandler["_tooltip"].setVisibility).toBeCalledWith(testingVisibilityState);
+        expect(testHandler.tooltip.setVisibility).toBeCalledWith(testingVisibilityState);
     })
+
+    test("Удаление", () => {
+        expect(document.body.innerHTML).toBe(testHandler.element.wrap.outerHTML);
+        testHandler.remove();
+        expect(document.body.innerHTML).toBe('');
+    });
 });
