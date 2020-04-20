@@ -34,10 +34,6 @@ export default class HandlerView implements Listenable {
         body: HTMLElement,
     };
 
-    get wrap(): HTMLElement {
-        return this.element.wrap;
-    };
-
     get body(): HTMLElement {
         return this.element.body;
     };
