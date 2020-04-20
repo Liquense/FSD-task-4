@@ -73,7 +73,7 @@ export default class Slider implements Listenable {
     private _activeHandler: HandlerView;
 
     public isVertical = false;
-    public isReversed = true;
+    public isReversed = false;
     private _tooltipsAreVisible = true;
     private _withMarkup = false;
     private _markup: MarkupView;
@@ -224,9 +224,9 @@ export default class Slider implements Listenable {
         );
     }
 
-    private _boundHandleDocumentMouseOut = this._handleDocumentMouseOut.bind(this);
+    private _boundHandleWindowMouseOut = this._handleWindowMouseOut.bind(this);
 
-    private _handleDocumentMouseOut(event: MouseEvent) {
+    private _handleWindowMouseOut(event: MouseEvent) {
         const from = event.target as HTMLElement;
         if (from.nodeName === "HTML")
             document.body.removeEventListener("mousemove", this._handleMouseMoveBound);
@@ -243,7 +243,7 @@ export default class Slider implements Listenable {
 
     private _handleMouseUp(event: MouseEvent): void {
         document.body.removeEventListener("mousemove", this._handleMouseMoveBound);
-        document.body.removeEventListener("mouseout", this._handleDocumentMouseOut);
+        document.body.removeEventListener("mouseout", this._handleWindowMouseOut);
     }
 
     private _handleMouseDown(event: MouseEvent): MouseEvent {
@@ -259,7 +259,7 @@ export default class Slider implements Listenable {
         document.body.addEventListener("mousemove", this._handleMouseMoveBound);
 
         //проверка на выход за пределы окна браузера
-        window.addEventListener("mouseout", this._boundHandleDocumentMouseOut);
+        window.addEventListener("mouseout", this._boundHandleWindowMouseOut);
 
         return event; //для обработки события пользовательскими функциями
     }
@@ -456,6 +456,7 @@ export default class Slider implements Listenable {
             range.remove();
             this._ranges.splice(rangeIndex, 1);
         });
+
         handlerToRemove.remove();
         this._handlers.splice(handlerToRemoveIndex, 1);
     }
@@ -517,6 +518,7 @@ export default class Slider implements Listenable {
         if (data.withMarkup !== undefined) {
             this._withMarkup = data.withMarkup;
         }
+
         this._refreshElements();
     }
 
@@ -531,8 +533,8 @@ export default class Slider implements Listenable {
             handler.refreshPosition();
         });
 
-        this._elements.min.innerText = this._min.toFixed(2);
-        this._elements.max.innerText = this._max.toFixed(2);
+        this._elements.min.innerText = this._min?.toFixed(2);
+        this._elements.max.innerText = this._max?.toFixed(2);
     }
 
     public addOnMouseDownListener(listener: Function) {
