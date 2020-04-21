@@ -6,13 +6,17 @@ jest.mock("../__handler/handler");
 jest.mock("../slider");
 let testRange: RangeView;
 
-const testSlider = new Slider(null, {});
+let testSlider = new Slider(null, {});
 // @ts-ignore
 testSlider.scaleStart = 0;
 // @ts-ignore
 testSlider.scaleEnd = 100;
 // @ts-ignore
 testSlider.scaleBorderWidth = 2;
+testSlider.rangePairOptions = new Map()
+    .set(null, null)
+    .set(`start`, false)
+    .set(`end`, true);
 
 const horizontalClass = "horizontal", verticalClass = "vertical";
 testSlider.getOrientationClass = jest.fn(function () {
@@ -35,11 +39,11 @@ describe("Инициализация", () => {
 
     describe("Правильное назначение хэндлеров", () => {
         test("Один хэндлер", () => {
-            //firstHandler.isStart = false;
+            firstHandler.rangePair = `start`;
             testRange = new RangeView(testSlider, document.body, firstHandler);
             expect(testRange.endHandler).toBe(firstHandler);
 
-            //firstHandler.isStart = true;
+            firstHandler.rangePair = `end`;
             testRange = new RangeView(testSlider, document.body, firstHandler);
             expect(testRange.startHandler).toBe(firstHandler);
         });
@@ -91,7 +95,7 @@ describe("Инициализация", () => {
             test("Один хэндлер", async () => {
                 function initTest(handlerSide, offsetDirection, expandDimension) {
                     return new Promise(resolve => {
-                        //firstHandler.isStart = handlerSide;
+                        firstHandler.rangePair = handlerSide;
                         //@ts-ignore
                         testSlider.offsetDirection = offsetDirection;
                         //@ts-ignore
@@ -105,19 +109,19 @@ describe("Инициализация", () => {
                     });
                 }
 
-                await initTest(true, "left", "width");
+                await initTest(`end`, "left", "width");
                 expect(testRange["_element"].style.left).toBe(`20px`);
                 expect(testRange["_element"].style.width).toBe("78px");
 
-                await initTest(true, "top", "height");
+                await initTest(`end`, "top", "height");
                 expect(testRange["_element"].style.top).toBe(`20px`);
                 expect(testRange["_element"].style.height).toBe("78px");
 
-                await initTest(false, "left", "width");
+                await initTest(`start`, "left", "width");
                 expect(testRange["_element"].style.left).toBe(`2px`);
                 expect(testRange["_element"].style.width).toBe("18px");
 
-                await initTest(false, "top", "height");
+                await initTest(`start`, "top", "height");
                 expect(testRange["_element"].style.top).toBe(`2px`);
                 expect(testRange["_element"].style.height).toBe("18px");
             });
@@ -164,9 +168,11 @@ describe("Инициализация", () => {
 
         expect(mockUpdatePosition.mock.calls.length).toBe(0);
 
+        testSlider.isVertical = true;
         firstHandler["refreshPosition"]();
         expect(mockUpdatePosition.mock.calls.length).toBe(1);
 
+        testSlider.isVertical = false;
         secondHandler["refreshPosition"]();
         expect(mockUpdatePosition.mock.calls.length).toBe(2);
     });
