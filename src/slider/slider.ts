@@ -179,20 +179,18 @@ export default class Slider implements Listenable {
             operableObjects.push(range)
         })
 
-        if (typeof newState === "boolean") {
-            const oldOrientClass = this.getOrientationClass();
-            this.isVertical = newState;
-            const newOrientClass = this.getOrientationClass();
+        const oldOrientClass = this.getOrientationClass();
+        this.isVertical = newState;
+        const newOrientClass = this.getOrientationClass();
 
-            operableObjects.forEach(obj => {
-                for (let key in obj) {
-                    if (obj[key]?.classList) {
-                        obj[key].classList.remove(oldOrientClass);
-                        obj[key].classList.add(newOrientClass);
-                    }
+        operableObjects.forEach(obj => {
+            for (let key in obj) {
+                if (obj[key]?.classList) {
+                    obj[key].classList.remove(oldOrientClass);
+                    obj[key].classList.add(newOrientClass);
                 }
-            });
-        }
+            }
+        });
     }
 
     public setTooltipsVisibility(stateToSet?: boolean): void {
@@ -212,7 +210,7 @@ export default class Slider implements Listenable {
     private setMouseEvents() {
         document.body.addEventListener(
             "mousedown",
-            this.handleDocumentMouseDown.bind(this)
+            this._handleDocumentMouseDown.bind(this)
         );
         this._elements.body.addEventListener(
             "mousedown",
@@ -232,9 +230,9 @@ export default class Slider implements Listenable {
             document.body.removeEventListener("mousemove", this._handleMouseMoveBound);
     }
 
-    private handleDocumentMouseDown(event: MouseEvent) {
-        let targetElement = (event.target) as HTMLElement;
-        if (!this._elements.wrap.contains(targetElement)) {
+    private _handleDocumentMouseDown(event: MouseEvent) {
+        let target = (event.target) as HTMLElement;
+        if (!this._elements.wrap.contains(target)) {
             this.deactivateActiveHandler();
         }
     }
@@ -495,28 +493,28 @@ export default class Slider implements Listenable {
 
     //обновление информации для отображения (для изменений после создания)
     public update(
-        data:
+        data?:
             {
                 min?: number, max?: number, step?: number,
                 isVertical?: boolean, tooltipsVisible?: boolean, withMarkup?: boolean
             }
     ) {
-        if (Number.isFinite(data.step)) {
+        if (Number.isFinite(data?.step)) {
             this._step = data.step;
         }
-        if (Number.isFinite(data.min)) {
+        if (Number.isFinite(data?.min)) {
             this._min = data.min;
         }
-        if (Number.isFinite(data.max)) {
+        if (Number.isFinite(data?.max)) {
             this._max = data.max;
         }
-        if (data.tooltipsVisible !== undefined) {
+        if (data?.tooltipsVisible !== undefined) {
             this.setTooltipsVisibility(data.tooltipsVisible);
         }
-        if (data.isVertical !== undefined) {
+        if (data?.isVertical !== undefined) {
             this.setOrientation(data.isVertical);
         }
-        if (data.withMarkup !== undefined) {
+        if (data?.withMarkup !== undefined) {
             this._withMarkup = data.withMarkup;
         }
 

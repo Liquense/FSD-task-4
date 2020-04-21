@@ -7,6 +7,7 @@ export default class RangeView {
     public startHandler: HandlerView;
     public endHandler: HandlerView;
     private _element: HTMLElement;
+    private handlerRefreshPositionName = `refreshPosition`;
 
     constructor(private parentSlider: Slider, public parentElement: HTMLElement, firstHandler: HandlerView, secondHandler?: HandlerView) {
         if (secondHandler)
@@ -20,9 +21,9 @@ export default class RangeView {
         requestAnimationFrame(this.refreshPosition.bind(this));
         //слушаем изменения хэндлеров, между которыми ренж
         if (this.startHandler)
-            addListenerAfter("refreshPosition", this._boundUpdatePosition, this.startHandler);
+            addListenerAfter(this.handlerRefreshPositionName, this._boundRefreshPosition, this.startHandler);
         if (this.endHandler)
-            addListenerAfter("refreshPosition", this._boundUpdatePosition, this.endHandler);
+            addListenerAfter(this.handlerRefreshPositionName, this._boundRefreshPosition, this.endHandler);
     }
 
     private createElement(): void {
@@ -35,7 +36,7 @@ export default class RangeView {
         this.parentElement.appendChild(body);
     }
 
-    private _boundUpdatePosition = this.refreshPosition.bind(this);
+    private _boundRefreshPosition = this.refreshPosition.bind(this);
 
     public refreshPosition() {
         const firstCoordinate = this.startHandler ?
@@ -70,23 +71,13 @@ export default class RangeView {
         }
     };
 
-    //TODO
-    //
-    // public addHandler(handler: HandlerView) {
-    //
-    // }
-    //
-    // public removeHandler(handler: HandlerView) {
-    //
-    // }
-
     public hasHandler(handler: HandlerView) {
         return handler === this.startHandler || handler === this.endHandler;
     }
 
     public remove() {
-        removeListener("updatePosition", this._boundUpdatePosition, this.startHandler);
-        removeListener("updatePosition", this._boundUpdatePosition, this.endHandler);
+        removeListener(this.handlerRefreshPositionName, this._boundRefreshPosition, this.startHandler);
+        removeListener(this.handlerRefreshPositionName, this._boundRefreshPosition, this.endHandler);
         this._element.remove();
     };
 }
