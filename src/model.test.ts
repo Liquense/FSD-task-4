@@ -1,5 +1,4 @@
 import Model from "./model";
-import handlerModel from "./handlerModel";
 import {KeyStringObj} from "./common";
 
 jest.mock("./controller");
@@ -66,64 +65,6 @@ describe("Инициализация", () => {
     describe("Установка полей", () => {
         beforeEach(() => {
             testModel = new Model();
-        });
-
-        test("Установка минимальных и максимальных значений", () => {
-            let oldMax = testModel.max,
-                oldMin = testModel.min;
-            //проверяем исходные данные
-            testModel["_setMinMax"]();
-            expect(testModel.max).toBe(oldMax);
-            expect(testModel.min).toBe(oldMin);
-
-            //устанавливаем только минимум
-            let newMin = 20, newMax = 100;
-            testModel["_setMinMax"]({min: newMin});
-            expect(testModel.max).toBe(oldMax);
-            expect(testModel.min).toBe(newMin);
-
-            //устанавливаем только максимум
-            testModel["_setMinMax"]({max: newMax});
-            expect(testModel.max).toBe(newMax);
-            expect(testModel.min).toBe(newMin);
-
-            //устанавливаем минимум и максимум
-            testModel["_setMinMax"]({max: oldMax, min: oldMin});
-            expect(testModel.max).toBe(oldMax);
-            expect(testModel.min).toBe(oldMin);
-
-            //передаём набор своих значений
-            const testItems = [1, "test", 3];
-            testModel["_setMinMax"]({items: testItems});
-            expect(testModel.max).toBe(2);
-            expect(testModel.min).toBe(0);
-        });
-
-        test("Установка шага значений", () => {
-            let oldStep = testModel["_step"];
-            //если ничего не передано - ничего не меняется
-            testModel["_setStep"]();
-            expect(testModel["_step"]).toBe(oldStep);
-
-            //если переданы пользовательские значения, то шаг округляется
-            const testItems = [1, "test", 3];
-            testModel["_setStep"]({step: 2.6, items: testItems});
-            expect(testModel["_step"]).toBe(3);
-
-            //если пользовательские значения не переданы, шаг может быть и дробным
-            testModel["_setStep"]({step: 2.6});
-            expect(testModel["_step"]).toBe(2.6);
-        });
-
-        test("Установка набора пользовательских значений", () => {
-            let testItems = [1, "test", 3];
-            //с передачей пустого параметра должен установиться null
-            testModel.setItems(null);
-            expect(testModel["_items"]).toBe(null);
-
-            //c передачей массива любых значений - оно и передаётся
-            testModel.setItems(testItems);
-            expect(testModel["_items"]).toBe(testItems);
         });
 
         test("Создание хэндлеров с пользовательскими значениями", () => {
@@ -221,46 +162,195 @@ describe("Инициализация", () => {
             testModel = new Model();
         });
 
-        test("Получение данных о хэндлерах", () => {
+        test("Получение из модели данных о хэндлерах", () => {
             //пользовательские хэндлеры
-            const testParameters3 = {handlers: [{value: 1}, {value: 3}]};
-            testModel = new Model(testParameters3);
+            const testParameters = {handlers: [{value: 1}, {value: 3}]};
+            testModel = new Model(testParameters);
+
             expect(testModel.getHandlersData()).toStrictEqual({
                 customHandlers: true, handlersArray: [
-                    {index: 0, value: 1, positionPart: 0.1}, {index: 1, value: 3, positionPart: 0.3}
+                    {index: 0, value: 1, positionPart: 0.1, valueIndex: 1}, {
+                        index: 1,
+                        value: 3,
+                        positionPart: 0.3,
+                        valueIndex: 3
+                    }
                 ]
             });
             //стандартные хэндлеры
             testModel = new Model({isRange: true});
             expect(testModel.getHandlersData()).toStrictEqual({
                 customHandlers: false, handlersArray: [
-                    {index: 0, value: 3, positionPart: 0.3}, {index: 1, value: 7, positionPart: 0.7}
+                    {index: 0, value: 3, positionPart: 0.3, valueIndex: 3}, {
+                        index: 1,
+                        value: 7,
+                        positionPart: 0.7,
+                        valueIndex: 7
+                    }
                 ]
             });
         });
 
-        test("Получение данных для слайдера", () => {
-            expect(testModel.getSliderData()).toStrictEqual({step: testModel["_step"] / testModel.range});
+        test("Получение из модели данных для слайдера", () => {
+            expect(testModel.getSliderData()).toStrictEqual({
+                    step: testModel["_step"] / testModel.range,
+                    absoluteStep: testModel["_step"],
+                    min: testModel["_min"],
+                    max: testModel["_max"],
+                }
+            );
         });
 
         test("Обработка изменения позиции хэндлера", () => {
             // @ts-ignore
-            const spyGetValueIndexFromPosition = jest.spyOn(testModel, "_getItemIndexFromPosition");
+            const spyGetItemIndexFromPosition = jest.spyOn(testModel, "_getItemIndexFromPosition");
             const testData = {index: 0, position: 0.6};
             const spySetItemIndex = jest.spyOn(testModel["_handlers"][testData.index], "setItemIndex");
 
+            //обычная ситуация
             testModel.handleHandlerPositionChanged(testData);
-            expect(spyGetValueIndexFromPosition).toBeCalledWith(testData.position);
-            expect(spySetItemIndex)
-                .toBeCalledWith(spyGetValueIndexFromPosition.mock.results[0].value);
+            expect(spyGetItemIndexFromPosition).toBeCalledWith(testData.position);
+            expect(spySetItemIndex).toBeCalledWith(spyGetItemIndexFromPosition.mock.results[0].value);
+
+            //если последнее значение не делится ровно на шаг
+            testModel.setMinMax({min: 0, max: 10});
+            testModel.setStep({step: 3});
+            testData.position = 1;
+            //несмотря на то, что 10 ближе к 9 (и округление по шагу должно быть в сторону 9),
+            //при перемещении хэндлера на крайнюю позицию значение не округляется (и соответственно сохраняется максимальное)
+            testModel.handleHandlerPositionChanged(testData);
+            expect(spySetItemIndex).toBeCalledWith(10);
         });
 
         test("Обработчик изменения значения хэндлера", () => {
             const testedHandler = testModel["_handlers"][0];
 
             expect(testModel.handlerValueChanged(testedHandler)).toStrictEqual({
-                index: 0, position: testedHandler.position, value: testedHandler.value
+                index: 0, relativeValue: testedHandler.position, item: testedHandler.value
             });
         });
     });
 });
+
+describe("Функции", () => {
+    beforeEach(() => {
+        testModel = new Model();
+    });
+
+    test("Установка набора пользовательских значений", () => {
+        let testItems = [1, "test", 3];
+        //с передачей пустого параметра должен установиться null
+        testModel.setItems(null);
+        expect(testModel["_items"]).toBe(null);
+
+        //c передачей массива любых значений - оно и передаётся
+        testModel.setItems(testItems);
+        expect(testModel["_items"]).toBe(testItems);
+    });
+
+    test("Установка минимальных и максимальных значений", () => {
+        let oldMax = testModel.max,
+            oldMin = testModel.min;
+        //проверяем исходные данные
+        testModel.setMinMax();
+        expect(testModel.max).toBe(oldMax);
+        expect(testModel.min).toBe(oldMin);
+
+        //устанавливаем только минимум
+        //если минимум меньше старого максимума - ничего не происходит
+        let newMin = 20, newMax: number;
+        testModel.setMinMax({min: newMin});
+        expect(testModel.min).toBe(oldMin);
+        expect(testModel.max).toBe(oldMax);
+        //если всё в порядке - должен поменяться минимум у модели
+        newMin = 5;
+        testModel.setMinMax({min: newMin});
+        expect(testModel.min).toBe(newMin);
+        expect(testModel.max).toBe(oldMax);
+        expect(testModel["_handlers"][0].itemIndex).toBeGreaterThanOrEqual(newMin); //после установки минимума или максимума пересчитывается и положение хэндлеров
+
+        //устанавливаем только максимум
+        //если максимум меньше старого минимума - ничего не произойдёт
+        oldMin = newMin;
+        newMax = 0;
+        testModel.setMinMax({max: newMax});
+        expect(testModel.min).toBe(oldMin);
+        expect(testModel.max).toBe(oldMax);
+        //если всё в порядке - меняется максимум у модели
+        newMax = 30;
+        testModel.setMinMax({max: newMax});
+        expect(testModel.min).toBe(oldMin);
+        expect(testModel.max).toBe(newMax);
+
+        //устанавливаем минимум и максимум
+        //Если минимум больше максимума - ничего не происходит
+        oldMax = newMax;
+        newMin = 10;
+        newMax = 0;
+        testModel.setMinMax({max: newMax, min: newMin});
+        expect(testModel.max).toBe(oldMax);
+        expect(testModel.min).toBe(oldMin);
+        //если всё нормально - меняются оба значения
+        newMax = 100;
+        testModel.setMinMax({min: newMin, max: newMax});
+        expect(testModel.min).toBe(newMin);
+        expect(testModel.max).toBe(newMax);
+    });
+
+    test("Установка шага значений", () => {
+        let oldStep = testModel["_step"];
+        //если ничего не передано - ничего не меняется
+        testModel.setStep();
+        expect(testModel["_step"]).toBe(oldStep);
+
+        //если переданы пользовательские значения, то шаг округляется
+        const testItems = [1, "test", 3];
+        testModel.setStep({step: 2.6, items: testItems});
+        expect(testModel["_step"]).toBe(3);
+
+        //если пользовательские значения не переданы, шаг может быть и дробным
+        testModel.setStep({step: 2.6});
+        expect(testModel["_step"]).toBe(2.6);
+    });
+
+    test("Добавление хэндлера", () => {
+        let oldHandlers = [...testModel["_handlers"]];
+
+        //если всё в порядке
+        testModel.addHandler(7);
+        expect(testModel["_handlers"].pop().itemIndex).toBe(7); //у нового хэндлера нужное нам значение
+        expect(testModel["_handlers"]).toStrictEqual(oldHandlers); //если его убрать (.pop() выше), то будет старый набор хэндлеров
+
+        //если все значения заняты
+        testModel.setMinMax({min: 0, max: 1});
+        testModel.setStep({step: 1});
+        testModel.addHandler(1); //на этот хэндлер места хватит
+        oldHandlers = [...testModel["_handlers"]];
+        const functionResult = testModel.addHandler(1); //а на этот - нет
+        expect(testModel["_handlers"]).toStrictEqual(oldHandlers);
+        expect(functionResult).toBe(null); //при неудачной вставке должен возвращаться null
+    });
+
+    test("Удаление хэндлера", () => {
+        testModel.addHandler(7);
+        testModel.addHandler(8);
+        testModel.addHandler(9);
+        let oldHandlers = [...testModel["_handlers"]];
+
+        //если такой хэндлер есть
+        let removingIndex = 1;
+        expect(testModel["_handlers"].some(handler => handler.handlerIndex === removingIndex)).toBeTruthy(); //проверяем, что данный хэндлер есть до удаления
+        let removingResult = testModel.removeHandler(removingIndex);
+        expect(testModel["_handlers"].length === oldHandlers.length - 1).toBeTruthy();
+        expect(testModel["_handlers"].some(handler => handler.handlerIndex === removingIndex)).toBeFalsy(); //проверяем, что после удаления хэндлер пропал
+        expect(removingResult).toBeTruthy();
+
+        //если хэндлера с таким индексом нет
+        oldHandlers = [...testModel["_handlers"]];
+        removingIndex = 111;
+        expect(testModel["_handlers"].some(handler => handler.handlerIndex === removingIndex)).toBeFalsy(); //проверяем, что данный хэндлер есть до удаления
+        removingResult = testModel.removeHandler(removingIndex);
+        expect(testModel["_handlers"].length === oldHandlers.length).toBeTruthy(); //длина массива хэндлеров остаётся прежней
+        expect(removingResult).toBeFalsy(); //функция возвращает false, если хэндлер не найден
+    });
+})
