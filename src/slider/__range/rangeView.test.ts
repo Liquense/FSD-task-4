@@ -48,7 +48,7 @@ describe("Инициализация", () => {
             expect(testRange.startHandler).toBe(firstHandler);
         });
         test("Два хэндлера", () => {
-            let testTwoHandlers = function (firstPos, secondPos) {
+            let testTwoHandlers = function (firstPos: number, secondPos: number) {
                 //@ts-ignore
                 firstHandler.positionPart = firstPos;
                 //@ts-ignore
@@ -93,7 +93,7 @@ describe("Инициализация", () => {
             });
 
             test("Один хэндлер", async () => {
-                function initTest(handlerSide, offsetDirection, expandDimension) {
+                function initTest(handlerSide: string, offsetDirection: string, expandDimension: string) {
                     return new Promise(resolve => {
                         firstHandler.rangePair = handlerSide;
                         //@ts-ignore
@@ -132,7 +132,7 @@ describe("Инициализация", () => {
                 //@ts-ignore
                 secondHandler.positionPart = 1;
 
-                function initTest(offsetDirection, expandDimension) {
+                function initTest(offsetDirection: string, expandDimension: string) {
                     return new Promise(resolve => {
                         //@ts-ignore
                         testSlider.offsetDirection = offsetDirection;

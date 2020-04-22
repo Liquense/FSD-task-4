@@ -5,7 +5,7 @@ import "./index.scss"
 
 const sliderInitSelector = ".initSliderHere";
 const panelSelector = ".panel";
-const panels = [];
+const panels: SliderPanel[] = [];
 
 $(panelSelector).get().forEach(panelWrap => {
     panels.push(new SliderPanel(panelWrap));

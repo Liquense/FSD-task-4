@@ -105,6 +105,9 @@ export default class Controller {
 
     public addHandler(itemIndex: number, rangePair?: number | string) {
         const handlerData = this._model.addHandler(itemIndex);
+        if (handlerData === undefined)
+            return;
+
         this._addHandlerView({...handlerData, rangePair: rangePair});
     }
 
@@ -180,5 +183,5 @@ export interface SliderView {
 
     addHandler(handlerParams: { positionPart: number, value: any, handlerIndex: number }): void;
 
-    removeHandler(handlerIndex: number);
+    removeHandler(handlerIndex: number): void;
 }

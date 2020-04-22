@@ -1,5 +1,6 @@
 import View from "./view";
 import Slider from "./slider/slider";
+import {KeyStringObj} from "./common";
 
 jest.mock("./slider/slider");
 const wrapperElement = document.createElement("div");
@@ -18,22 +19,24 @@ test("Создание экземпляра класса", () => {
 });
 
 describe("Функции", () => {
-    let mockSliderInstance;
+    let mockSliderInstance: jest.Mock;
 
-    function testFunctionCall(sliderFuncName: string, viewFuncName?: string, testData?, addParams?: object) {
+    function testFunctionCall(sliderFuncName: string, viewFuncName?: string, testData?: object, addParams?: object) {
         mockSlider.mockClear(); //чтобы не было старых вызовов функций
 
         if (viewFuncName)
-            testView[viewFuncName](testData);
+            (<KeyStringObj>testView)[viewFuncName](testData);
 
         let passData = testData;
-        if (addParams?.["passArray"])
+        if ((<KeyStringObj>addParams)?.["passArray"])
             passData = [testData];
 
         if (passData || passData === null)
-            expect(mockSliderInstance[sliderFuncName]).toBeCalledWith(passData);
+            expect((<KeyStringObj>mockSliderInstance)[sliderFuncName])
+                .toBeCalledWith(passData);
         else
-            expect(mockSliderInstance[sliderFuncName]).toBeCalled();
+            expect((<KeyStringObj>mockSliderInstance)[sliderFuncName])
+                .toBeCalled();
     }
 
     beforeEach(() => {
@@ -79,6 +82,7 @@ describe("Функции", () => {
     });
 
     test("Добавление слушателя на нажатие мыши", () => {
-        testFunctionCall("addOnMouseDownListener", "addSliderMousedownListener", () => {});
+        testFunctionCall("addOnMouseDownListener", "addSliderMousedownListener", () => {
+        });
     });
 });

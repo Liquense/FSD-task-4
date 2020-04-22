@@ -1,12 +1,13 @@
 import View from "../../view";
 import Slider from "../slider";
 import MarkupView from "./markup";
+import {KeyStringObj} from "../../common";
 
 document.body.innerHTML = '<div class="liquidSlider liquidSlider_horizontal"></div>';
 const sliderContainer = document.querySelector(".liquidSlider") as HTMLElement;
 const view = new View(sliderContainer, {});
-let slider = new Slider(view, {withMarkup: true});
-let markup: MarkupView;
+let slider: Slider & KeyStringObj = new Slider(view, {withMarkup: true});
+let markup: MarkupView & KeyStringObj;
 
 describe("Инициализация экземпляра разметки", function () {
     test("Конструктор разметки правильно заполняет владельца-слайдера", () => {
@@ -45,7 +46,7 @@ describe("Функционал разметки", function () {
         const dimension = slider.expandDimension;
         markup.addMark(null, null);
 
-        expect(markup["getMarkThickness"]()).toBe(markup["_marks"][0].getBoundingClientRect()[dimension]);
+        expect(markup["getMarkThickness"]()).toBe((<KeyStringObj>markup["_marks"][0].getBoundingClientRect())[dimension]);
     });
 
     describe("Получение относительной ширины метки", () => {
@@ -98,7 +99,7 @@ describe("Функционал разметки", function () {
             });
 
             test("Создание элемента с правильным стилем", () => {
-                function expectOffsetStyle () {
+                function expectOffsetStyle() {
                     markup.addMark(0.5, 0);
                     expect(markup["wrap"].innerHTML).toBe(
                         `<div class="liquidSlider__markup ${slider.getOrientationClass()}" style="${slider.offsetDirection}: 50%;"></div>`

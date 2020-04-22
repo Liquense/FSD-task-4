@@ -203,7 +203,7 @@ describe("Инициализация", () => {
         describe("Нажатие на кнопку мыши", () => {
             let testClicks: Function,
                 simulateMouseDown: Function,
-                spyOnPreventDefault,
+                spyOnPreventDefault: jest.SpyInstance,
                 testMouseDownEvent: Event;
 
             beforeAll(() => {
@@ -437,7 +437,7 @@ describe("Функции", () => {
     test("Обновление данных слайдера", () => {
         testSlider.createRanges();
 
-        const spies = [];
+        const spies: jest.SpyInstance[] = [];
         testSlider["_ranges"].forEach(range => {
             spies.push(jest.spyOn(range, `refreshPosition`));
         })
@@ -514,7 +514,8 @@ describe("Функции", () => {
         testSlider.addHandler(null);
         expect(testSlider.handlers).toStrictEqual(prevHandlers);
 
-        const testParams = {positionPart: 0.2, value: `hello`, handlerIndex: 33, rangePair: null};
+        let testParams: { rangePair: number; positionPart: number; handlerIndex: number; value: string };
+        testParams = {positionPart: 0.2, value: `hello`, handlerIndex: 33, rangePair: null};
         testSlider.addHandler(testParams)
         const newStartHandler = testSlider.handlers[testSlider.handlers.length - 1];
         expect(testSlider.handlers.length === prevHandlers.length + 1).toBeTruthy();
@@ -539,7 +540,8 @@ describe("Функции", () => {
         const prevRanges = [...testSlider["_ranges"]];
 
         //хэндлер без диапазона
-        const testParams = {positionPart: 0.2, value: `hello`, handlerIndex: 44, rangePair: null};
+        let testParams: { rangePair: number; positionPart: number; handlerIndex: number; value: string };
+        testParams = {positionPart: 0.2, value: `hello`, handlerIndex: 44, rangePair: null};
         testSlider.addHandler(testParams);
         testSlider.removeHandler(44);
         expect(testSlider.handlers).toStrictEqual(prevHandlers);

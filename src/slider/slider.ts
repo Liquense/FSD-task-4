@@ -1,6 +1,14 @@
 import HandlerView from "./__handler/handler";
 import RangeView from "./__range/rangeView";
-import {addListenerAfter, clamp, defaultSliderClass, Listenable, roundToDecimal, standardize} from "../common";
+import {
+    addListenerAfter,
+    clamp,
+    defaultSliderClass,
+    KeyStringObj,
+    Listenable,
+    roundToDecimal,
+    standardize
+} from "../common";
 import View from "../view";
 import MarkupView from "./_markup/markup";
 
@@ -9,6 +17,7 @@ export default class Slider implements Listenable {
 
     private static _defaultSliderClass = "liquidSlider";
     private _elements: {
+        [key: string]: HTMLElement,
         wrap: HTMLElement,
         body: HTMLElement,
         scale: HTMLElement,
@@ -99,8 +108,11 @@ export default class Slider implements Listenable {
 
     private _ranges: RangeView[] = [];
 
-    public getScaleLength() {
-        return this._elements.scale.getBoundingClientRect()[this.expandDimension];
+
+    public getScaleLength(): number {
+        return Number.parseFloat(
+            (<KeyStringObj>this._elements.scale.getBoundingClientRect())[this.expandDimension]
+        );
     }
 
     constructor(private _parentView: View,
@@ -164,7 +176,7 @@ export default class Slider implements Listenable {
     };
 
     public setOrientation(newState: boolean) {
-        const operableObjects: object[] = [this._elements];
+        const operableObjects: KeyStringObj[] = [this._elements];
 
         if (this._markup?.wrap) {
             operableObjects.push({wrap: this._markup.wrap});
@@ -176,7 +188,7 @@ export default class Slider implements Listenable {
         });
 
         this._ranges.forEach(range => {
-            operableObjects.push(range)
+            operableObjects.push(range);
         })
 
         const oldOrientClass = this.getOrientationClass();
@@ -239,7 +251,7 @@ export default class Slider implements Listenable {
 
     private _handleMouseMoveBound = this._handleMouseMove.bind(this); //хранится для корректного удаления слушателя
 
-    private _handleMouseUp(event: MouseEvent): void {
+    private _handleMouseUp(): void {
         document.body.removeEventListener("mousemove", this._handleMouseMoveBound);
         document.body.removeEventListener("mouseout", this._handleWindowMouseOut);
     }

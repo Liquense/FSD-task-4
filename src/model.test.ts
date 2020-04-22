@@ -1,20 +1,21 @@
 import Model from "./model";
 import handlerModel from "./handlerModel";
+import {KeyStringObj} from "./common";
 
 jest.mock("./controller");
 
-let testModel: Model;
+let testModel: Model & KeyStringObj;
 const createHandlersFN = "_createHandlers",
     generateDefaultHandlersItemIndexesFN = "_generateDefaultHandlersItemIndexes";
 
 
 describe("Инициализация", () => {
     test("Конструктор", () => {
-        const origSetMinMax = Model.prototype["_setMinMax"];
-        const mockSetMinMax = Model.prototype["_setMinMax"] = jest.fn();
+        const origSetMinMax = Model.prototype.setMinMax;
+        const mockSetMinMax = Model.prototype.setMinMax = jest.fn();
 
-        const origSetStep = Model.prototype["_setStep"];
-        const mockSetStep = Model.prototype["_setStep"] = jest.fn();
+        const origSetStep = Model.prototype.setStep;
+        const mockSetStep = Model.prototype.setStep = jest.fn();
 
         const origSetItems = Model.prototype.setItems;
         const mockSetItems = Model.prototype.setItems = jest.fn();
@@ -55,8 +56,8 @@ describe("Инициализация", () => {
         expect(mockSetItems).toBeCalledWith(undefined);
         expect(mockCreateCustomHandlers).toBeCalledWith(testParameters3.handlers);
 
-        Model.prototype["_setMinMax"] = origSetMinMax;
-        Model.prototype["_setStep"] = origSetStep;
+        Model.prototype.setMinMax = origSetMinMax;
+        Model.prototype.setStep = origSetStep;
         Model.prototype.setItems = origSetItems;
         Model.prototype[createHandlersFN] = origCreateCustomHandlers;
         Model.prototype[generateDefaultHandlersItemIndexesFN] = origGenerateDefaultHandlers;

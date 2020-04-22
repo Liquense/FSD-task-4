@@ -8,12 +8,13 @@ export default class Tooltip {
         this._value = value;
         this.innerHTML = value;
     }
+
     get value() {
         return this._value;
     }
 
     private _innerHTML: string = "";
-    set innerHTML(value) {
+    set innerHTML(value: any) {
         this._innerHTML = `${value}`;
         this.updateHTML();
     }
@@ -24,11 +25,6 @@ export default class Tooltip {
     }
 
     public static readonly defaultClass = defaultSliderClass + "__handlerTooltip";
-
-    private _addClasses: string[] = [];
-    public addClassesFromString(classesString: string) {
-        this._addClasses = parseClassesString(classesString);
-    }
 
     get width(): number {
         return this.element.getBoundingClientRect().width;
@@ -61,7 +57,6 @@ export default class Tooltip {
         let defaultParameters = this.initDefaultParameters();
         let parameters = {...defaultParameters, ...params};
 
-        this._addClasses = parameters.additionalClasses;
         this.createElement(parentElement);
         this.value = parameters.value;
         this.setVisibility(parameters.visibilityState !== undefined ? parameters.visibilityState : true);
@@ -69,7 +64,7 @@ export default class Tooltip {
 
     private initDefaultParameters() {
         return {
-            additionalClasses: [],
+            additionalClasses: <string[]>[],
             bodyHTML: this._innerHTML,
             withTooltip: true,
             isEnd: true,

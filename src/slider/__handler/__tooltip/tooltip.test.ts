@@ -1,6 +1,7 @@
 import HandlerView from "../handler";
 import Tooltip from "./tooltip";
 import Slider from "../../slider";
+import {KeyStringObj} from "../../../common";
 
 jest.mock("../handler");
 jest.mock("../../slider");
@@ -52,7 +53,7 @@ describe("Создание экземпляра", () => {
     });
 
     test("Корректное заполнение свойств", () => {
-        let tooltip = new Tooltip(handler["element"].body, handler);
+        let tooltip: Tooltip & KeyStringObj = new Tooltip(handler["element"].body, handler);
         expect(tooltip["_addClasses"]).toStrictEqual([]);
         expect(tooltip.value).toBe(undefined);
 
@@ -69,7 +70,6 @@ describe("Создание экземпляра", () => {
     });
 
     test("Создание элемента", () => {
-        let tooltip = new Tooltip(handler["element"].body, handler);
         expect(handler["element"].body.innerHTML)
             .toBe('<div class="liquidSlider__handlerTooltip defaultOrientClass">undefined</div>');
     });
@@ -118,7 +118,7 @@ describe("Функционал", () => {
     });
 
     test("Добавление классов", () => {
-        let tooltip = new Tooltip(handler["element"].body, handler);
+        let tooltip: Tooltip & KeyStringObj = new Tooltip(handler["element"].body, handler);
 
         tooltip.addClassesFromString("test1  test2 test3_anotherClass");
         expect(tooltip["_addClasses"]).toStrictEqual(["test1", "test2", "test3_anotherClass"]);

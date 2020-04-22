@@ -124,15 +124,15 @@ export default class Model implements Listenable {
 
         this._occupiedItems = [];
         this._handlers = [];
-        const reducer = (newValueIndexes, handler) => {
+        const reducer = (newHandlers: HandlerModel[], handler: HandlerModel) => {
             const itemIndex = standardize(handler.value, this.standardizeParams);
 
-            const newHandler = this._createHandler(itemIndex, newValueIndexes.length);
+            const newHandler = this._createHandler(itemIndex, newHandlers.length);
             if (newHandler !== null) {
-                newValueIndexes.push(newHandler);
+                newHandlers.push(newHandler);
             }
 
-            return newValueIndexes;
+            return newHandlers;
         };
 
         //.value у хэндлера - номер значения в массиве значений (если они заданы), либо число
@@ -256,7 +256,7 @@ export default class Model implements Listenable {
         this._handlers[movingHandlerIndex].setItemIndex(newStandardPosition);
     }
 
-    public checkItemOccupancy(itemIndex): boolean {
+    public checkItemOccupancy(itemIndex: number): boolean {
         return !(this._occupiedItems[itemIndex] === undefined);
     }
 

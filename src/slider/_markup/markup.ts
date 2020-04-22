@@ -1,5 +1,5 @@
 import SliderView from "../slider";
-import {defaultSliderClass} from "../../common";
+import {defaultSliderClass, KeyStringObj} from "../../common";
 
 export default class MarkupView {
     private _marks: HTMLElement[] = [];
@@ -8,7 +8,7 @@ export default class MarkupView {
 
     private getMarkThickness() {
         const dimension = this.ownerSlider.expandDimension;
-        return this._marks[0].getBoundingClientRect()[dimension];
+        return (<KeyStringObj>this._marks[0].getBoundingClientRect())[dimension];
     }
 
     private getRelativeMarkThickness(): number {
@@ -61,6 +61,6 @@ export default class MarkupView {
         this._marks.push(newMark);
 
         const markOffset = this.calculateMarkOffset(relativePosition, relativeHandlerSize);
-        newMark.style[this.ownerSlider.offsetDirection] = markOffset + "%";
+        (<KeyStringObj>newMark.style)[this.ownerSlider.offsetDirection] = markOffset + "%";
     }
 }

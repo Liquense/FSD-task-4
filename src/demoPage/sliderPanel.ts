@@ -78,21 +78,21 @@ export default class SliderPanel implements Listenable, SliderView {
 
     private _boundHandleStepInputChange = this._handleStepInputChange.bind(this);
 
-    private _handleStepInputChange(event: Event) {
+    private _handleStepInputChange() {
         const stepInput = this._elements.stepInput;
         this.boundController.setStep(Number.parseFloat(stepInput.value));
     }
 
     private _boundHandleMinInputChange = this._handleMinInputChange.bind(this);
 
-    private _handleMinInputChange(event: Event) {
+    private _handleMinInputChange() {
         const minInput = this._elements.minInput;
         this.boundController.setMin(Number.parseFloat(minInput.value));
     }
 
     private _boundHandleTooltipVisibilityInputChange = this._handleTooltipVisibilityInputChange.bind(this);
 
-    private _handleTooltipVisibilityInputChange(event: Event) {
+    private _handleTooltipVisibilityInputChange() {
         const tooltipVisibilityInput = this._elements.tooltipsVisibilityInput;
         this._tooltipsAreVisible = tooltipVisibilityInput.checked;
         this.boundController.setTooltipVisibility(tooltipVisibilityInput.checked);
@@ -100,7 +100,7 @@ export default class SliderPanel implements Listenable, SliderView {
 
     private _boundHandleMaxInputChange = this._handleMaxInputChange.bind(this);
 
-    private _handleMaxInputChange(event: Event) {
+    private _handleMaxInputChange() {
         const maxInput = this._elements.maxInput;
         this.boundController.setMax(Number.parseFloat(maxInput.value));
     }
@@ -138,7 +138,7 @@ export default class SliderPanel implements Listenable, SliderView {
         });
     }
 
-    private _addHandlerRangePairOption(optionKey, optionValue) {
+    private _addHandlerRangePairOption(optionKey: number | string, optionValue: number | string) {
         const handlerPairSelect = this._elements.newHandlerElements.handlerPairSelect;
 
         let textToShow: string;
@@ -151,7 +151,7 @@ export default class SliderPanel implements Listenable, SliderView {
         this.options.set(textToShow, optionValue);
 
         const optionElement = document.createElement(`option`);
-        optionElement.value = optionKey;
+        optionElement.value = optionKey.toString();
         optionElement.innerText = textToShow;
 
         handlerPairSelect.options.add(optionElement);
@@ -205,7 +205,7 @@ export default class SliderPanel implements Listenable, SliderView {
 
         SliderPanel._createLabel(labelText, elementName, propWrap);
 
-        this._elements[elementName + `Input`] = SliderPanel._createInput(elementName, propWrap, isCheckbox);
+        (<{ [key: string]: any }>this._elements)[elementName + `Input`] = SliderPanel._createInput(elementName, propWrap, isCheckbox);
 
         return propWrap;
     }

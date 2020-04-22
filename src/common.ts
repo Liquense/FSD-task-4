@@ -1,4 +1,5 @@
 export const defaultSliderClass = "liquidSlider";
+export type KeyStringObj = { [key: string]: any };
 
 export function parseClassesString(classesString: string): string[] {
     if (!classesString?.trim())
@@ -14,7 +15,7 @@ export interface Listenable {
     listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };
 }
 
-export function addListenerAfter(executorName: string, listener: Function, executorContext: Listenable) {
+export function addListenerAfter(executorName: string, listener: Function, executorContext: Listenable & KeyStringObj) {
     if (!executorContext)
         return;
     if (!executorContext.listenDictionary)
@@ -41,9 +42,9 @@ export function removeListener(executor: string, listener: Function, executorCon
     listeners.splice(listenerIndex, 1);
 }
 
-function bindListeners(executor: string, listeners: Function[], executorContext: Listenable) {
+function bindListeners(executor: string, listeners: Function[], executorContext: Listenable & KeyStringObj) {
     const pureFunc = executorContext.listenDictionary[executor].func;
-    executorContext[executor] = function (...args) {
+    executorContext[executor] = function (...args: any) {
         const functionResult = pureFunc.call(executorContext, ...args);
 
         //добавляется выполнение всех слушателей после исполнения функции
@@ -91,7 +92,7 @@ export function roundToDecimal(numToRound: number, decimalsCount: number) {
         multiplier *= 10;
     }
 
-    return  Math.round((numToRound + Number.EPSILON) * multiplier) / multiplier;
+    return Math.round((numToRound + Number.EPSILON) * multiplier) / multiplier;
 }
 
 export function calculateElementCenter(DOMElement: Element, isVertical: boolean): number {

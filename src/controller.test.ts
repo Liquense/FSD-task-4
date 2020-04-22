@@ -1,13 +1,13 @@
 import Controller, {SliderView} from "./controller";
 import Model from "./model";
 import View from "./view";
-import {addListenerAfter} from "./common";
+import {addListenerAfter, KeyStringObj} from "./common";
 
 jest.mock("./common");
 jest.mock("./view");
 jest.mock("./model");
 
-let testController: Controller;
+let testController: Controller & KeyStringObj;
 const rootElement = document.createElement("div");
 document.body.appendChild(rootElement);
 

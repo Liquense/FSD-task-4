@@ -1,13 +1,12 @@
 import {
     addListenerAfter,
     calculateElementCenter,
-    clamp,
+    clamp, KeyStringObj,
     Listenable,
     parseClassesString,
     removeListener,
     standardize
 } from "./common";
-import {returnStatement} from "@babel/types";
 
 test("Парсинг строки классов", () => {
     //передача пустого параметра
@@ -32,17 +31,19 @@ test("Парсинг строки классов", () => {
 });
 
 describe("Слушатель", () => {
-    let spyTestExecutor,
-        testListener,
-        testListener2;
-    let testContext;
-    beforeAll(() => {
-        class TestContext implements Listenable {
-            public listenDictionary: {[key: string] : { func: Function, listeners: Function[] }};
+    class TestContext implements Listenable {
+        public listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };
 
-            testExecutor = function () {
-            };
-        }
+        testExecutor() {
+        };
+    }
+
+    let spyTestExecutor: jest.SpyInstance,
+        testListener: jest.Mock,
+        testListener2: jest.Mock;
+    let testContext: TestContext & KeyStringObj;
+
+    beforeAll(() => {
 
         testContext = new TestContext();
         spyTestExecutor = jest.spyOn(testContext, "testExecutor");
@@ -100,7 +101,8 @@ describe("Слушатель", () => {
         expect(testListener2).toBeCalledTimes(++tl2Count);
 
         //передана функция, которой нет в списке (не должно ничего удалиться)
-        removeListener("testExecutor", () => {}, testContext);
+        removeListener("testExecutor", () => {
+        }, testContext);
         testContext.testExecutor();
         expect(spyTestExecutor).toBeCalledTimes(++steCount);
         expect(testListener).toBeCalledTimes(++tlCount);
@@ -142,7 +144,7 @@ test("Вычисление середины HTML-элемента в необх�
 
     //нулевой элемент
     Element.prototype.getBoundingClientRect = jest.fn(() => {
-        return {height: 0, width: 0, x: 0, y: 0, bottom: 0, left: 0, right: 0, top: 0, toJSON: null};
+            return {height: 0, width: 0, x: 0, y: 0, bottom: 0, left: 0, right: 0, top: 0, toJSON: null};
         }
     );
     let testElement = document.createElement("div");

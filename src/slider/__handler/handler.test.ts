@@ -2,6 +2,7 @@ import HandlerView from "./handler";
 import Slider from "../slider";
 import Tooltip from "./__tooltip/tooltip";
 import Mock = jest.Mock;
+import {KeyStringObj} from "../../common";
 
 jest.mock("../slider");
 jest.mock("./__tooltip/tooltip");
@@ -48,8 +49,7 @@ describe("Инициализация", () => {
         //с необязательными параметрами
         mockTooltip.mockClear();
         const withTooltip = false;
-        const isEnd = false;
-        const rangePair = null;
+        const rangePair: string = null;
         testHandler = new HandlerView(testSlider, {index, positionPart, value, withTooltip, rangePair});
 
         expect(testHandler.rangePair).toBe(rangePair);
@@ -72,15 +72,15 @@ test("Установка позиции", () => {
         return 10;
     };
 
-    function checkSettingPosition(isVertical, value) {
+    function checkSettingPosition(isVertical: boolean, value: number) {
         //@ts-ignore
         testSlider.expandDimension = isVertical ? "height" : "width";
         //@ts-ignore
         testSlider.offsetDirection = isVertical ? "top" : "left";
 
         (testHandler.tooltip.updateHTML as Mock).mockClear();
-        testHandler.setPosition(parseFloat(value));
-        expect(testHandler.element.wrap.style[testSlider.offsetDirection]).toBe(`${parseFloat(value) * 100}px`);
+        testHandler.setPosition(value);
+        expect((<KeyStringObj>testHandler.element.wrap.style)[testSlider.offsetDirection]).toBe(`${value * 100}px`);
         expect(testHandler.tooltip.updateHTML).toBeCalled();
     }
 

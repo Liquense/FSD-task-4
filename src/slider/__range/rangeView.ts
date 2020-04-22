@@ -57,8 +57,9 @@ export default class RangeView {
         this._element.style.removeProperty("width");
         this._element.style.removeProperty("height");
 
-        this._element.style[this.parentSlider.offsetDirection] = `${offset}px`;
-        this._element.style[this.parentSlider.expandDimension] = `${length}px`;
+
+        (<{[key: string]: any}>this._element.style)[this.parentSlider.offsetDirection] = `${offset}px`;
+        (<{[key: string]: any}>this._element.style)[this.parentSlider.expandDimension] = `${length}px`;
     }
 
     private arrangeHandlers(firstHandler: HandlerView, secondHandler: HandlerView) {

@@ -1,9 +1,9 @@
-import {calculateElementCenter, defaultSliderClass, Listenable} from "../../common";
+import {calculateElementCenter, defaultSliderClass, KeyStringObj, Listenable} from "../../common";
 import Tooltip from "./__tooltip/tooltip";
 import Slider from "../slider";
 
 export default class HandlerView implements Listenable {
-    listenDictionary: {[key: string] : { func: Function, listeners: Function[] }};
+    listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };
     public index: number;
 
     private _defaultClass = `${defaultSliderClass}__handler`;
@@ -89,7 +89,7 @@ export default class HandlerView implements Listenable {
 
 
     get size(): number {
-        return this[this.ownerSlider.expandDimension];
+        return (<KeyStringObj>this)[this.ownerSlider.expandDimension];
     }
 
     public calculateOffset(): number {
@@ -97,7 +97,7 @@ export default class HandlerView implements Listenable {
     }
 
     //добавляется смещение для правильного отображения хэндлера и тултипа, если тултип больше
-    private centerShift(shift): number {
+    private centerShift(shift: number): number {
         let handlerSize = this.size;
         let tooltipSize = this.tooltip.getSize();
 
@@ -118,7 +118,7 @@ export default class HandlerView implements Listenable {
         this.element.wrap.style.removeProperty("left");
         this.element.wrap.style.removeProperty("top");
 
-        this.element.wrap.style[this.ownerSlider.offsetDirection] = `${offset}px`;
+        (<KeyStringObj>this.element.wrap.style)[this.ownerSlider.offsetDirection] = `${offset}px`;
         this.tooltip.updateHTML();
     }
 
