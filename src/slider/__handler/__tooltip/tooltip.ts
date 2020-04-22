@@ -48,7 +48,6 @@ export default class Tooltip {
     constructor(parentElement: HTMLElement,
                 public parentHandler: HandlerView,
                 params?: {
-                    additionalClasses?: string[],
                     bodyHTML?: string,
                     value?: any,
                     visibilityState?: boolean,
