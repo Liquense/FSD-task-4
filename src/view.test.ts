@@ -6,7 +6,7 @@ jest.mock("./slider/slider");
 const wrapperElement = document.createElement("div");
 document.body.appendChild(wrapperElement);
 
-let testView: View;
+let testView: View & KeyStringObj;
 let mockSlider = (Slider as unknown as jest.Mock);
 
 test("Создание экземпляра класса", () => {
@@ -19,24 +19,22 @@ test("Создание экземпляра класса", () => {
 });
 
 describe("Функции", () => {
-    let mockSliderInstance: jest.Mock;
+    let mockSliderInstance: jest.Mock & KeyStringObj;
 
-    function testFunctionCall(sliderFuncName: string, viewFuncName?: string, testData?: object, addParams?: object) {
-        mockSlider.mockClear(); //чтобы не было старых вызовов функций
+    function testFunctionCall(sliderFuncName: string, viewFuncName?: string, testData?: object, addParams?: KeyStringObj) {
+        mockSlider.mockClear();
 
-        if (viewFuncName)
-            (<KeyStringObj>testView)[viewFuncName](testData);
+        if (viewFuncName in testView)
+            testView[viewFuncName](testData);
 
         let passData = testData;
-        if ((<KeyStringObj>addParams)?.["passArray"])
+        if (addParams?.["passArray"])
             passData = [testData];
 
         if (passData || passData === null)
-            expect((<KeyStringObj>mockSliderInstance)[sliderFuncName])
-                .toBeCalledWith(passData);
+            expect(mockSliderInstance[sliderFuncName]).toBeCalledWith(passData);
         else
-            expect((<KeyStringObj>mockSliderInstance)[sliderFuncName])
-                .toBeCalled();
+            expect(mockSliderInstance[sliderFuncName]).toBeCalled();
     }
 
     beforeEach(() => {
@@ -47,10 +45,10 @@ describe("Функции", () => {
 
     test("Вызов инициализации хэндлеров", () => {
         testFunctionCall("initHandlers", "initHandlers", null);
-        testFunctionCall("createRanges");
+        testFunctionCall(`createRanges`, `initHandlers`);
 
         testFunctionCall("initHandlers", "initHandlers", {});
-        testFunctionCall("createRanges");
+        testFunctionCall(`createRanges`, `initHandlers`);
 
         testFunctionCall("initHandlers", "initHandlers", {
             customHandlers: false,
@@ -59,7 +57,7 @@ describe("Функции", () => {
                 {index: 1, positionPart: 0.8, value: "test2"}
             ]
         });
-        testFunctionCall("createRanges");
+        testFunctionCall(`createRanges`, `initHandlers`);
     });
 
     test("Передача данных слушателем изменения значений хэндлеров", () => {
@@ -75,14 +73,22 @@ describe("Функции", () => {
         expect(result).toStrictEqual({index: 0, position: 0.5});
     });
 
-    test("Установка данных слайдера", () => {
-        testFunctionCall("update", "setSliderProps", null);
-        testFunctionCall("update", "setSliderProps", {});
-        testFunctionCall("update", "setSliderProps", {something: "test"});
+    test("Обновление данных слайдера", () => {
+        testFunctionCall("update", "passDataProps", null);
+        testFunctionCall("update", "passDataProps", {});
+        testFunctionCall("update", "passDataProps", {something: "test"});
+
+        testFunctionCall("update", "passVisualProps", null);
+        testFunctionCall("update", "passVisualProps", {});
+        testFunctionCall("update", "passVisualProps", {something: "test"});
     });
 
-    test("Добавление слушателя на нажатие мыши", () => {
-        testFunctionCall("addOnMouseDownListener", "addSliderMousedownListener", () => {
-        });
+    test("Добавление хэндлера", () => {
+        testFunctionCall(`addHandler`, `addHandler`);
+        testFunctionCall(`addHandler`, `addHandler`, {test: `test`});
+    });
+
+    test("Удаление хэндлера", () => {
+        testFunctionCall(`removeHandler`, `removeHandler`);
     });
 });
