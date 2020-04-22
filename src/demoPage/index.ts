@@ -40,6 +40,7 @@ let slider3 = $(sliderInitSelector).liquidSlider({
     isRange: true,
     isReversed: false,
     isVertical: true,
+    withMarkup: true,
 });
 slider3.addView(panels[2]);
 panels[2].boundController = slider3;
