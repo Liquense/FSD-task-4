@@ -105,7 +105,7 @@ export default class Controller {
 
     public addHandler(itemIndex: number, rangePair?: number | string) {
         const handlerData = this._model.addHandler(itemIndex);
-        if (handlerData === undefined)
+        if (!handlerData)
             return;
 
         this._addHandlerView({...handlerData, rangePair: rangePair});

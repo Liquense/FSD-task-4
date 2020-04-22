@@ -158,7 +158,7 @@ export default class Model implements Listenable {
                 itemIndex: newHandler.itemIndex
             }
         } else
-            return undefined;
+            return null;
     }
 
     /*
@@ -259,7 +259,6 @@ export default class Model implements Listenable {
      */
     public handleHandlerPositionChanged(data: { index: number, position: number }): void {
         const newStandardPosition = this._getItemIndexFromPosition(data.position);
-        console.log(data.position);
 
         const movingHandlerIndex = this._handlers.findIndex(handler => handler.handlerIndex === data.index);
         this._handlers[movingHandlerIndex].setItemIndex(newStandardPosition);
