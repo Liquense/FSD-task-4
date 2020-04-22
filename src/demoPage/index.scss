@@ -128,9 +128,29 @@ body > div {
     }
 
     .panel__valueWrap {
-      grid-template-columns: 100px max-content 100px 1fr;
+      grid-template-columns: 100px max-content 100px 1fr 15px;
       border-top: dashed 1px black;
       padding-top: 10px;
+
+      .panel__deleteButton {
+        width: 15px;
+        height: 15px;
+        line-height: 11px;
+        text-align: center;
+        font-size: 11px;
+        padding: 0;
+        border-radius: 50%;
+        color: indianred;
+        border: 2px solid indianred;
+        background-color: white;
+        font-weight: bold;
+
+        &:hover {
+          background-color: indianred;
+          color: white;
+          cursor: pointer;
+        }
+      }
     }
 
     .panel__newHandlerWrap {
