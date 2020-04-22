@@ -186,7 +186,7 @@ export default class SliderPanel implements Listenable, SliderView {
     };
 
     private static _createButton(text: string, elementClassName: string, wrap?: HTMLElement): HTMLButtonElement {
-        const newButton = this._createElement(`button`, elementClassName + `button`, wrap) as HTMLButtonElement;
+        const newButton = this._createElement(`button`, elementClassName + `Button`, wrap) as HTMLButtonElement;
         newButton.innerText = text;
 
         return newButton;
