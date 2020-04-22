@@ -23,7 +23,7 @@ export default class Controller {
             handlers?: {
                 value?: number,
                 additionalClasses?: string,
-                isEnd?: boolean,
+                rangePair?: string | number,
                 withTooltip?: boolean,
                 tooltip?: {
                     additionalClasses?: string,
@@ -94,7 +94,7 @@ export default class Controller {
     private _passHandlersData(targetView: SliderView, initHandlersData?: object[]) {
         let handlersData = this._model.getHandlersData();
 
-        if (initHandlersData) {
+        if (initHandlersData?.length > 0) {
             handlersData.handlersArray.forEach((handlerData, index) => {
                 handlersData.handlersArray[index] = {...initHandlersData[index], ...handlerData};
             });
@@ -128,33 +128,51 @@ export default class Controller {
     }
 
     public setMin(newMin: number) {
+        if (newMin === null || newMin === undefined)
+            return;
+
         this._model.setMinMax({min: newMin})
         this.passSliderData();
     }
 
     public setMax(newMax: number) {
+        if (newMax === null || newMax === undefined)
+            return;
+
         this._model.setMinMax({max: newMax})
         this.passSliderData();
     }
 
     public setStep(newStep: number) {
+        if (newStep === null || newStep === undefined)
+            return;
+
         this._model.setStep({step: newStep});
         this.passSliderData();
     }
 
     public setTooltipVisibility(newState: boolean) {
+        if (newState === null || newState === undefined)
+            return;
+
         this._views.forEach(view => {
             view.passVisualProps({tooltipsVisible: newState});
         });
     }
 
     public setVertical(isVertical: boolean): void {
+        if (isVertical === null || isVertical === undefined)
+            return;
+
         this._views.forEach(view => {
             view.passVisualProps({isVertical: isVertical});
         })
     }
 
     public setMarkupVisibility(isVisible: boolean): void {
+        if (isVisible === null || isVisible === undefined)
+            return;
+
         this._views.forEach(view => {
             view.passVisualProps({withMarkup: isVisible});
         })
