@@ -118,7 +118,9 @@ export default class Controller {
     }
 
     public removeHandler(handlerIndex: number) {
-        this._model.removeHandler(handlerIndex);
+        const removeResult = this._model.removeHandler(handlerIndex);
+        if (!removeResult)
+            return;
 
         this._views.forEach(view => {
             view.removeHandler(handlerIndex);

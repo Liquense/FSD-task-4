@@ -158,13 +158,18 @@ export default class Model implements Listenable {
             return undefined;
     }
 
-    public removeHandler(handlerIndex: number) {
+    /*
+    Удаляет хэндлер под указанным индексом (handlerModel.index).
+    Возвращает false, если хэндлер с таким индексом не найден.
+     */
+    public removeHandler(handlerIndex: number): boolean {
         const handlerToRemoveIndex = this._handlers.findIndex(handler => handler.handlerIndex === handlerIndex);
         if (handlerToRemoveIndex < 0)
-            return;
+            return false;
 
         this.releaseItem(this._handlers[handlerToRemoveIndex].itemIndex);
         this._handlers.splice(handlerToRemoveIndex, 1);
+        return true;
     }
 
     public calculateValue(valueOrIndex: number): any {
