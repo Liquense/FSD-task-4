@@ -5,9 +5,9 @@ export default class SliderPanel implements Listenable, SliderView {
     listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };
 
     public boundController: Controller;
-    private _isVertical = false;
-    private _tooltipsAreVisible = true;
-    private _withMarkup = false;
+    private _isVertical: boolean;
+    private _tooltipsAreVisible: boolean;
+    private _withMarkup: boolean;
     private _handlers: { index: number, positionPart: number, item: any, itemIndex: number }[] = [];
     private options = new Map().set(`Никем`, null).set(`Началом`, `start`).set(`Концом`, `end`);
 
@@ -73,7 +73,7 @@ export default class SliderPanel implements Listenable, SliderView {
     private _boundHandleOrientationInputChange = this._handleOrientationInputChange.bind(this);
 
     private _handleOrientationInputChange(event: Event) {
-        this.setOrientation((event.target as HTMLInputElement).checked);
+        this.setOrientation((this._elements.orientationInput as HTMLInputElement).checked);
     }
 
     private _boundHandleStepInputChange = this._handleStepInputChange.bind(this);
@@ -246,6 +246,8 @@ export default class SliderPanel implements Listenable, SliderView {
      */
     private _refreshElements() {
         this._refreshOrientation();
+        this._refreshMarkupVisibility();
+        this._refreshTooltipVisibility();
 
         this._handlers.forEach((handler) => {
             this._refreshHandlerPosition(handler.index);
@@ -253,11 +255,19 @@ export default class SliderPanel implements Listenable, SliderView {
         })
     };
 
+    private _refreshMarkupVisibility() {
+        this._elements.markupVisibilityInput.checked = this._withMarkup;
+    }
+
+    private _refreshTooltipVisibility() {
+        this._elements.tooltipsVisibilityInput.checked = this._tooltipsAreVisible;
+    }
+
     private _refreshOrientation() {
         this._elements.wrap.classList.add(this._isVertical ? "vertical" : "horizontal");
         this._elements.wrap.classList.remove(this._isVertical ? "horizontal" : "vertical");
 
-        (this._elements.orientationInput as HTMLInputElement).checked = this._isVertical; //отображение значения вертикальности на чекбоксе
+        this._elements.orientationInput.checked = this._isVertical; //отображение значения вертикальности на чекбоксе
     }
 
     private _refreshHandlerItem(index: number) {
@@ -290,15 +300,17 @@ export default class SliderPanel implements Listenable, SliderView {
             withMarkup?: boolean,
         }
     ) {
-        if (parameters?.isVertical !== undefined) {
+        if (parameters?.isVertical !== undefined && parameters?.isVertical !== null) {
             this._isVertical = parameters.isVertical;
         }
 
-        (this._elements.tooltipsVisibilityInput as HTMLInputElement).checked =
-            parameters?.showTooltips === undefined ? this._tooltipsAreVisible : parameters.showTooltips;
+        if (parameters?.withMarkup !== undefined && parameters?.withMarkup !== null) {
+            this._withMarkup = parameters.withMarkup;
+        }
 
-        (this._elements.markupVisibilityInput as HTMLInputElement).checked =
-            parameters?.withMarkup === undefined ? this._withMarkup : parameters.withMarkup;
+        if (parameters?.showTooltips !== undefined && parameters?.showTooltips !== null) {
+            this._tooltipsAreVisible = parameters.showTooltips;
+        }
 
         this._refreshElements();
     };
