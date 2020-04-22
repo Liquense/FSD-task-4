@@ -283,11 +283,22 @@ export default class Slider implements Listenable {
         this.activateHandler(closestHandler);
 
         const mousePosition = this.calculateMouseRelativePosition(event);
-        const standardMousePosition = standardize(mousePosition, {min: 0, max: 1, step: this._step});
+        let standardMousePosition: number;
 
-        if (standardMousePosition === roundToDecimal(closestHandler.positionPart, 4))
+        const stepsRemainder = 1 % this._step;
+        const penultimatePosition = 1 - stepsRemainder;
+        if (mousePosition > penultimatePosition && stepsRemainder !== 0) {
+            standardMousePosition = standardize(mousePosition, {
+                min: penultimatePosition,
+                max: 1,
+                step: stepsRemainder
+            });
+        } else {
+            standardMousePosition = standardize(mousePosition, {min: 0, max: penultimatePosition, step: this._step});
+        }
+
+        if (standardMousePosition === roundToDecimal(closestHandler.positionPart, 4)) //в standardize результат округляется до 4-х знаков после запятой
             return;
-
 
         this._parentView.handlerPositionChanged(closestHandler.index, standardMousePosition);
     }

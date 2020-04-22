@@ -102,6 +102,9 @@ export default class Model implements Listenable {
      * @private
      */
     public setMinMax(data?: { min?: number, max?: number }) {
+        if (data?.min > this._max || data?.max < this._min)
+            return;
+
         if (data?.min !== undefined) {
             this._min = data.min;
         }
@@ -245,7 +248,7 @@ export default class Model implements Listenable {
     }
 
     private _getItemIndexFromPosition(position: number): number {
-        return standardize((this._min + position * this.range), this.standardizeParams);
+        return position === 1 ? this._max : standardize((this._min + position * this.range), this.standardizeParams);
     }
 
     /**
@@ -256,6 +259,7 @@ export default class Model implements Listenable {
      */
     public handleHandlerPositionChanged(data: { index: number, position: number }): void {
         const newStandardPosition = this._getItemIndexFromPosition(data.position);
+        console.log(data.position);
 
         const movingHandlerIndex = this._handlers.findIndex(handler => handler.handlerIndex === data.index);
         this._handlers[movingHandlerIndex].setItemIndex(newStandardPosition);
