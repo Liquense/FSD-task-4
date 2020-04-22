@@ -102,7 +102,7 @@ export default class Model implements Listenable {
      * @private
      */
     public setMinMax(data?: { min?: number, max?: number }) {
-        if (data?.min > this._max || data?.max < this._min)
+        if (data?.min > this._max || data?.max < this._min || data?.min > data?.max)
             return;
 
         if (data?.min !== undefined) {
