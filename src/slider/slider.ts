@@ -81,10 +81,10 @@ export default class Slider implements Listenable {
 
     private _activeHandler: HandlerView;
 
-    public isVertical = false;
+    public isVertical: boolean;
     public isReversed = false;
-    private _tooltipsAreVisible = true;
-    private _withMarkup = false;
+    private _tooltipsAreVisible: boolean;
+    private _withMarkup: boolean;
     private _markup: MarkupView;
 
     get offsetDirection(): string {

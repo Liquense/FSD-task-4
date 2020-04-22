@@ -49,6 +49,8 @@ $.fn.liquidSlider = function liquidSlider(
             },
         }[],
     }) {
-    return new Controller($(this).get()[0], parameters);
+    const defaultValues = {isVertical: false, showTooltips: true, withMarkup: false};
+
+    return new Controller($(this).get()[0], {...defaultValues, ...parameters});
 };
 
