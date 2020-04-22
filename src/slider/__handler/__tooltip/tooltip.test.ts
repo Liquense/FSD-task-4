@@ -16,7 +16,7 @@ slider.getOrientationClass = jest.fn(() => {
 
 let handler = new HandlerView(null, {index: 0, positionPart: 0, value: "test"});
 handler.ownerSlider = slider;
-handler["element"] = {body: document.body, wrap: null};
+handler.element = {body: document.body, wrap: null};
 
 
 beforeEach(() => {
@@ -45,7 +45,7 @@ describe("Создание экземпляра", () => {
     });
 
     test("Запуск функций для инициализации", () => {
-        new Tooltip(handler["element"].body, handler);
+        new Tooltip(handler.element.body, handler);
 
         expect(mockCreateElement).toBeCalled();
         expect(mockSetVisibility).toBeCalled();
@@ -54,23 +54,23 @@ describe("Создание экземпляра", () => {
 
     test("Корректное заполнение свойств", () => {
         let tooltip: Tooltip & KeyStringObj = new Tooltip(handler["element"].body, handler);
-        expect(tooltip["_addClasses"]).toStrictEqual([]);
         expect(tooltip.value).toBe(undefined);
 
         mockSetVisibility.mock.calls = [];
-        tooltip = new Tooltip(handler["element"].body, handler,
+        new Tooltip(handler.element.body, handler,
             {
-                additionalClasses: ["test0"],
                 visibilityState: false,
                 value: "testValue",
                 bodyHTML: "<div></div>"
             });
-        expect(tooltip["_addClasses"]).toStrictEqual(["test0"]);
         expect(mockSetVisibility.mock.calls[0][0]).toBe(false);
     });
 
-    test("Создание элемента", () => {
-        expect(handler["element"].body.innerHTML)
+    test("Создание элемента в DOM", () => {
+        document.body.innerHTML = "";
+        new Tooltip(handler.element.body, handler);
+
+        expect(handler.element.body.innerHTML)
             .toBe('<div class="liquidSlider__handlerTooltip defaultOrientClass">undefined</div>');
     });
 
@@ -115,13 +115,6 @@ describe("Функционал", () => {
 
         slider.isVertical = true;
         expect(tooltip.getSize()).toBe(tooltip.element.getBoundingClientRect().height);
-    });
-
-    test("Добавление классов", () => {
-        let tooltip: Tooltip & KeyStringObj = new Tooltip(handler["element"].body, handler);
-
-        tooltip.addClassesFromString("test1  test2 test3_anotherClass");
-        expect(tooltip["_addClasses"]).toStrictEqual(["test1", "test2", "test3_anotherClass"]);
     });
 
     test("Установка значения", () => {

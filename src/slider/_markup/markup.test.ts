@@ -88,7 +88,7 @@ describe("Функционал разметки", function () {
 
         describe("Создание и размещение", () => {
             beforeEach(() => {
-                slider["_element"]["scale"] = document.body;
+                slider["_elements"]["scale"] = document.body;
             });
 
             test("Правильный расчёт смещения", () => {
