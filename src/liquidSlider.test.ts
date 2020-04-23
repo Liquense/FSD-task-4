@@ -1,7 +1,7 @@
 jest.mock("./controller");
 import * as $ from 'jquery';
 import "./liquidSlider"
-import Controller from "./controller";
+import Controller from "./controller/controller";
 
 let $testDiv = $(document.body.appendChild(document.createElement("div")));
 

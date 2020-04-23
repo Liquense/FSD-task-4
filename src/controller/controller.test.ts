@@ -1,7 +1,7 @@
 import Controller from "./controller";
-import Model from "./model";
-import View from "./view";
-import {addListenerAfter, KeyStringObj} from "./common";
+import Model from "../model/model";
+import View from "../view/view";
+import {addListenerAfter, KeyStringObj} from "../utils/common";
 
 jest.mock("./common");
 jest.mock("./view");

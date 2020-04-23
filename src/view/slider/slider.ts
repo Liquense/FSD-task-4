@@ -8,7 +8,7 @@ import {
     Listenable,
     roundToDecimal,
     standardize
-} from "../common";
+} from "../../utils/common";
 import View from "../view";
 import MarkupView from "./_markup/markup";
 

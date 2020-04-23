@@ -1,4 +1,4 @@
-import {clamp, Listenable} from "./common";
+import {clamp, Listenable} from "../utils/common";
 import Model from "./model";
 
 export default class HandlerModel implements Listenable {

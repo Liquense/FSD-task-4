@@ -1,4 +1,4 @@
-import {Listenable, standardize} from "./common";
+import {Listenable, standardize} from "../utils/common";
 import HandlerModel from "./handlerModel";
 
 export default class Model implements Listenable {

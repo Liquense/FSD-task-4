@@ -2,7 +2,7 @@ import HandlerView from "./handler";
 import Slider from "../slider";
 import Tooltip from "./__tooltip/tooltip";
 import Mock = jest.Mock;
-import {KeyStringObj} from "../../common";
+import {KeyStringObj} from "../../../utils/common";
 
 jest.mock("../slider");
 jest.mock("./__tooltip/tooltip");

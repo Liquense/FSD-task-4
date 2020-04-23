@@ -1,4 +1,4 @@
-import {calculateElementCenter, defaultSliderClass, KeyStringObj, Listenable} from "../../common";
+import {calculateElementCenter, defaultSliderClass, KeyStringObj, Listenable} from "../../../utils/common";
 import Tooltip from "./__tooltip/tooltip";
 import Slider from "../slider";
 

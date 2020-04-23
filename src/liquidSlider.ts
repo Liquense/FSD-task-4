@@ -1,5 +1,5 @@
 import * as $ from 'jquery';
-import Controller from "./controller"
+import Controller from "./controller/controller"
 
 /**
  * Расширение JQuery, добавляющее функцию для инициализации слайдера

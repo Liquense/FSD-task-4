@@ -1,5 +1,5 @@
 import Model from "./model";
-import {KeyStringObj} from "./common";
+import {KeyStringObj} from "../utils/common";
 
 jest.mock("./controller");
 

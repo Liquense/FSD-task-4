@@ -1,4 +1,4 @@
-import {defaultSliderClass, parseClassesString} from "../../../common";
+import {defaultSliderClass, parseClassesString} from "../../../../utils/common";
 import HandlerView from "../handler";
 
 export default class Tooltip {

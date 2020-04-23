@@ -1,5 +1,5 @@
 import "../liquidSlider"
-import "../slider/slider.scss"
+import "../view/slider/slider.scss"
 import SliderPanel from "./sliderPanel";
 import "./index.scss"
 

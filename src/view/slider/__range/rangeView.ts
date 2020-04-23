@@ -1,5 +1,5 @@
 import HandlerView from "../__handler/handler";
-import {addListenerAfter, defaultSliderClass, removeListener} from "../../common";
+import {addListenerAfter, defaultSliderClass, removeListener} from "../../../utils/common";
 import Slider from "../slider";
 
 export default class RangeView {

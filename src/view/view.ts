@@ -1,7 +1,6 @@
-import "./slider/slider"
 import Slider from "./slider/slider";
-import {Listenable} from "./common";
-import {SliderView} from "./controller";
+import {Listenable} from "../utils/common";
+import {SliderView} from "../controller/controller";
 
 export default class View implements Listenable, SliderView {
     listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };

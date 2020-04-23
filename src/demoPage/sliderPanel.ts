@@ -1,5 +1,5 @@
-import {Listenable} from "../common";
-import Controller, {SliderView} from "../controller";
+import {Listenable} from "../utils/common";
+import Controller, {SliderView} from "../controller/controller";
 
 export default class SliderPanel implements Listenable, SliderView {
     listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };

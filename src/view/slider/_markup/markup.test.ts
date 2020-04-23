@@ -1,7 +1,7 @@
 import View from "../../view";
 import Slider from "../slider";
 import MarkupView from "./markup";
-import {KeyStringObj} from "../../common";
+import {KeyStringObj} from "../../../utils/common";
 
 document.body.innerHTML = '<div class="liquidSlider liquidSlider_horizontal"></div>';
 const sliderContainer = document.querySelector(".liquidSlider") as HTMLElement;

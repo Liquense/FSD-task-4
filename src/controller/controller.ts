@@ -1,6 +1,6 @@
-import View from "./view"
-import Model from "./model"
-import {addListenerAfter, Listenable} from "./common";
+import View from "../view/view"
+import Model from "../model/model"
+import {addListenerAfter, Listenable} from "../utils/common";
 
 export default class Controller {
     private _views: (SliderView & Listenable)[];

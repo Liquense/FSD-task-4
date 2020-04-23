@@ -1,5 +1,5 @@
 import SliderView from "../slider";
-import {defaultSliderClass, KeyStringObj} from "../../common";
+import {defaultSliderClass, KeyStringObj} from "../../../utils/common";
 
 export default class MarkupView {
     private _marks: HTMLElement[] = [];
