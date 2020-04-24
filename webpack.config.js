@@ -73,7 +73,7 @@ module.exports = {
 			{
 				test: /\.ts(x?)$/,
 				exclude: [/node_modules/, /(\.(test)?)\.ts(x?)/],
-				loader: "ts-loader",
+				loader: ["ts-loader", "eslint-loader"],
 			},
 			{
 				test: /\.scss$/,
