@@ -1,16 +1,25 @@
-jest.mock("./controller");
+/* eslint-disable no-undef */
+// eslint-disable-next-line import/no-extraneous-dependencies
 import * as $ from 'jquery';
-import "./liquidSlider"
-import Controller from "./controller/controller";
+import './liquidSlider';
+import Controller from './controller/controller';
+import { DEFAULT_SLIDER_PARAMS } from './utils/common';
 
-let $testDiv = $(document.body.appendChild(document.createElement("div")));
+jest.mock('./controller/controller');
 
-test("Инициализация слайдера", () => {
-    let testParameters = {something: "", anotherArg: "test1", withMarkup: ""};
+const $testDiv = $(document.body.appendChild(document.createElement('div')));
 
-    $testDiv.liquidSlider();
-    expect(Controller).toBeCalledWith($testDiv.get()[0], undefined);
+test('Инициализация слайдера', () => {
+  const testParameters = { something: '', anotherArg: 'test1', withMarkup: '' };
 
-    $testDiv.liquidSlider(testParameters);
-    expect(Controller).toBeCalledWith($testDiv.get()[0], testParameters);
+
+  $testDiv.liquidSlider();
+  expect(Controller).toBeCalledWith(
+    $testDiv.get()[0], { isVertical: false, showTooltips: true, withMarkup: false },
+  );
+
+  $testDiv.liquidSlider(testParameters);
+  expect(Controller).toBeCalledWith(
+    $testDiv.get()[0], { ...DEFAULT_SLIDER_PARAMS, ...testParameters },
+  );
 });

@@ -1,68 +1,77 @@
-import View from "../view/view"
-import Model from "../model/model"
-import {addListenerAfter, Listenable} from "../utils/common";
+import SliderView from '../view/view';
+import Model from '../model/model';
+import { addListenerAfter, Listenable } from '../utils/common';
+import { Presentable } from '../utils/types';
+import { View } from '../utils/interfaces';
 
 export default class Controller {
-    private _views: (SliderView & Listenable)[];
+    private _views: (View & Listenable)[];
+
     private readonly _model: Model;
 
     constructor(
         private _element: HTMLElement,
-        private _parameters?: {
-            additionalClasses?: string,
-            items?: Array<any>,
-            values?: number[], //если не заданы handlers
-            isRange?: boolean, //если не заданы handlers
-            isVertical?: boolean,
-            isReversed?: boolean,
-            min?: number,
-            max?: number,
-            step?: number,
-            showTooltips?: boolean,
-            withMarkup?: boolean,
+        private parameters?: {
+            additionalClasses?: string;
+            items?: Array<Presentable>;
+            values?: number[]; // если не заданы handlers
+            isRange?: boolean; // если не заданы handlers
+            isVertical?: boolean;
+            isReversed?: boolean;
+            min?: number;
+            max?: number;
+            step?: number;
+            showTooltips?: boolean;
+            withMarkup?: boolean;
             handlers?: {
-                value?: number,
-                additionalClasses?: string,
-                rangePair?: string | number,
-                withTooltip?: boolean,
+                itemIndex: number;
+                additionalClasses?: string;
+                rangePair?: string | number;
+                withTooltip?: boolean;
                 tooltip?: {
-                    additionalClasses?: string,
-                    bodyHTML?: string,
-                },
-            }[],
+                    additionalClasses?: string;
+                    bodyHTML?: string;
+                };
+            }[];
         },
     ) {
-        const newView = new View(_element, _parameters);
-        this._views = [newView];
-        this._model = new Model(_parameters);
+      const newView = new SliderView(_element, parameters);
+      this._views = [newView];
+      this._model = new Model(parameters);
 
-        addListenerAfter("handlerValueChanged", this._boundPassHandlerValueChange, this._model);
-        addListenerAfter("handlerPositionChanged", this._boundPassHandlerPositionChange, newView);
+      addListenerAfter(
+        'handlerValueChanged',
+        this._boundPassHandlerValueChange, this._model,
+      );
+      addListenerAfter(
+        'handlerPositionChanged',
+        this._boundPassHandlerPositionChange, this._views[0],
+      );
 
-        this.passSliderData();
-        this._passHandlersData(newView, _parameters?.handlers);
+      this._passSliderData();
+      this._passHandlersData(newView, parameters?.handlers);
     }
 
-    public addViews(newViews: (SliderView & Listenable)[]) {
-        newViews.forEach((view) => {
-            this.addView(view)
-        });
+    public addViews(newViews: (View & Listenable)[]): void {
+      newViews.forEach((view) => {
+        this.addView(view);
+      });
     }
 
-    public addView(newView: SliderView & Listenable) {
-        this._views.push(newView);
+    public addView(newView: View & Listenable): void {
+      this._views.push(newView);
 
-        addListenerAfter("handlerPositionChanged", this._boundPassHandlerPositionChange, newView);
-        newView.passVisualProps(this._parameters);
+      addListenerAfter('handlerPositionChanged', this._boundPassHandlerPositionChange, newView);
+      newView.passVisualProps(this.parameters);
 
-        this.passSliderData();
-        this._passHandlersData(newView, this._parameters?.handlers);
+      this._passSliderData();
+      this._passHandlersData(newView, this.parameters?.handlers);
     }
 
-    private passSliderData() {
-        this._views.forEach(view => {
-            view.passDataProps(this._model.getSliderData());
-        });
+    private _passSliderData(): void {
+      this._views.forEach((view) => {
+        view.passDataProps(this._model.getSliderData());
+      });
     }
 
     private _boundPassHandlerPositionChange = this._passHandlerPositionChange.bind(this);
@@ -71,8 +80,8 @@ export default class Controller {
      * Вызов обработки в модели, когда меняется позиция хэндлера в Виде
      * @param data
      */
-    private _passHandlerPositionChange(data: { index: number, position: number }) {
-        this._model.handleHandlerPositionChanged(data);
+    private _passHandlerPositionChange(data: { index: number; position: number }): void {
+      this._model.handleHandlerPositionChanged(data);
     }
 
     private _boundPassHandlerValueChange = this._passHandlerValueChange.bind(this);
@@ -81,127 +90,120 @@ export default class Controller {
      * Вызов обработчика в Виде, когда меняется значение хэндлера в Модели
      * @param data
      * @param data.index Индекс хэндлера
-     * @param data.relativeValue Относительное значение (от 0 до 1), которое Вид преобразует в смещение
+     * @param data.relativeValue Относительное значение (от 0 до 1),
+     * которое Вид будет преобразовывать в смещение
      * @param data.item Данные на этой позиции
      * @private
      */
-    private _passHandlerValueChange(data: { index: number, relativeValue: number, item: any }): void {
-        this._views.forEach(view => {
-            view.handlersValuesChangedListener(data);
+    private _passHandlerValueChange(
+      data: { index: number; relativeValue: number; item: Presentable },
+    ): void {
+      this._views.forEach((view) => {
+        view.handlersValuesChangedListener(data);
+      });
+    }
+
+    private _passHandlersData(targetView: View, initHandlersData?: object[]): void {
+      const handlersData = this._model.getHandlersData();
+
+      if (initHandlersData?.length > 0) {
+        handlersData.handlersArray.forEach((handlerData, index) => {
+          handlersData.handlersArray[index] = { ...initHandlersData[index], ...handlerData };
         });
+      }
+
+      targetView.initHandlers(handlersData);
     }
 
-    private _passHandlersData(targetView: SliderView, initHandlersData?: object[]) {
-        let handlersData = this._model.getHandlersData();
+    public addHandler(itemIndex: number, rangePair?: number | string): void {
+      const handlerData = this._model.addHandler(itemIndex);
+      if (!handlerData) {
+        return;
+      }
 
-        if (initHandlersData?.length > 0) {
-            handlersData.handlersArray.forEach((handlerData, index) => {
-                handlersData.handlersArray[index] = {...initHandlersData[index], ...handlerData};
-            });
-        }
-
-        targetView.initHandlers(handlersData);
+      this._addHandlerView({ ...handlerData, rangePair });
     }
 
-    public addHandler(itemIndex: number, rangePair?: number | string) {
-        const handlerData = this._model.addHandler(itemIndex);
-        if (!handlerData)
-            return;
-
-        this._addHandlerView({...handlerData, rangePair: rangePair});
+    private _addHandlerView(
+      handlerParams:
+            {
+                positionPart: number;
+                item: Presentable;
+                handlerIndex: number;
+                rangePair: number | string;
+                itemIndex: number;
+            },
+    ): void {
+      this._views.forEach((view) => {
+        view.addHandler(handlerParams);
+      });
     }
 
-    private _addHandlerView(handlerParams: { positionPart: number, value: any, handlerIndex: number, rangePair: number | string }) {
-        this._views.forEach(view => {
-            view.addHandler(handlerParams);
-        });
+    public removeHandler(handlerIndex: number): void {
+      const removeResult = this._model.removeHandler(handlerIndex);
+      if (!removeResult) {
+        return;
+      }
+
+      this._views.forEach((view) => {
+        view.removeHandler(handlerIndex);
+      });
     }
 
-    public removeHandler(handlerIndex: number) {
-        const removeResult = this._model.removeHandler(handlerIndex);
-        if (!removeResult)
-            return;
+    public setMin(newMin: number): void {
+      if (newMin === null || newMin === undefined) {
+        return;
+      }
 
-        this._views.forEach(view => {
-            view.removeHandler(handlerIndex);
-        })
+      this._model.setMinMax({ min: newMin });
+      this._passSliderData();
     }
 
-    public setMin(newMin: number) {
-        if (newMin === null || newMin === undefined)
-            return;
+    public setMax(newMax: number): void {
+      if (newMax === null || newMax === undefined) {
+        return;
+      }
 
-        this._model.setMinMax({min: newMin})
-        this.passSliderData();
+      this._model.setMinMax({ max: newMax });
+      this._passSliderData();
     }
 
-    public setMax(newMax: number) {
-        if (newMax === null || newMax === undefined)
-            return;
+    public setStep(newStep: number): void {
+      if (newStep === null || newStep === undefined) {
+        return;
+      }
 
-        this._model.setMinMax({max: newMax})
-        this.passSliderData();
+      this._model.setStep({ step: newStep });
+      this._passSliderData();
     }
 
-    public setStep(newStep: number) {
-        if (newStep === null || newStep === undefined)
-            return;
+    public setTooltipVisibility(newState: boolean): void {
+      if (newState === null || newState === undefined) {
+        return;
+      }
 
-        this._model.setStep({step: newStep});
-        this.passSliderData();
-    }
-
-    public setTooltipVisibility(newState: boolean) {
-        if (newState === null || newState === undefined)
-            return;
-
-        this._views.forEach(view => {
-            view.passVisualProps({tooltipsVisible: newState});
-        });
+      this._views.forEach((view) => {
+        view.passVisualProps({ tooltipsVisible: newState });
+      });
     }
 
     public setVertical(isVertical: boolean): void {
-        if (isVertical === null || isVertical === undefined)
-            return;
+      if (isVertical === null || isVertical === undefined) {
+        return;
+      }
 
-        this._views.forEach(view => {
-            view.passVisualProps({isVertical: isVertical});
-        })
+      this._views.forEach((view) => {
+        view.passVisualProps({ isVertical });
+      });
     }
 
     public setMarkupVisibility(isVisible: boolean): void {
-        if (isVisible === null || isVisible === undefined)
-            return;
+      if (isVisible === null || isVisible === undefined) {
+        return;
+      }
 
-        this._views.forEach(view => {
-            view.passVisualProps({withMarkup: isVisible});
-        })
+      this._views.forEach((view) => {
+        view.passVisualProps({ withMarkup: isVisible });
+      });
     }
-}
-
-export interface SliderView {
-    passVisualProps(parameters?: { isVertical?: boolean, tooltipsVisible?: boolean, withMarkup?: boolean }): void;
-
-    passDataProps(sliderData: { step?: number, absoluteStep: number, min: number, max: number }): void;
-
-    /**
-     * Функция, которую слушает контроллер
-     */
-    handlerPositionChanged: Function;
-
-    handlersValuesChangedListener(data: { index: number, relativeValue: number, item: any }): void;
-
-    initHandlers(handlersData: {
-        customHandlers: boolean,
-        handlersArray: {
-            index: number,
-            positionPart: number,
-            value: any,
-            valueIndex: number
-        }[]
-    }): void;
-
-    addHandler(handlerParams: { positionPart: number, value: any, handlerIndex: number }): void;
-
-    removeHandler(handlerIndex: number): void;
 }

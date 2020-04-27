@@ -1,100 +1,102 @@
-import {defaultSliderClass, parseClassesString} from "../../../../utils/common";
-import HandlerView from "../handler";
+import { DEFAULT_SLIDER_CLASS } from '../../../../utils/common';
+import { Presentable } from '../../../../utils/types';
+import { SliderElement } from '../../../../utils/interfaces';
 
 export default class Tooltip {
+    private _value: Presentable;
 
-    private _value: any;
-    set value(value) {
-        this._value = value;
-        this.innerHTML = value;
+    set value(value: Presentable) {
+      this._value = value;
+      this.innerHTML = value;
     }
 
-    get value() {
-        return this._value;
+    get value(): Presentable {
+      return this._value;
     }
 
-    private _innerHTML: string = "";
-    set innerHTML(value: any) {
-        this._innerHTML = `${value}`;
-        this.updateHTML();
+    private _innerHTML = '';
+
+    set innerHTML(value: Presentable) {
+      this._innerHTML = `${value}`;
+      this.updateHTML();
     }
 
     private _element: HTMLElement;
+
     get element(): HTMLElement {
-        return this._element;
+      return this._element;
     }
 
-    public static readonly defaultClass = defaultSliderClass + "__handlerTooltip";
+    public static readonly DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__handlerTooltip`;
 
     get width(): number {
-        return this.element.getBoundingClientRect().width;
+      return this.element.getBoundingClientRect().width;
     }
 
     get height(): number {
-        return this.element.getBoundingClientRect().height;
+      return this.element.getBoundingClientRect().height;
     }
 
-    private isSliderVertical(): boolean {
-        return this.parentHandler.ownerSlider.isVertical;
+    private _isSliderVertical(): boolean {
+      return this.parentHandler.ownerSlider.isVertical;
     }
 
     public getSize(): number {
-        if (this.isSliderVertical())
-            return this.height;
-        else
-            return this.width;
+      if (this._isSliderVertical()) { return this.height; }
+      return this.width;
     }
 
     constructor(parentElement: HTMLElement,
-                public parentHandler: HandlerView,
+                public parentHandler: SliderElement,
                 params?: {
-                    bodyHTML?: string,
-                    value?: any,
-                    visibilityState?: boolean,
-                }
-    ) {
-        let defaultParameters = this.initDefaultParameters();
-        let parameters = {...defaultParameters, ...params};
-
-        this.createElement(parentElement);
-        this.value = parameters.value;
-        this.setVisibility(parameters.visibilityState !== undefined ? parameters.visibilityState : true);
-    }
-
-    private initDefaultParameters() {
-        return {
-            additionalClasses: <string[]>[],
-            bodyHTML: this._innerHTML,
-            withTooltip: true,
-            isEnd: true,
-        };
+                    bodyHTML?: string;
+                    item: Presentable;
+                    visibilityState?: boolean;
+                }) {
+      const defaultParameters = this._initDefaultParameters();
+      const parameters = { ...defaultParameters, ...params };
+      this._createElement(parentElement);
+      this.value = parameters.item;
+      this.setVisibility(
+        (parameters.visibilityState !== undefined) ? parameters.visibilityState : true,
+      );
     }
 
     public setVisibility(visibilityState: boolean): void {
-        visibilityState ? this.show() : this.hide();
+      if (visibilityState) this._show(); else this._hide();
     }
 
-    private show(): void {
-        this._element.classList.add(`${Tooltip.defaultClass}_visible`);
-        this._element.classList.remove(`${Tooltip.defaultClass}_hidden`);
+    public updateHTML(): void {
+      this._element.innerHTML = this._innerHTML;
     }
 
-    private hide(): void {
-        this._element.classList.add(`${Tooltip.defaultClass}_hidden`);
-        this._element.classList.remove(`${Tooltip.defaultClass}_visible`);
+    private _initDefaultParameters(): {
+      additionalClasses: string[]; bodyHTML: string; withTooltip: boolean; isEnd: boolean;} {
+      return {
+        additionalClasses: [] as string[],
+        bodyHTML: this._innerHTML,
+        withTooltip: true,
+        isEnd: true,
+      };
     }
 
-    private createElement(parentElement: HTMLElement) {
-        const orientationClass = this.parentHandler.ownerSlider.getOrientationClass();
-
-        this._element = document.createElement("div");
-        this._element.classList.add(`${Tooltip.defaultClass}`, orientationClass);
-        this._element.innerHTML = this._innerHTML;
-
-        parentElement.appendChild(this._element);
+    private _show(): void {
+      this._element.classList.add(`${Tooltip.DEFAULT_CLASS}_visible`);
+      this._element.classList.remove(`${Tooltip.DEFAULT_CLASS}_hidden`);
     }
 
-    public updateHTML() {
-        this._element.innerHTML = this._innerHTML;
+    private _hide(): void {
+      this._element.classList.add(`${Tooltip.DEFAULT_CLASS}_hidden`);
+      this._element.classList.remove(`${Tooltip.DEFAULT_CLASS}_visible`);
+    }
+
+    private _createElement(parentElement: HTMLElement): void {
+      const orientationClass = this.parentHandler.ownerSlider.getOrientationClass();
+
+      this._element = document.createElement('div');
+      this._element.classList.add(`${Tooltip.DEFAULT_CLASS}`, orientationClass);
+      this._element.innerHTML = this._innerHTML;
+
+      parentElement.appendChild(this._element);
     }
 }

@@ -1,66 +1,67 @@
-import SliderView from "../slider";
-import {defaultSliderClass, KeyStringObj} from "../../../utils/common";
+import { DEFAULT_SLIDER_CLASS } from '../../../utils/common';
+import { KeyStringObj } from '../../../utils/types';
+import { Orientable, ScaleOwner, SliderContainer } from '../../../utils/interfaces';
 
 export default class MarkupView {
-    private _marks: HTMLElement[] = [];
-    public wrap: HTMLElement = undefined;
-    private _defaultClass = `${defaultSliderClass}__markup`;
+  public wrap: HTMLElement = undefined;
 
-    private getMarkThickness() {
-        const dimension = this.ownerSlider.expandDimension;
-        return (<KeyStringObj>this._marks[0].getBoundingClientRect())[dimension];
-    }
+  private _marks: HTMLElement[] = [];
 
-    private getRelativeMarkThickness(): number {
-        return this.ownerSlider.getScaleLength() ?
-            this.ownerSlider.shrinkCoeff * (this.getMarkThickness() / this.ownerSlider.getScaleLength()) :
-            0;
-    }
+  private static _DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__markup`;
 
-    constructor(
-        public ownerSlider: SliderView,
-    ) {
-        this.createWrap();
-    }
+  constructor(
+      public ownerSlider: Orientable & ScaleOwner & SliderContainer,
+  ) {
+    this._createWrap();
+  }
 
-    private createWrap() {
-        this.wrap = document.createElement("div");
+  public clearAllMarks(): void {
+    this._marks = [];
+    this.wrap.innerHTML = '';
+  }
 
-        this.wrap.classList.add(`${this._defaultClass}Wrap`, this.ownerSlider.getOrientationClass());
+  public addMark(relativePosition: number, relativeHandlerSize: number): void {
+    const newMark = this._createMarkElement();
+    this._marks.push(newMark);
 
-        this.ownerSlider.bodyElement.insertBefore(this.wrap, this.ownerSlider.handlersElement);
-    }
+    const markOffset = this._calculateMarkOffset(relativePosition, relativeHandlerSize);
+    (newMark.style as KeyStringObj)[this.ownerSlider.offsetDirection] = `${markOffset}%`;
+  }
 
-    private createMarkElement(): HTMLElement {
-        let newMark = document.createElement("div");
-        newMark.classList.add(this._defaultClass, this.ownerSlider.getOrientationClass());
-        this.wrap.appendChild(newMark);
+  private _getMarkThickness(): number {
+    const dimension = this.ownerSlider.expandDimension;
+    return (this._marks[0].getBoundingClientRect() as KeyStringObj)[dimension];
+  }
 
-        return newMark;
-    }
+  private _getRelativeMarkThickness(): number {
+    const relativeMarkThickness = this.ownerSlider.shrinkRatio
+      * (this._getMarkThickness() / this.ownerSlider.getScaleLength());
 
-    private calculateMarkOffset(relativePosition: number, relativeHandlerSize: number): Number {
-        return Number(
-            (
-                100 *
-                (
-                    relativePosition
-                    + (relativeHandlerSize / 2)
-                    - this.getRelativeMarkThickness() / 2
-                )
-            ).toFixed(4));
-    }
+    return this.ownerSlider.getScaleLength() ? relativeMarkThickness : 0;
+  }
 
-    public clearAllMarks() {
-        this._marks = [];
-        this.wrap.innerHTML = "";
-    }
+  private _createWrap(): void {
+    this.wrap = document.createElement('div');
 
-    public addMark(relativePosition: number, relativeHandlerSize: number) {
-        let newMark = this.createMarkElement();
-        this._marks.push(newMark);
+    this.wrap.classList.add(`${MarkupView._DEFAULT_CLASS}Wrap`, this.ownerSlider.getOrientationClass());
 
-        const markOffset = this.calculateMarkOffset(relativePosition, relativeHandlerSize);
-        (<KeyStringObj>newMark.style)[this.ownerSlider.offsetDirection] = markOffset + "%";
-    }
+    this.ownerSlider.bodyElement.insertBefore(this.wrap, this.ownerSlider.handlersContainer);
+  }
+
+  private _createMarkElement(): HTMLElement {
+    const newMark = document.createElement('div');
+    newMark.classList.add(MarkupView._DEFAULT_CLASS, this.ownerSlider.getOrientationClass());
+    this.wrap.appendChild(newMark);
+
+    return newMark;
+  }
+
+  private _calculateMarkOffset(relativePosition: number, relativeHandlerSize: number): number {
+    return Number(
+      (
+        100
+        * (relativePosition + (relativeHandlerSize / 2) - this._getRelativeMarkThickness() / 2)
+      ).toFixed(4),
+    );
+  }
 }

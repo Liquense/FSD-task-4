@@ -1,138 +1,143 @@
-import {calculateElementCenter, defaultSliderClass, KeyStringObj, Listenable} from "../../../utils/common";
-import Tooltip from "./__tooltip/tooltip";
-import Slider from "../slider";
+import { calculateElementCenter, DEFAULT_SLIDER_CLASS, Listenable } from '../../../utils/common';
+import Tooltip from './__tooltip/tooltip';
+import { KeyStringObj, Presentable } from '../../../utils/types';
+import {
+  HandlersOwner, Orientable, ScaleOwner, SliderContainer, SliderElement,
+} from '../../../utils/interfaces';
 
-export default class HandlerView implements Listenable {
-    listenDictionary: { [key: string]: { func: Function, listeners: Function[] } };
-    public index: number;
+export default class HandlerView implements Listenable, SliderElement {
+    listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 
-    private _defaultClass = `${defaultSliderClass}__handler`;
+    private static _DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__handler`;
 
-    private _additionalClasses: string[] = [];
     public readonly tooltip: Tooltip;
 
-    public setValue(value: any) {
-        this.tooltip.value = value;
+    private _additionalClasses: string[] = [];
+
+    public index: number;
+
+    public setValue(value: Presentable): void {
+      this.tooltip.value = value;
     }
 
-    get value(): any {
-        return this.tooltip.value;
+    get value(): Presentable {
+      return this.tooltip.value;
     }
 
     get positionCoordinate(): number {
-        return calculateElementCenter(this.element.body, this.ownerSlider.isVertical);
+      return calculateElementCenter(this.element.body, this.ownerSlider.isVertical);
     }
 
-    private _positionPart: number;
-    get positionPart(): number {
-        return this._positionPart;
-    }
-
+    public positionPart: number;
 
     public element: {
-        wrap: HTMLElement,
-        body: HTMLElement,
+        wrap: HTMLElement;
+        body: HTMLElement;
     };
 
     get body(): HTMLElement {
-        return this.element.body;
-    };
+      return this.element.body;
+    }
 
     get width(): number {
-        return this.element.body.getBoundingClientRect().width;
+      return this.element.body.getBoundingClientRect().width;
     }
 
     get height(): number {
-        return this.element.body.getBoundingClientRect().height;
+      return this.element.body.getBoundingClientRect().height;
     }
 
     public rangePair: number | string;
 
-    constructor(public ownerSlider: Slider,
-                params:
-                    {
-                        index: number,
-                        positionPart: number,
-                        value: any,
-                        withTooltip?: boolean,
-                        rangePair?: number | string,
-                    }
+    constructor(
+        public ownerSlider: Orientable & SliderContainer & HandlersOwner & ScaleOwner,
+        params:
+            {
+                handlerIndex: number;
+                positionPart: number;
+                item: Presentable;
+                withTooltip?: boolean;
+                rangePair?: number | string;
+            },
     ) {
-        this.rangePair = params.rangePair;
-        this.index = params.index;
-        this._positionPart = params.positionPart;
+      this.rangePair = params.rangePair;
+      this.index = params.handlerIndex;
+      this.positionPart = params.positionPart;
 
-        this.createElement(ownerSlider.handlersElement);
+      this._createElement(ownerSlider.handlersContainer);
 
-        const withTooltip = params.withTooltip === undefined ? true : params.withTooltip;
-        this.tooltip = new Tooltip(this.element.wrap, this, {visibilityState: withTooltip});
-        this.setValue(params.value);
+      const withTooltip = params.withTooltip === undefined ? true : params.withTooltip;
+      this.tooltip = new Tooltip(
+        this.element.wrap, this, { visibilityState: withTooltip, item: params.item },
+      );
+      this.setValue(params.item);
 
-        requestAnimationFrame(this.refreshPosition.bind(this));
+      requestAnimationFrame(this.refreshPosition.bind(this));
     }
 
-    private createElement(parentElement: HTMLElement): void {
-        let wrap = document.createElement("div");
-        let body = document.createElement("div");
-        const orientationClass = this.ownerSlider.getOrientationClass();
+    private _createElement(parentElement: HTMLElement): void {
+      const wrap = document.createElement('div');
+      const body = document.createElement('div');
+      const orientationClass = this.ownerSlider.getOrientationClass();
 
-        this.element = {wrap, body};
-        this.element.body.setAttribute("tabindex", "-1");
+      this.element = { wrap, body };
+      this.element.body.setAttribute('tabindex', '-1');
 
-        wrap.classList.add(`${this._defaultClass}Container`, orientationClass);
-        wrap.classList.add(...this._additionalClasses);
-        parentElement.appendChild(wrap);
+      wrap.classList.add(`${HandlerView._DEFAULT_CLASS}Container`, orientationClass);
+      wrap.classList.add(...this._additionalClasses);
+      parentElement.appendChild(wrap);
 
-        body.classList.add(`${this._defaultClass}Body`, orientationClass);
-        wrap.appendChild(body);
-    };
+      body.classList.add(`${HandlerView._DEFAULT_CLASS}Body`, orientationClass);
+      wrap.appendChild(body);
+    }
 
 
     get size(): number {
-        return (<KeyStringObj>this)[this.ownerSlider.expandDimension];
+      return (this as KeyStringObj)[this.ownerSlider.expandDimension];
     }
 
     public calculateOffset(): number {
-        return this.ownerSlider.calculateHandlerOffset(this._positionPart);
+      return this.ownerSlider.calculateHandlerOffset(this.positionPart);
     }
 
-    //добавляется смещение для правильного отображения хэндлера и тултипа, если тултип больше
-    private centerShift(shift: number): number {
-        let handlerSize = this.size;
-        let tooltipSize = this.tooltip.getSize();
+    // добавляется смещение для правильного отображения хэндлера и тултипа, если тултип больше
+    private _centerShift(shift: number): number {
+      const handlerSize = this.size;
+      const tooltipSize = this.tooltip.getSize();
 
-        const tooltipExcess = Math.max(0, tooltipSize - handlerSize);
+      const tooltipExcess = Math.max(0, tooltipSize - handlerSize);
 
-        return (shift - 0.5 * tooltipExcess);
+      return (shift - 0.5 * tooltipExcess);
     }
 
-    private calculateAccurateOffset(): number {
-        let shift = this.calculateOffset();
+    private _calculateAccurateOffset(): number {
+      const shift = this.calculateOffset();
 
-        return this.centerShift(shift);
+      return this._centerShift(shift);
     }
 
     public refreshPosition(): void {
-        const offset = this.calculateAccurateOffset();
+      const offset = this._calculateAccurateOffset();
 
-        this.element.wrap.style.removeProperty("left");
-        this.element.wrap.style.removeProperty("top");
+      this.element.wrap.style.removeProperty('left');
+      this.element.wrap.style.removeProperty('top');
 
-        (<KeyStringObj>this.element.wrap.style)[this.ownerSlider.offsetDirection] = `${offset}px`;
-        this.tooltip.updateHTML();
+      (this.element.wrap.style as KeyStringObj)[this.ownerSlider.offsetDirection] = `${offset}px`;
+      this.tooltip.updateHTML();
     }
 
-    public setPosition(newPositionPart: number) {
-        this._positionPart = newPositionPart;
-        if (this.element)
-            this.refreshPosition();
+    public setPosition(newPositionPart: number): void {
+      this.positionPart = newPositionPart;
+      if (this.element) {
+        this.refreshPosition();
+      }
     }
 
-    public setTooltipVisibility(stateToSet: boolean) {
-        this.tooltip.setVisibility(stateToSet);
+    public setTooltipVisibility(stateToSet: boolean): void {
+      this.tooltip.setVisibility(stateToSet);
     }
 
-    public remove() {
-        this.element.wrap.remove();
+    public remove(): void {
+      this.element.wrap.remove();
     }
 }

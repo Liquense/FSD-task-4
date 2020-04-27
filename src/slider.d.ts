@@ -1,3 +1,3 @@
 interface JQuery {
-    liquidSlider: any;
+    liquidSlider: Function;
 }
