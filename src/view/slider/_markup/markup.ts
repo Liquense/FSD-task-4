@@ -57,10 +57,14 @@ export default class MarkupView {
   }
 
   private _calculateMarkOffset(relativePosition: number, relativeHandlerSize: number): number {
+    // поправка на толщину деления шкалы
+    const relativeMarkThicknessHalf = (this._getRelativeMarkThickness() / 2);
+    // изначальный отступ по краям шкалы
+    const relativeHandlerSizeHalf = (relativeHandlerSize / 2);
+
     return Number(
       (
-        100
-        * (relativePosition + (relativeHandlerSize / 2) - this._getRelativeMarkThickness() / 2)
+        100 * (relativePosition + relativeHandlerSizeHalf - relativeMarkThicknessHalf)
       ).toFixed(4),
     );
   }

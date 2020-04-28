@@ -23,19 +23,22 @@ $markupThickness: 1px;
 $markupLength: $scaleThickness + 6px;
 
 .liquidSlider {
-  width: fit-content;
   outline: none;
   display: flex;
   align-items: center;
 
 
   &.liquidSlider_horizontal {
+    min-width: 200px;
+    width: 100%;
     flex-direction: row;
     padding-top: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipPadding*2;
     padding-bottom: $handlerAddition/2 + $handlerBorderWidth;
   }
 
   &.liquidSlider_vertical {
+    min-height: 200px;
+    height: 100%;
     flex-direction: column;
     padding-left: $handlerAddition/2 + $handlerBorderWidth;
     padding-right: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipPadding*2;
@@ -76,11 +79,13 @@ $markupLength: $scaleThickness + 6px;
     order: 1;
 
     &.liquidSlider_horizontal {
-      width: $sliderLength;
+      width: inherit;
+      min-width: inherit;
     }
 
     &.liquidSlider_vertical {
-      height: $sliderLength;
+      height: inherit;
+      min-height: inherit;
     }
 
     position: relative;
@@ -92,12 +97,14 @@ $markupLength: $scaleThickness + 6px;
       border-radius: $scaleBorderRadius;
 
       &.liquidSlider_horizontal {
-        width: 100%;
+        width: inherit;
+        min-width: inherit;
         height: $scaleThickness;
       }
 
       &.liquidSlider_vertical {
-        height: 100%;
+        height: inherit;
+        min-height: inherit;
         width: $scaleThickness;
       }
 
@@ -129,7 +136,7 @@ $markupLength: $scaleThickness + 6px;
       }
 
       &.liquidSlider_horizontal {
-        width: $sliderLength;
+        width: inherit;
         height: $scaleThickness;
 
         .liquidSlider__markup {
@@ -140,7 +147,7 @@ $markupLength: $scaleThickness + 6px;
       }
 
       &.liquidSlider_vertical {
-        height: $sliderLength;
+        height: inherit;
         width: $scaleThickness;
 
         .liquidSlider__markup {
@@ -157,12 +164,14 @@ $markupLength: $scaleThickness + 6px;
 
       &.liquidSlider_horizontal {
         height: $scaleThickness;
-        width: $sliderLength;
+        width: inherit;
+        min-width: inherit;
       }
 
       &.liquidSlider_vertical {
         width: $scaleThickness;
-        height: $sliderLength;
+        height: inherit;
+        min-height: inherit;
       }
 
       .liquidSlider__handlerContainer {

@@ -1,3 +1,5 @@
+import { ResizeObserver } from 'resize-observer';
+
 import {
   addListenerAfter,
   clamp,
@@ -60,6 +62,8 @@ export default class Slider implements Listenable, Orientable, SliderContainer, 
     // хранится для корректного удаления слушателя
     private _handleMouseMoveBound = this._handleMouseMove.bind(this);
 
+    private _resizeObserver: ResizeObserver;
+
     constructor(
         private _parentView: View,
         parameters?: {
@@ -85,6 +89,7 @@ export default class Slider implements Listenable, Orientable, SliderContainer, 
 
       this._createElements();
       this._setMouseEvents();
+      this._setResizeObserver();
     }
 
     get bodyElement(): HTMLElement {
@@ -163,7 +168,7 @@ export default class Slider implements Listenable, Orientable, SliderContainer, 
 
       operableObjects.forEach((obj) => {
         Object.keys(obj).forEach((key) => {
-          if (obj[key].classList) {
+          if (obj[key]?.classList) {
             obj[key].classList.remove(oldOrientClass);
             obj[key].classList.add(newOrientClass);
           }
@@ -429,6 +434,11 @@ export default class Slider implements Listenable, Orientable, SliderContainer, 
       );
     }
 
+    private _setResizeObserver(): void {
+      this._resizeObserver = new ResizeObserver(this._refreshElements.bind(this));
+      this._resizeObserver.observe(this._elements.body);
+    }
+
     private _handleWindowMouseOut(event: MouseEvent): void {
       const from = event.target as HTMLElement;
       if (from.nodeName === 'HTML') {
@@ -566,24 +576,19 @@ export default class Slider implements Listenable, Orientable, SliderContainer, 
       this._updateMarkup();
     }
 
-    private _updateMarkup():
-        void {
-      if (!this._markup
-      ) {
-        return;
-      }
+    private _updateMarkup(): void {
+      if (!this._markup) { return; }
 
       this._markup.clearAllMarks();
 
-      if (!this._withMarkup) {
-        return;
-      }
+      if (!this._withMarkup) { return; }
 
       requestAnimationFrame(() => {
         // i округляется, чтобы не всплывало ошибок деления
         for (let i = 0; i <= 1; i = roundToDecimal(i + this._step, 5)) {
           const standardPosition = standardize(i, { min: 0, max: 1, step: this._step });
           const shrinkPosition = standardPosition * this.shrinkRatio;
+          console.log(shrinkPosition);
           this._markup.addMark(shrinkPosition, this.calcRelativeHandlerSize());
         }
       });
