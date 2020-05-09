@@ -427,6 +427,8 @@ export default class SliderPanel implements Listenable, View {
     public handlersValuesChangedListener(
       data: { index: number; relativeValue: number; item: Presentable },
     ): void {
+      if (data === null) return;
+
       const changedHandler = this._handlers.find((handler) => handler.index === data.index);
       if (!changedHandler) return;
 

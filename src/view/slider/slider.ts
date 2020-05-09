@@ -324,8 +324,12 @@ export default class Slider implements Listenable, Orientable, SliderContainer, 
     public setHandlersData(
       handlers: { index: number; item: Presentable; relativeValue: number }[],
     ): void {
+      if (handlers.some((handler) => handler === null)) return;
+
       handlers.forEach(({ index, item, relativeValue }) => {
-        const realIndex = this.handlers.findIndex((handler) => handler.index === index);
+        const realIndex = this.handlers.findIndex(
+          (handler) => handler.index === index,
+        );
         if (realIndex === -1) {
           return;
         }
@@ -588,7 +592,6 @@ export default class Slider implements Listenable, Orientable, SliderContainer, 
         for (let i = 0; i <= 1; i = roundToDecimal(i + this._step, 5)) {
           const standardPosition = standardize(i, { min: 0, max: 1, step: this._step });
           const shrinkPosition = standardPosition * this.shrinkRatio;
-          console.log(shrinkPosition);
           this._markup.addMark(shrinkPosition, this.calcRelativeHandlerSize());
         }
       });
