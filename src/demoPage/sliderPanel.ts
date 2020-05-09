@@ -14,7 +14,9 @@ export default class SliderPanel implements Listenable, View {
 
     private _withMarkup: boolean;
 
-    private _handlers: { index: number; positionPart: number; item: any; itemIndex: number }[] = [];
+    private _handlers: {
+      index: number; positionPart: number; item: Presentable; itemIndex: number;
+    }[] = [];
 
     private _options = new Map().set('Никем', null).set('Началом', 'start').set('Концом', 'end');
 
@@ -93,6 +95,8 @@ export default class SliderPanel implements Listenable, View {
 
     private _newHandlerElementsClick(): void {
       const itemIndex = Number.parseFloat(this._elements.newHandlerElements.itemIndexInput.value);
+      if (Number.isNaN(itemIndex)) return;
+
       const rangePair = this._options
         .get(this._elements.newHandlerElements.handlerPairSelect.selectedOptions[0].text);
 
@@ -338,7 +342,7 @@ export default class SliderPanel implements Listenable, View {
       const handlerIndex = this._elements.handlerInputs.findIndex((input) => input.index === index);
       const handler = this._elements.handlerInputs[handlerIndex];
 
-      handler.itemIndexElement.innerText = this._handlers[handlerIndex].item;
+      handler.itemIndexElement.innerText = this._handlers[handlerIndex].item.toString();
     }
 
     private _refreshHandlerPosition(index: number): void {
@@ -411,7 +415,7 @@ export default class SliderPanel implements Listenable, View {
 
       const pairSelectOptions = this._elements.newHandlerElements.handlerPairSelect.options;
       Object.entries(pairSelectOptions).forEach((option, index) => {
-        if (option[0] === handlerIndex.toString()) {
+        if (option[1].innerText === (handlerIndex + 1).toString()) {
           pairSelectOptions.remove(index);
         }
       });
