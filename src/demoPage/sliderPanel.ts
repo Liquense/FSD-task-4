@@ -1,6 +1,5 @@
-import { Listenable } from '../utils/common';
 import Controller from '../controller/controller';
-import { View } from '../utils/interfaces';
+import { Listenable, View } from '../utils/interfaces';
 import { KeyStringObj, Presentable } from '../utils/types';
 
 export default class SliderPanel implements Listenable, View {

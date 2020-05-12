@@ -1,6 +1,7 @@
 // некоторые функции созданы для того, чтобы менять свойства в параметре
 // (bindListeners, addListenerAfter)
 import { KeyStringObj } from './types';
+import { Listenable } from './interfaces';
 
 export const DEFAULT_SLIDER_PARAMS = { isVertical: false, showTooltips: true, withMarkup: false };
 
@@ -12,10 +13,6 @@ export function parseClassesString(classesString: string): string[] {
   }
 
   return classesString.split(' ').filter((value) => value.length > 0);
-}
-
-export interface Listenable {
-    listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 }
 
 function bindListeners(

@@ -1,8 +1,8 @@
-import { calculateElementCenter, DEFAULT_SLIDER_CLASS, Listenable } from '../../../utils/common';
+import { calculateElementCenter, DEFAULT_SLIDER_CLASS } from '../../../utils/common';
 import TooltipView from './tooltip/tooltipView';
 import { KeyStringObj, Presentable } from '../../../utils/types';
 import {
-  HandlersOwner, Orientable, ScaleOwner, SliderContainer, SliderElement,
+  HandlersOwner, Listenable, Orientable, ScaleOwner, SliderContainer, SliderElement,
 } from '../../../utils/interfaces';
 
 export default class HandlerView implements Listenable, SliderElement {

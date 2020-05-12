@@ -1,7 +1,6 @@
 import SliderView from './slider/sliderView';
-import { Listenable } from '../utils/common';
 import { Presentable } from '../utils/types';
-import { View } from '../utils/interfaces';
+import { Listenable, View } from '../utils/interfaces';
 
 // класс кажется не слишком нужным,
 // но в случае, если понадобится какой-то функционал, связанный с другими видами, будет полезен

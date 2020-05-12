@@ -1,8 +1,8 @@
 import DefaultView from '../view/defaultView';
 import SliderModel from '../model/sliderModel';
-import { addListenerAfter, Listenable } from '../utils/common';
+import { addListenerAfter } from '../utils/common';
 import { Presentable } from '../utils/types';
-import { View } from '../utils/interfaces';
+import { Listenable, View } from '../utils/interfaces';
 
 export default class Controller {
     private _views: (View & Listenable)[];

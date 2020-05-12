@@ -3,12 +3,12 @@ import {
   addListenerAfter,
   calculateElementCenter,
   clamp,
-  Listenable,
   parseClassesString,
   removeListener,
   standardize,
 } from './common';
 import { KeyStringObj } from './types';
+import {Listenable} from "./interfaces";
 
 
 test('Парсинг строки классов', () => {

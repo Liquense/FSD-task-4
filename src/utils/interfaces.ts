@@ -68,3 +68,7 @@ export interface HandlersOwner {
 export interface SliderElement {
   ownerSlider: Orientable & SliderContainer & ScaleOwner & HandlersOwner;
 }
+
+export interface Listenable {
+  listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
+}

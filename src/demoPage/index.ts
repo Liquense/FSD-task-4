@@ -44,7 +44,7 @@ panels[2].boundController = slider3;
 
 const slider4 = $(sliderInitSelector).liquidSlider({
   handlers: [
-    { isEnd: true, rangePair: 'start' },
+    { rangePair: 'start' },
     { itemIndex: 2, rangePair: 0 },
     { itemIndex: 3, rangePair: 3 },
     { itemIndex: 6 },

@@ -4,7 +4,6 @@ import {
   addListenerAfter,
   clamp,
   DEFAULT_SLIDER_CLASS,
-  Listenable,
   roundToDecimal,
   standardize,
 } from '../../utils/common';
@@ -13,7 +12,7 @@ import HandlerView from './handler/handlerView';
 import RangeView from './range/rangeView';
 import MarkupView from './markup/markupView';
 import {
-  HandlersOwner,
+  HandlersOwner, Listenable,
   Orientable, ScaleOwner, SliderContainer, View,
 } from '../../utils/interfaces';
 
