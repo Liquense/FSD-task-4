@@ -38,7 +38,7 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
 
     private _handlers: HandlerModel[] = [];
 
-    public withCustomHandlers: boolean;
+    private withCustomHandlers: boolean;
 
     constructor(parameters?: {
         isRange?: boolean;
@@ -71,91 +71,6 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
       });
     }
 
-    public setItems(items: Presentable[]): void {
-      if (items?.length) {
-        // если передаётся массив своих значений
-        this._items = items;
-        this._initItemsMinMax(items.length);
-      } else {
-        this._items = null;
-      }
-    }
-
-    /**
-     * Устанавливает шаг значений, используемый в слайдере.
-     * @param data
-     *      @param data.items - пользовательские значения.
-     *      Если переданы - шаг должен быть целым числом, поскольку работа будет с массивом.
-     * @private
-     */
-    public setStep(data?: { step?: number; items?: Presentable[] }): void {
-      if (!data?.step) {
-        return;
-      }
-
-      if (data.items) {
-        this._step = Math.round(data.step);
-      } else {
-        this._step = data.step;
-      }
-
-      this.updateHandlersPositions();
-    }
-
-    /**
-     * Устанавливает минимальное и максимальное значение слайдера.
-     * Если ничего не передано, то остаются прежние значения.
-     * @param data
-     * @private
-     */
-    public setMinMax(data?: { min?: number; max?: number }): void {
-      const newMinGreaterThanOldMax = data?.min > this._max;
-      const newMaxLesserThanOldMin = data?.max < this._min;
-      const singleExtremumChecks = (newMinGreaterThanOldMax || newMaxLesserThanOldMin);
-      const maxLesserThanMin = data?.min > data?.max;
-      if (singleExtremumChecks || maxLesserThanMin) {
-        return;
-      }
-
-      if (data?.min !== undefined) {
-        this._min = data.min;
-      }
-      if (data?.max !== undefined) {
-        this._max = data.max;
-      }
-
-      this.updateHandlersPositions();
-    }
-
-    private _initItemsMinMax(itemsCount: number): void {
-      this._min = 0;
-      this._max = itemsCount - 1;
-    }
-
-
-    private _createHandlers(handlersItemIndexes: { itemIndex: number }[]): void {
-      if (!handlersItemIndexes?.length) {
-        return;
-      }
-
-      this._occupiedItems = [];
-      this._handlers = [];
-      const reducer = (
-        newHandlers: HandlerModel[], handler: {itemIndex?: number},
-      ): HandlerModel[] => {
-        const itemIndex = standardize(handler.itemIndex, this.standardizeParams);
-
-        const newHandler = this._createHandler(itemIndex, newHandlers.length);
-        if (newHandler !== null) {
-          newHandlers.push(newHandler);
-        }
-
-        return newHandlers;
-      };
-
-      this._handlers = handlersItemIndexes.reduce(reducer, []);
-    }
-
     public addHandler(
       itemIndex: number,
     ): { positionPart: number; item: Presentable; handlerIndex: number; itemIndex: number } {
@@ -166,6 +81,7 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
       if (newHandler) {
         this._handlers.push(newHandler);
         newHandler.handlerIndex = newHandlerIndex;
+        this.withCustomHandlers = true;
 
         return {
           positionPart: newHandler.position,
@@ -178,9 +94,9 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     }
 
     /*
-    Удаляет хэндлер под указанным индексом (handlerModel.index).
-    Возвращает false, если хэндлер с таким индексом не найден.
-     */
+  Удаляет хэндлер под указанным индексом (handlerModel.index).
+  Возвращает false, если хэндлер с таким индексом не найден.
+   */
     public removeHandler(handlerIndex: number): boolean {
       const handlerToRemoveIndex = this._handlers.findIndex(
         (handler) => handler.handlerIndex === handlerIndex,
@@ -220,25 +136,57 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
       this._createHandlers(handlersItemIndexes);
     }
 
-    /**
-     * Создаёт и возвращает новый хэндлер.
-     * При занятости запрашиваемого значения ищёт свободное, если свободных нет - возвращает null
-     * @param itemIndex
-     * @param handlerIndex
-     */
-    private _createHandler(itemIndex: number, handlerIndex: number): HandlerModel {
-      const freeItemIndex = this.getFirstFreeItemIndex(itemIndex);
-      if (freeItemIndex === null) {
-        return null;
+    public setItems(items: Presentable[]): void {
+      if (items?.length) {
+        // если передаётся массив своих значений
+        this._items = items;
+        this._initItemsMinMax(items.length);
+      } else {
+        this._items = null;
       }
-
-      const handlerValue = this._items?.length > 0 ? (this._items[freeItemIndex]) : (freeItemIndex);
-      return new HandlerModel(handlerValue, freeItemIndex, this, handlerIndex);
     }
 
+    /**
+     * Устанавливает шаг значений, используемый в слайдере.
+     * @param data
+     *      @param data.items - пользовательские значения.
+     *      Если переданы - шаг должен быть целым числом, поскольку работа будет с массивом.
+     * @private
+     */
+    public setStep(data?: { step?: number; items?: Presentable[] }): void {
+      if (!data?.step) { return; }
+
+      this._step = data.items ? Math.round(data.step) : data.step;
+
+      this.updateHandlersPositions();
+    }
+
+    /**
+     * Устанавливает минимальное и максимальное значение слайдера.
+     * Если ничего не передано, то остаются прежние значения.
+     * @param data
+     * @private
+     */
+    public setMinMax(data?: { min?: number; max?: number }): void {
+      const newMinGreaterThanOldMax = data?.min > this._max;
+      const newMaxLesserThanOldMin = data?.max < this._min;
+      const singleExtremumChecks = (newMinGreaterThanOldMax || newMaxLesserThanOldMin);
+      const maxLesserThanMin = data?.min > data?.max;
+
+      if (singleExtremumChecks || maxLesserThanMin) { return; }
+
+      if (data?.min !== undefined) {
+        this._min = data.min;
+      }
+      if (data?.max !== undefined) {
+        this._max = data.max;
+      }
+
+      this.updateHandlersPositions();
+    }
 
     public handlerValueChanged(changedHandler: HandlerModel):
-      { index: number; relativeValue: number; item: Presentable} {
+    { index: number; relativeValue: number; item: Presentable} {
       const changedHandlerIndex = this._handlers.findIndex(
         (handler) => handler.handlerIndex === changedHandler.handlerIndex,
       );
@@ -256,11 +204,11 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
 
     // для передачи контролеру
     public getHandlersData(): {
-      customHandlers: boolean;
-      handlersArray: {
-        handlerIndex: number; item: Presentable; positionPart: number; itemIndex: number;
-      }[];
-      } {
+    customHandlers: boolean;
+    handlersArray: {
+      handlerIndex: number; item: Presentable; positionPart: number; itemIndex: number;
+    }[];
+    } {
       return {
         customHandlers: this.withCustomHandlers,
         handlersArray: this._handlers.map(
@@ -283,19 +231,13 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
       };
     }
 
-    private _getItemIndexFromPosition(position: number): number {
-      return (position === 1)
-        ? this._max
-        : standardize((this._min + position * this.range), this.standardizeParams);
-    }
-
     /**
-     * Обрабатывает изменение позиции хэндлера, устанавливая значение,
-     * соответствующее пришедшей позиции
-     * @param data
-     * @param data.index индекс хэндлера
-     * @param data.position новая позиция, полученная от контроллера
-     */
+   * Обрабатывает изменение позиции хэндлера, устанавливая значение,
+   * соответствующее пришедшей позиции
+   * @param data
+   * @param data.index индекс хэндлера
+   * @param data.position новая позиция, полученная от контроллера
+   */
     public handleHandlerPositionChanged(data: { index: number; position: number }): void {
       const newStandardPosition = this._getItemIndexFromPosition(data.position);
 
@@ -315,6 +257,57 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
 
     public releaseItem(itemIndex: number): void {
       delete this._occupiedItems[itemIndex];
+    }
+
+    private _initItemsMinMax(itemsCount: number): void {
+      this._min = 0;
+      this._max = itemsCount - 1;
+    }
+
+
+    private _createHandlers(handlersItemIndexes: { itemIndex: number }[]): void {
+      if (!handlersItemIndexes?.length) {
+        return;
+      }
+
+      this._occupiedItems = [];
+      this._handlers = [];
+      const reducer = (
+        newHandlers: HandlerModel[], handler: {itemIndex?: number},
+      ): HandlerModel[] => {
+        const itemIndex = standardize(handler.itemIndex, this.standardizeParams);
+
+        const newHandler = this._createHandler(itemIndex, newHandlers.length);
+        if (newHandler !== null) {
+          newHandlers.push(newHandler);
+        }
+
+        return newHandlers;
+      };
+
+      this._handlers = handlersItemIndexes.reduce(reducer, []);
+    }
+
+    /**
+     * Создаёт и возвращает новый хэндлер.
+     * При занятости запрашиваемого значения ищёт свободное, если свободных нет - возвращает null
+     * @param itemIndex
+     * @param handlerIndex
+     */
+    private _createHandler(itemIndex: number, handlerIndex: number): HandlerModel {
+      const freeItemIndex = this.getFirstFreeItemIndex(itemIndex);
+      if (freeItemIndex === null) {
+        return null;
+      }
+
+      const handlerValue = this._items?.length > 0 ? (this._items[freeItemIndex]) : (freeItemIndex);
+      return new HandlerModel(handlerValue, freeItemIndex, this, handlerIndex);
+    }
+
+    private _getItemIndexFromPosition(position: number): number {
+      return (position === 1)
+        ? this._max
+        : standardize((this._min + position * this.range), this.standardizeParams);
     }
 
     /**
