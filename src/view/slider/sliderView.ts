@@ -18,13 +18,17 @@ import {
 
 export default class SliderView implements Listenable, Orientable, SliderContainer, ScaleOwner,
   HandlersOwner {
-    private static _DEFAULT_CLASS = 'liquidSlider';
-
-    listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
+    public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 
     public isVertical: boolean;
 
     public isReversed = false;
+
+    public handlerSize = 0;
+
+    public handlers: HandlerView[] = [];
+
+    private static _DEFAULT_CLASS = 'liquidSlider';
 
     private _elements: {
         [key: string]: HTMLElement;
@@ -117,13 +121,10 @@ export default class SliderView implements Listenable, Orientable, SliderContain
       );
     }
 
-    public handlerSize = 0;
 
     get shrinkRatio(): number {
       return this.getWorkZoneLength() / this.getScaleLength();
     }
-
-    public handlers: HandlerView[] = [];
 
     get offsetDirection(): string {
       if (this.isVertical) {
