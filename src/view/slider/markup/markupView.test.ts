@@ -1,13 +1,13 @@
 /* eslint-disable dot-notation,no-undef */
-import View from '../../view';
-import Slider from '../slider';
-import MarkupView from './markup';
+import View from '../../defaultView';
+import SliderView from '../sliderView';
+import MarkupView from './markupView';
 import { KeyStringObj } from '../../../utils/types';
 
 document.body.innerHTML = '<div class="liquidSlider liquidSlider_horizontal"></div>';
 const sliderContainer = document.querySelector('.liquidSlider') as HTMLElement;
 const view = new View(sliderContainer, {});
-let slider: Slider & KeyStringObj = new Slider(view, { withMarkup: true });
+let slider: SliderView & KeyStringObj = new SliderView(view, { withMarkup: true });
 let markup: MarkupView & KeyStringObj;
 
 describe('Инициализация экземпляра разметки', () => {
@@ -52,7 +52,7 @@ describe('Функционал разметки', () => {
 
   describe('Получение относительной ширины метки', () => {
     beforeAll(() => {
-      slider = new Slider(view, { withMarkup: true });
+      slider = new SliderView(view, { withMarkup: true });
 
       markup = new MarkupView(slider);
       markup['_getMarkThickness'] = jest.fn(() => 1);
@@ -71,7 +71,7 @@ describe('Функционал разметки', () => {
 
   describe('Добавление метки', () => {
     beforeEach(() => {
-      slider = new Slider(view, { withMarkup: true });
+      slider = new SliderView(view, { withMarkup: true });
       markup = new MarkupView(slider);
     });
 

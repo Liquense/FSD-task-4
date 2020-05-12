@@ -1,36 +1,36 @@
 /* eslint-disable dot-notation,no-undef,@typescript-eslint/ban-ts-ignore */
-import Model from './model';
+import SliderModel from './sliderModel';
 import { KeyStringObj } from '../utils/types';
 
-let testModel: Model & KeyStringObj;
+let testModel: SliderModel & KeyStringObj;
 const createHandlersFN = '_createHandlers';
 const generateDefaultHandlersItemIndexesFN = '_generateDefaultHandlersItemIndexes';
 
 
 describe('Инициализация', () => {
   test('Конструктор', () => {
-    const origSetMinMax = Model.prototype.setMinMax;
-    Model.prototype.setMinMax = jest.fn();
-    const mockSetMinMax = Model.prototype.setMinMax;
+    const origSetMinMax = SliderModel.prototype.setMinMax;
+    SliderModel.prototype.setMinMax = jest.fn();
+    const mockSetMinMax = SliderModel.prototype.setMinMax;
 
-    const origSetStep = Model.prototype.setStep;
-    Model.prototype.setStep = jest.fn();
-    const mockSetStep = Model.prototype.setStep;
+    const origSetStep = SliderModel.prototype.setStep;
+    SliderModel.prototype.setStep = jest.fn();
+    const mockSetStep = SliderModel.prototype.setStep;
 
-    const origSetItems = Model.prototype.setItems;
-    Model.prototype.setItems = jest.fn();
-    const mockSetItems = Model.prototype.setItems;
+    const origSetItems = SliderModel.prototype.setItems;
+    SliderModel.prototype.setItems = jest.fn();
+    const mockSetItems = SliderModel.prototype.setItems;
 
-    const origCreateCustomHandlers = Model.prototype[createHandlersFN];
-    Model.prototype[createHandlersFN] = jest.fn();
-    const mockCreateCustomHandlers = Model.prototype[createHandlersFN];
+    const origCreateCustomHandlers = SliderModel.prototype[createHandlersFN];
+    SliderModel.prototype[createHandlersFN] = jest.fn();
+    const mockCreateCustomHandlers = SliderModel.prototype[createHandlersFN];
 
-    const origGenerateDefaultHandlers = Model.prototype[generateDefaultHandlersItemIndexesFN];
-    Model.prototype[generateDefaultHandlersItemIndexesFN] = jest.fn();
-    const mockGenerateDefaultHandlers = Model.prototype[generateDefaultHandlersItemIndexesFN];
+    const origGenerateDefaultHandlers = SliderModel.prototype[generateDefaultHandlersItemIndexesFN];
+    SliderModel.prototype[generateDefaultHandlersItemIndexesFN] = jest.fn();
+    const mockGenerateDefaultHandlers = SliderModel.prototype[generateDefaultHandlersItemIndexesFN];
 
     // создание без передачи параметров
-    testModel = new Model();
+    testModel = new SliderModel();
     expect(mockSetMinMax).toBeCalledWith(undefined);
     expect(mockSetStep).toBeCalledWith(undefined);
     expect(mockSetItems).toBeCalledWith(undefined);
@@ -38,14 +38,14 @@ describe('Инициализация', () => {
 
     // создание с передачей данных (items) и установкой диапазона
     const testParameters = { isRange: true, max: 100, items: [2, 6, 12] };
-    testModel = new Model(testParameters);
+    testModel = new SliderModel(testParameters);
     expect(mockSetMinMax).toBeCalledWith(testParameters);
     expect(mockSetStep).toBeCalledWith(testParameters);
     expect(mockSetItems).toBeCalledWith(testParameters.items);
     expect(mockGenerateDefaultHandlers).toBeCalledWith(2, undefined);
 
     const testParameters2 = { isRange: true, max: 100, values: [2, 6, 10] };
-    testModel = new Model(testParameters2);
+    testModel = new SliderModel(testParameters2);
     expect(mockSetMinMax).toBeCalledWith(testParameters2);
     expect(mockSetStep).toBeCalledWith(testParameters2);
     expect(mockSetItems).toBeCalledWith(undefined);
@@ -53,22 +53,22 @@ describe('Инициализация', () => {
 
     // с передачей своих значений хэндлеров
     const testParameters3 = { handlers: [{ itemIndex: 1 }, { itemIndex: 3 }] };
-    testModel = new Model(testParameters3);
+    testModel = new SliderModel(testParameters3);
     expect(mockSetMinMax).toBeCalledWith(testParameters3);
     expect(mockSetStep).toBeCalledWith(testParameters3);
     expect(mockSetItems).toBeCalledWith(undefined);
     expect(mockCreateCustomHandlers).toBeCalledWith(testParameters3.handlers);
 
-    Model.prototype.setMinMax = origSetMinMax;
-    Model.prototype.setStep = origSetStep;
-    Model.prototype.setItems = origSetItems;
-    Model.prototype[createHandlersFN] = origCreateCustomHandlers;
-    Model.prototype[generateDefaultHandlersItemIndexesFN] = origGenerateDefaultHandlers;
+    SliderModel.prototype.setMinMax = origSetMinMax;
+    SliderModel.prototype.setStep = origSetStep;
+    SliderModel.prototype.setItems = origSetItems;
+    SliderModel.prototype[createHandlersFN] = origCreateCustomHandlers;
+    SliderModel.prototype[generateDefaultHandlersItemIndexesFN] = origGenerateDefaultHandlers;
   });
 
   describe('Установка полей', () => {
     beforeEach(() => {
-      testModel = new Model();
+      testModel = new SliderModel();
     });
 
     test('Создание хэндлеров с пользовательскими значениями', () => {
@@ -137,7 +137,7 @@ describe('Инициализация', () => {
 
     describe('Занятие и освобождение значений', () => {
       beforeEach(() => {
-        testModel = new Model();
+        testModel = new SliderModel();
       });
 
       test('Занятие значения', () => {
@@ -167,13 +167,13 @@ describe('Инициализация', () => {
 
   describe('Обмен данными', () => {
     beforeEach(() => {
-      testModel = new Model();
+      testModel = new SliderModel();
     });
 
     test('Получение из модели данных о хэндлерах', () => {
       // пользовательские хэндлеры
       const testParameters = { handlers: [{ itemIndex: 1 }, { itemIndex: 3 }] };
-      testModel = new Model(testParameters);
+      testModel = new SliderModel(testParameters);
 
       expect(testModel.getHandlersData()).toStrictEqual({
         customHandlers: true,
@@ -189,7 +189,7 @@ describe('Инициализация', () => {
         ],
       });
       // стандартные хэндлеры
-      testModel = new Model({ isRange: true });
+      testModel = new SliderModel({ isRange: true });
       expect(testModel.getHandlersData()).toStrictEqual({
         customHandlers: false,
         handlersArray: [
@@ -248,7 +248,7 @@ describe('Инициализация', () => {
 
 describe('Функции', () => {
   beforeEach(() => {
-    testModel = new Model();
+    testModel = new SliderModel();
   });
 
   test('Установка набора пользовательских значений', () => {

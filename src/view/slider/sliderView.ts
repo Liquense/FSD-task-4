@@ -9,15 +9,15 @@ import {
   standardize,
 } from '../../utils/common';
 import { KeyStringObj, Presentable } from '../../utils/types';
-import HandlerView from './__handler/handler';
-import RangeView from './__range/rangeView';
-import MarkupView from './_markup/markup';
+import HandlerView from './handler/handlerView';
+import RangeView from './range/rangeView';
+import MarkupView from './markup/markupView';
 import {
   HandlersOwner,
   Orientable, ScaleOwner, SliderContainer, View,
 } from '../../utils/interfaces';
 
-export default class Slider implements Listenable, Orientable, SliderContainer, ScaleOwner,
+export default class SliderView implements Listenable, Orientable, SliderContainer, ScaleOwner,
   HandlersOwner {
     private static _DEFAULT_CLASS = 'liquidSlider';
 
@@ -187,7 +187,7 @@ export default class Slider implements Listenable, Orientable, SliderContainer, 
     }
 
     public getOrientationClass(): string {
-      return this.isVertical ? `${DEFAULT_SLIDER_CLASS}_vertical` : `${Slider._DEFAULT_CLASS}_horizontal`;
+      return this.isVertical ? `${DEFAULT_SLIDER_CLASS}_vertical` : `${SliderView._DEFAULT_CLASS}_horizontal`;
     }
 
     // возвращает позицию мыши относительно начала шкалы в стндартизированном виде
@@ -407,7 +407,7 @@ export default class Slider implements Listenable, Orientable, SliderContainer, 
             break;
           case 'body':
             // чтобы не возникало drag-n-drop (с ondragstart не работает)
-            element.addEventListener('mousedown', Slider._preventDefault);
+            element.addEventListener('mousedown', SliderView._preventDefault);
             wrap.append(element);
             break;
           case 'min':

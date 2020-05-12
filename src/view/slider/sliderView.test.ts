@@ -1,11 +1,11 @@
 // в тестах приходится хакать области видимости и не только
 /* eslint-disable no-undef,dot-notation,@typescript-eslint/ban-ts-ignore */
-import Slider from './slider';
-import View from '../view';
-import Tooltip from './__handler/__tooltip/tooltip';
-import MarkupView from './_markup/markup';
+import SliderView from './sliderView';
+import View from '../defaultView';
+import TooltipView from './handler/tooltip/tooltipView';
+import MarkupView from './markup/markupView';
 
-jest.mock('../view');
+jest.mock('../defaultView');
 
 const testView = new View(null, null);
 Object.defineProperty(testView, 'body', {
@@ -16,7 +16,7 @@ Object.defineProperty(testView, 'body', {
 });
 
 testView.handlerPositionChanged = jest.fn(() => undefined);
-let testSlider: Slider;
+let testSlider: SliderView;
 
 function resetHTML(): void {
   document.body.innerHTML = '';
@@ -30,7 +30,7 @@ function resetHTML(): void {
 describe('Инициализация', () => {
   describe('Установка значений полей', () => {
     test('Без передачи необязательных параметров', () => {
-      testSlider = new Slider(testView);
+      testSlider = new SliderView(testView);
 
       expect(testSlider.isVertical).toBe(undefined);
       expect(testSlider.isReversed).toBe(false);
@@ -38,7 +38,7 @@ describe('Инициализация', () => {
       expect(testSlider['_withMarkup']).toBe(undefined);
     });
     test('С передачей необязательных параметров', () => {
-      testSlider = new Slider(
+      testSlider = new SliderView(
         testView, {
           isVertical: true, isReversed: false, showTooltips: false, withMarkup: true,
         },
@@ -53,7 +53,7 @@ describe('Инициализация', () => {
 
   test('Создание HTML-элементов', () => {
     resetHTML();
-    testSlider = new Slider(testView);
+    testSlider = new SliderView(testView);
 
     const wrap = document.body.querySelector('.liquidSlider');
     const body = document.body.querySelector('.liquidSlider__body');
@@ -195,7 +195,7 @@ describe('Инициализация', () => {
   describe('Проверка слушателей событий', () => {
     beforeEach(() => {
       resetHTML();
-      testSlider = new Slider(testView);
+      testSlider = new SliderView(testView);
 
       testSlider.bodyElement.style.width = '100px';
       testSlider.getScaleLength = (): number => 100;
@@ -270,7 +270,7 @@ describe('Инициализация', () => {
             // видимость тултипов
             if (testSlider['_tooltipsAlwaysVisible']) {
               expect(testSlider['_activeHandler'].tooltip.element.classList)
-                .toContain(`${Tooltip.DEFAULT_CLASS}_visible`);
+                .toContain(`${TooltipView.DEFAULT_CLASS}_visible`);
             } else if (testSlider['_tooltipsAlwaysVisible'] !== undefined) {
               // если значение передано и оно FALSE
               // проверяем, что на неактивных хэндлерах тултипы не видны
@@ -278,7 +278,7 @@ describe('Инициализация', () => {
               testSlider.handlers.forEach((handler) => {
                 if (handler !== testSlider['_activeHandler']) {
                   expect(handler.tooltip.element.classList)
-                    .toContain(`${Tooltip.DEFAULT_CLASS}_hidden`);
+                    .toContain(`${TooltipView.DEFAULT_CLASS}_hidden`);
                 }
               });
             }
@@ -389,7 +389,7 @@ describe('Инициализация', () => {
 describe('Функции', () => {
   beforeAll(() => {
     resetHTML();
-    testSlider = new Slider(testView);
+    testSlider = new SliderView(testView);
 
     testSlider.initHandlers(
       {

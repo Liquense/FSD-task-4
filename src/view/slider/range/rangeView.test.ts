@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore,no-undef,dot-notation */
 import RangeView from './rangeView';
-import Slider from '../slider';
-import HandlerView from '../__handler/handler';
+import SliderView from '../sliderView';
+import HandlerView from '../handler/handlerView';
 
-jest.mock('../__handler/handler');
-jest.mock('../slider');
+jest.mock('../handler/handlerView');
+jest.mock('../sliderView');
 let testRange: RangeView;
 
-const testSlider = new Slider(null, {});
+const testSlider = new SliderView(null, {});
 // @ts-ignore
 testSlider.scaleStart = 0;
 // @ts-ignore

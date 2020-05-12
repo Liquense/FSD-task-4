@@ -1,20 +1,20 @@
 /* eslint-disable no-undef,@typescript-eslint/ban-ts-ignore,dot-notation */
 import Controller from './controller';
-import Model from '../model/model';
-import View from '../view/view';
+import SliderModel from '../model/sliderModel';
+import View from '../view/defaultView';
 import { addListenerAfter } from '../utils/common';
 import { KeyStringObj } from '../utils/types';
 
 jest.mock('../utils/common');
-jest.mock('../view/view');
-jest.mock('../model/model');
+jest.mock('../view/defaultView');
+jest.mock('../model/sliderModel');
 
 let testController: Controller & KeyStringObj;
 const rootElement = document.createElement('div');
 document.body.appendChild(rootElement);
 
 const mockAddListenerAfter = addListenerAfter as unknown as jest.Mock;
-const mockModel = Model as unknown as jest.Mock;
+const mockModel = SliderModel as unknown as jest.Mock;
 const mockView = View as unknown as jest.Mock;
 
 const viewsParamName = '_views';
@@ -25,7 +25,7 @@ describe('Инициализация контроллера', () => {
     mockView.mockClear();
   });
 
-  test('Создание и присваивание экземпляров Model и View', () => {
+  test('Создание и присваивание экземпляров SliderModel и View', () => {
     testController = new Controller(rootElement);
 
     expect(testController[viewsParamName][0]).toBe(mockView.mock.instances[0]);
@@ -50,7 +50,7 @@ describe('Инициализация контроллера', () => {
   test('Передача данных о слайдере от модели к виду', () => {
     const testData = { test: 'data1' };
     // @ts-ignore
-    Model.prototype.getSliderData = jest.fn(() => testData);
+    SliderModel.prototype.getSliderData = jest.fn(() => testData);
 
     testController = new Controller(rootElement);
 
@@ -76,7 +76,7 @@ describe('Инициализация контроллера', () => {
       const testHandlersData = { customHandlers: false, handlersArray: testHandlersArray };
 
       // @ts-ignore
-      Model.prototype.getHandlersData = jest.fn(() => testHandlersData);
+      SliderModel.prototype.getHandlersData = jest.fn(() => testHandlersData);
 
       // @ts-ignore
       testController = new Controller(rootElement, testParameters);

@@ -9,7 +9,6 @@ import { DEFAULT_SLIDER_PARAMS } from './utils/common';
 /**
  * Расширение JQuery, добавляющее функцию для инициализации слайдера
  * @param parameters
- * @param parameters.additionalClass дополнительный класс
  * @param parameters.items массив элементов, который будет перебираться слайдером
  * (если не указан - будет массив чисел от min до max с шагом step)
  * @param parameters.values текущие значения, если не были переданы свои хэндлеры
@@ -20,20 +19,20 @@ import { DEFAULT_SLIDER_PARAMS } from './utils/common';
  * @param parameters.min минимальное значение слайдера
  * @param parameters.max максимальное значение слайдер
  * @param parameters.step шаг слайдера
- * (при использовании массива не-числовых элементов будет относиться к итератору массива)
+ *  (при использовании массива пользовательских элементов
+ *   будет относиться к индексам элементов массива)
  * @param parameters.handlers параметры для массива хэндлеров
- *      @param parameters.handlers.additionalClass дополнительный класс, если он нужен пользователю
- *      @param parameters.handlers.height высота хэндлера (строка типа "15px" или "10%")
- *      @param parameters.handlers.width ширина хэндлера (строка типа "15px" или "10%")
+ *      @param parameters.handlers.itemIndex значение хэндлера
+ *      (индекс значения при пользовательских значениях)
+ *      @param parameters.handlers.rangePair объект, с которым нужно связать хэндлер
+ *      ('start' - с началом слайдера,'end' - с концом слайдера, <number> - с другим хэндлером)
+ *      @param parameters.handlers.additionalClasses пользовательские классы
  *      @param parameters.handlers.tooltip тултип, принадлежащий хэндлеру
- *          @param parameters.handlers.tooltip.additionalClass дополнительный класс
- *          @param parameters.handlers.tooltip.position позиция относительно хэндлера
- *          @param parameters.handlers.tooltip.bodyHTML HTML-код, если нужно заменить стандартный
+ *          @param parameters.handlers.tooltip.additionalClasses пользовательские классы
  */
 $.fn.liquidSlider = function liquidSlider(
   parameters?: {
-        additionalClasses?: string;
-        items?: Array<Presentable>;
+        items?: Presentable[];
         values?: number[]; // если не заданы handlers
         isRange?: boolean; // если не заданы handlers
         isVertical?: boolean;
@@ -46,11 +45,9 @@ $.fn.liquidSlider = function liquidSlider(
         handlers?: {
             itemIndex: number;
             additionalClasses?: string;
-            rangePair?: number | string;
-            withTooltip?: boolean;
+            rangePair?: number | 'start' | 'end';
             tooltip?: {
                 additionalClasses?: string;
-                bodyHTML?: string;
             };
         }[];
     },

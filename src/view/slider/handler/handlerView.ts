@@ -1,5 +1,5 @@
 import { calculateElementCenter, DEFAULT_SLIDER_CLASS, Listenable } from '../../../utils/common';
-import Tooltip from './__tooltip/tooltip';
+import TooltipView from './tooltip/tooltipView';
 import { KeyStringObj, Presentable } from '../../../utils/types';
 import {
   HandlersOwner, Orientable, ScaleOwner, SliderContainer, SliderElement,
@@ -10,7 +10,7 @@ export default class HandlerView implements Listenable, SliderElement {
 
     private static _DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__handler`;
 
-    public readonly tooltip: Tooltip;
+    public readonly tooltip: TooltipView;
 
     private _additionalClasses: string[] = [];
 
@@ -67,7 +67,7 @@ export default class HandlerView implements Listenable, SliderElement {
       this._createElement(ownerSlider.handlersContainer);
 
       const withTooltip = params.withTooltip === undefined ? true : params.withTooltip;
-      this.tooltip = new Tooltip(
+      this.tooltip = new TooltipView(
         this.element.wrap, this, { visibilityState: withTooltip, item: params.item },
       );
       this.setValue(params.item);

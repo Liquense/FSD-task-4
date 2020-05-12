@@ -1,11 +1,11 @@
-import Slider from './slider/slider';
+import SliderView from './slider/sliderView';
 import { Listenable } from '../utils/common';
 import { Presentable } from '../utils/types';
 import { View } from '../utils/interfaces';
 
 // класс кажется не слишком нужным,
 // но в случае, если понадобится какой-то функционал, связанный с другими видами, будет полезен
-export default class SliderView implements Listenable, View {
+export default class DefaultView implements Listenable, View {
     listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 
     private _element: HTMLElement;
@@ -14,11 +14,11 @@ export default class SliderView implements Listenable, View {
       return this._element;
     }
 
-    private _slider: Slider;
+    private _slider: SliderView;
 
     constructor(element: HTMLElement, parameters?: object) {
       this._element = element;
-      this._slider = new Slider(this, parameters);
+      this._slider = new SliderView(this, parameters);
     }
 
     /**

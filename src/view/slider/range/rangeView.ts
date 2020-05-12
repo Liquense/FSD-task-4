@@ -1,4 +1,4 @@
-import HandlerView from '../__handler/handler';
+import HandlerView from '../handler/handlerView';
 import {
   addListenerAfter,
   DEFAULT_SLIDER_CLASS,

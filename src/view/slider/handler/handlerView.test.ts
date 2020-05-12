@@ -1,17 +1,17 @@
 /* eslint-disable no-undef,@typescript-eslint/ban-ts-ignore */
-import HandlerView from './handler';
-import Slider from '../slider';
-import Tooltip from './__tooltip/tooltip';
+import HandlerView from './handlerView';
+import SliderView from '../sliderView';
+import TooltipView from './tooltip/tooltipView';
 import { KeyStringObj, Presentable } from '../../../utils/types';
 
 import Mock = jest.Mock;
 
-jest.mock('../slider');
-jest.mock('./__tooltip/tooltip');
+jest.mock('../sliderView');
+jest.mock('./tooltip/tooltipView');
 
 const verticalClass = 'vertical';
 const horizontalClass = 'horizontal';
-const testSlider = new Slider(null, null);
+const testSlider = new SliderView(null, null);
 testSlider.getOrientationClass = jest.fn(function () {
   return this.isVertical ? verticalClass : horizontalClass;
 });
@@ -27,7 +27,7 @@ function createTestHandler(index = 0, positionPart = 0.5, value: Presentable = '
 
 describe('Инициализация', () => {
   test('Установка значений полей', async () => {
-    const mockTooltip = (Tooltip as unknown as Mock);
+    const mockTooltip = (TooltipView as unknown as Mock);
     mockTooltip.mockClear();
     // только с обязательными параметрами
     const index = 0;
@@ -143,7 +143,7 @@ describe('Вспомогательные функции', () => {
   });
 
   test('Установка видимости тултипа', () => {
-    const mockTooltip = (Tooltip as unknown as Mock);
+    const mockTooltip = (TooltipView as unknown as Mock);
     mockTooltip.mockClear();
 
     let testingVisibilityState = true;

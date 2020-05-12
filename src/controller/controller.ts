@@ -1,5 +1,5 @@
-import SliderView from '../view/view';
-import Model from '../model/model';
+import DefaultView from '../view/defaultView';
+import SliderModel from '../model/sliderModel';
 import { addListenerAfter, Listenable } from '../utils/common';
 import { Presentable } from '../utils/types';
 import { View } from '../utils/interfaces';
@@ -7,15 +7,15 @@ import { View } from '../utils/interfaces';
 export default class Controller {
     private _views: (View & Listenable)[];
 
-    private readonly _model: Model;
+    private readonly _model: SliderModel;
 
     constructor(
         private _element: HTMLElement,
         private parameters?: {
             additionalClasses?: string;
             items?: Array<Presentable>;
-            values?: number[]; // если не заданы handlers
-            isRange?: boolean; // если не заданы handlers
+            values?: number[]; // актуально, если не заданы handlers
+            isRange?: boolean; // актуально, если не заданы handlers
             isVertical?: boolean;
             isReversed?: boolean;
             min?: number;
@@ -30,14 +30,13 @@ export default class Controller {
                 withTooltip?: boolean;
                 tooltip?: {
                     additionalClasses?: string;
-                    bodyHTML?: string;
                 };
             }[];
         },
     ) {
-      const newView = new SliderView(_element, parameters);
+      const newView = new DefaultView(_element, parameters);
       this._views = [newView];
-      this._model = new Model(parameters);
+      this._model = new SliderModel(parameters);
 
       addListenerAfter(
         'handlerValueChanged',

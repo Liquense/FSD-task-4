@@ -2,7 +2,7 @@ import { DEFAULT_SLIDER_CLASS } from '../../../../utils/common';
 import { Presentable } from '../../../../utils/types';
 import { SliderElement } from '../../../../utils/interfaces';
 
-export default class Tooltip {
+export default class TooltipView {
     private _value: Presentable;
 
     set value(value: Presentable) {
@@ -81,20 +81,20 @@ export default class Tooltip {
     }
 
     private _show(): void {
-      this._element.classList.add(`${Tooltip.DEFAULT_CLASS}_visible`);
-      this._element.classList.remove(`${Tooltip.DEFAULT_CLASS}_hidden`);
+      this._element.classList.add(`${TooltipView.DEFAULT_CLASS}_visible`);
+      this._element.classList.remove(`${TooltipView.DEFAULT_CLASS}_hidden`);
     }
 
     private _hide(): void {
-      this._element.classList.add(`${Tooltip.DEFAULT_CLASS}_hidden`);
-      this._element.classList.remove(`${Tooltip.DEFAULT_CLASS}_visible`);
+      this._element.classList.add(`${TooltipView.DEFAULT_CLASS}_hidden`);
+      this._element.classList.remove(`${TooltipView.DEFAULT_CLASS}_visible`);
     }
 
     private _createElement(parentElement: HTMLElement): void {
       const orientationClass = this.parentHandler.ownerSlider.getOrientationClass();
 
       this._element = document.createElement('div');
-      this._element.classList.add(`${Tooltip.DEFAULT_CLASS}`, orientationClass);
+      this._element.classList.add(`${TooltipView.DEFAULT_CLASS}`, orientationClass);
       this._element.innerHTML = this._innerHTML;
 
       parentElement.appendChild(this._element);

@@ -1,14 +1,14 @@
 /* eslint-disable no-undef */
-import View from './view';
-import Slider from './slider/slider';
+import View from './defaultView';
+import SliderView from './slider/sliderView';
 import { KeyStringObj } from '../utils/types';
 
-jest.mock('./slider/slider');
+jest.mock('./slider/sliderView');
 const wrapperElement = document.createElement('div');
 document.body.appendChild(wrapperElement);
 
 let testView: View & KeyStringObj;
-const mockSlider = (Slider as unknown as jest.Mock);
+const mockSlider = (SliderView as unknown as jest.Mock);
 
 test('Создание экземпляра класса', () => {
   mockSlider.mockClear();

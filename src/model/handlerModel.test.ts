@@ -1,8 +1,8 @@
 /* eslint-disable no-undef,dot-notation */
-import Model from './model';
+import SliderModel from './sliderModel';
 import HandlerModel from './handlerModel';
 
-const testModel = new Model();
+const testModel = new SliderModel();
 let testHandlerModel: HandlerModel;
 
 beforeEach(() => {
