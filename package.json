@@ -6,7 +6,8 @@
   "scripts": {
     "build": "webpack --config webpack.config.js --mode production",
     "dev-server": "webpack-dev-server --config webpack.config.js",
-    "test": "jest --coverage --verbose"
+    "test": "jest --coverage --verbose",
+    "eslint": "eslint --ext .ts src/"
   },
   "keywords": [],
   "author": "",
