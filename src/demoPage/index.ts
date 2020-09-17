@@ -4,7 +4,7 @@ import '../view/slider/sliderView.scss';
 import SliderPanel from './sliderPanel';
 import './index.scss';
 
-const sliderInitSelector = '.initSliderHere';
+const sliderInitSelector = '.js-init-slider-here';
 const panelSelector = '.panel';
 const panels: SliderPanel[] = [];
 
