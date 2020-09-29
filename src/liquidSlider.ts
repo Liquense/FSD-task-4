@@ -1,9 +1,7 @@
-/* eslint-disable no-undef */
-// eslint-disable-next-line import/no-extraneous-dependencies
 import * as $ from 'jquery';
 
 import Controller from './controller/controller';
-import { Presentable } from './utils/types';
+import { Presentable } from './utils/interfacesAndTypes';
 import { DEFAULT_SLIDER_PARAMS } from './utils/common';
 
 /**
@@ -33,8 +31,8 @@ import { DEFAULT_SLIDER_PARAMS } from './utils/common';
 $.fn.liquidSlider = function liquidSlider(
   parameters?: {
         items?: Presentable[];
-        values?: number[]; // если не заданы handlers
-        isRange?: boolean; // если не заданы handlers
+        values?: number[];
+        isRange?: boolean;
         isVertical?: boolean;
         isReversed?: boolean;
         min?: number;

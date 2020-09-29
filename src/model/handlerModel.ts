@@ -1,70 +1,68 @@
 import { clamp } from '../utils/common';
-import { Presentable } from '../utils/types';
-import { Listenable } from '../utils/interfaces';
+import { Presentable, Listenable } from '../utils/interfacesAndTypes';
+
 
 export default class HandlerModel implements Listenable {
   public listenDictionary: {[key: string]: { func: Function; listeners: Function[] }};
 
-  get item(): Presentable {
-    return this._item;
-  }
-
-  get position(): number {
-    return this._position;
-  }
-
-  // позиция будет передаваться между моделью и видом в виде доли,
-  // потому что это обезличенные данные, которые они могут интерпретировать как им нужно
-  private _position: number;
+  private position: number;
 
   /**
-   * @param _item непосредственно данные
+   * @param item непосредственно данные
    * @param itemIndex значение-индекс, нужно для вычисления положения
-   * @param _parentModel
+   * @param parentModel
    * @param handlerIndex
    */
   constructor(
-        private _item: Presentable,
+        private item: Presentable,
         public itemIndex: number,
-        private readonly _parentModel: SliderDataContainer & ModelItemManager,
+        private readonly parentModel: SliderDataContainer & ModelItemManager,
         public handlerIndex: number,
   ) {
     this.setItemIndex(itemIndex);
   }
 
+  public getItem(): Presentable {
+    return this.item;
+  }
+
+  public getPosition(): number {
+    return this.position;
+  }
+
   public setItemIndex(newItemIndex: number): void {
     const oldItemIndex = this.itemIndex;
-    if (this._parentModel.checkItemOccupancy(newItemIndex)) {
+    if (this.parentModel.checkItemOccupancy(newItemIndex)) {
       this.updatePosition();
       return;
     }
 
     this.itemIndex = newItemIndex;
-    this._item = this._parentModel.calculateValue(this.itemIndex);
+    this.item = this.parentModel.calculateValue(this.itemIndex);
     this.updatePosition();
 
-    this._parentModel.releaseItem(oldItemIndex);
-    this._parentModel.occupyItem(newItemIndex, this.handlerIndex);
+    this.parentModel.releaseItem(oldItemIndex);
+    this.parentModel.occupyItem(newItemIndex, this.handlerIndex);
   }
 
   private calculatePosition(): number {
     return clamp(
-      ((this.itemIndex - this._parentModel.min) / this._parentModel.range),
+      ((this.itemIndex - this.parentModel.getMin()) / this.parentModel.getRange()),
       0,
       1,
     );
   }
 
   private updatePosition(): void {
-    this._position = this.calculatePosition();
-    this._parentModel.handlerValueChanged(this);
+    this.position = this.calculatePosition();
+    this.parentModel.handlerValueChanged(this);
   }
 }
 
 export interface SliderDataContainer {
- min: number;
- max: number;
- range: number;
+ getMin(): number;
+ getMax(): number;
+ getRange(): number;
 }
 
 export interface ModelItemManager {

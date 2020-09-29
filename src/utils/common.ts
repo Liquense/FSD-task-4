@@ -1,7 +1,4 @@
-// некоторые функции созданы для того, чтобы менять свойства в параметре
-// (bindListeners, addListenerAfter)
-import { KeyStringObj } from './types';
-import { Listenable } from './interfaces';
+import { KeyStringObj, Listenable } from './interfacesAndTypes';
 
 export const DEFAULT_SLIDER_PARAMS = { isVertical: false, showTooltips: true, withMarkup: false };
 
@@ -36,12 +33,9 @@ function bindListeners(
 export function addListenerAfter(
   executorName: string, listener: Function, executorContext: Listenable & KeyStringObj,
 ): void {
-  if (!executorContext) {
-    return;
-  }
+  if (!executorContext) return;
 
   const context = executorContext;
-
   if (!context.listenDictionary) {
     context.listenDictionary = {};
   }
@@ -117,17 +111,13 @@ export function standardize(
   return roundToDecimal(resultValue, 4);
 }
 
-export function calculateElementCenter(DOMElement: Element, isVertical: boolean): number {
+export function calculateElementCenter(DOMElement: Element): { x: number; y: number } {
   const thisRect = DOMElement.getBoundingClientRect();
-  let thisCenter: number;
 
-  if (isVertical) {
-    thisCenter = thisRect.top + thisRect.height / 2;
-  } else {
-    thisCenter = thisRect.left + thisRect.width / 2;
-  }
-
-  return thisCenter;
+  return {
+    x: thisRect.left + thisRect.width / 2,
+    y: thisRect.top + thisRect.height / 2,
+  };
 }
 
 export const HANDLER_PAIR_OPTIONS = new Map()

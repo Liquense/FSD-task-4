@@ -1,19 +1,15 @@
 import { calculateElementCenter, DEFAULT_SLIDER_CLASS } from '../../../utils/common';
 import TooltipView from './tooltip/tooltipView';
-import { KeyStringObj, Presentable } from '../../../utils/types';
 import {
-  HandlersOwner,
+  KeyStringObj, Presentable,
   Listenable,
-  Orientable,
-  ScaleOwner,
-  SliderContainer,
-  SliderElement,
-} from '../../../utils/interfaces';
+  SliderElement, Slider,
+} from '../../../utils/interfacesAndTypes';
 
 export default class HandlerView implements Listenable, SliderElement {
-  public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
-
   public readonly tooltip: TooltipView;
+
+  public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 
   public index: number;
 
@@ -26,36 +22,12 @@ export default class HandlerView implements Listenable, SliderElement {
 
   public rangePair: number | string;
 
-  private static _DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__handler`;
+  private static DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__handler`;
 
-  private _additionalClasses: string[] = [];
-
-  get value(): Presentable {
-    return this.tooltip.value;
-  }
-
-  get positionCoordinate(): number {
-    return calculateElementCenter(this.element.body, this.ownerSlider.isVertical);
-  }
-
-  get body(): HTMLElement {
-    return this.element.body;
-  }
-
-  get width(): number {
-    return this.element.body.getBoundingClientRect().width;
-  }
-
-  get height(): number {
-    return this.element.body.getBoundingClientRect().height;
-  }
-
-  get size(): number {
-    return (this as KeyStringObj)[this.ownerSlider.expandDimension];
-  }
+  private additionalClasses: string[] = [];
 
   constructor(
-    public ownerSlider: Orientable & SliderContainer & HandlersOwner & ScaleOwner,
+    private ownerSlider: Slider,
     params:
       {
         handlerIndex: number;
@@ -69,7 +41,7 @@ export default class HandlerView implements Listenable, SliderElement {
     this.index = params.handlerIndex;
     this.positionPart = params.positionPart;
 
-    this._createElement(ownerSlider.handlersContainer);
+    this.createElement(ownerSlider.getHandlersContainer());
 
     const withTooltip = params.withTooltip === undefined ? true : params.withTooltip;
     this.tooltip = new TooltipView(
@@ -80,21 +52,48 @@ export default class HandlerView implements Listenable, SliderElement {
     requestAnimationFrame(this.refreshPosition.bind(this));
   }
 
+  public getOwnerSlider(): Slider {
+    return this.ownerSlider;
+  }
+
+  public getPositionCoordinate(): number {
+    const elementCenter = calculateElementCenter(this.element.body);
+    return this.ownerSlider.getIsVertical() ? elementCenter.y : elementCenter.x;
+  }
+
+  public getBody(): HTMLElement {
+    return this.element.body;
+  }
+
+  public getSize(dimension?: 'width' | 'height'): number {
+    return (this.element.body.getBoundingClientRect() as KeyStringObj)[
+      dimension ?? this.ownerSlider.getExpandDimension()
+    ];
+  }
+
+  public getValue(): Presentable {
+    return this.tooltip.getValue();
+  }
+
   public setValue(value: Presentable): void {
-    this.tooltip.value = value;
+    this.tooltip.setValue(value);
   }
 
   public calculateOffset(): number {
     return this.ownerSlider.calculateHandlerOffset(this.positionPart);
   }
 
+  public getTooltipElement(): HTMLElement {
+    return this.tooltip.getElement();
+  }
+
   public refreshPosition(): void {
-    const offset = this._calculateAccurateOffset();
+    const offset = this.calculateAccurateOffset();
 
     this.element.wrap.style.removeProperty('left');
     this.element.wrap.style.removeProperty('top');
 
-    (this.element.wrap.style as KeyStringObj)[this.ownerSlider.offsetDirection] = `${offset}px`;
+    (this.element.wrap.style as KeyStringObj)[this.ownerSlider.getOffsetDirection()] = `${offset}px`;
     this.tooltip.updateHTML();
   }
 
@@ -113,7 +112,7 @@ export default class HandlerView implements Listenable, SliderElement {
     this.element.wrap.remove();
   }
 
-  private _createElement(parentElement: HTMLElement): void {
+  private createElement(parentElement: HTMLElement): void {
     const wrap = document.createElement('div');
     const body = document.createElement('div');
     const orientationClass = this.ownerSlider.getOrientationClass();
@@ -121,17 +120,21 @@ export default class HandlerView implements Listenable, SliderElement {
     this.element = { wrap, body };
     this.element.body.setAttribute('tabindex', '-1');
 
-    wrap.classList.add(`${HandlerView._DEFAULT_CLASS}Container`, orientationClass);
-    wrap.classList.add(...this._additionalClasses);
+    wrap.classList.add(`${HandlerView.DEFAULT_CLASS}Container`, orientationClass);
+    wrap.classList.add(...this.additionalClasses);
     parentElement.appendChild(wrap);
 
-    body.classList.add(`${HandlerView._DEFAULT_CLASS}Body`, orientationClass);
+    body.classList.add(`${HandlerView.DEFAULT_CLASS}Body`, orientationClass);
     wrap.appendChild(body);
   }
 
-  // добавляется смещение для правильного отображения хэндлера и тултипа, если тултип больше
-  private _centerShift(shift: number): number {
-    const handlerSize = this.size;
+  /**
+   * Добавляет смещение для правильного отображения хэндлера и тултипа, если тултип больше
+   * @param shift
+   * @private
+   */
+  private centerShift(shift: number): number {
+    const handlerSize = this.getSize();
     const tooltipSize = this.tooltip.getSize();
 
     const tooltipExcess = Math.max(0, tooltipSize - handlerSize);
@@ -139,9 +142,9 @@ export default class HandlerView implements Listenable, SliderElement {
     return (shift - 0.5 * tooltipExcess);
   }
 
-  private _calculateAccurateOffset(): number {
+  private calculateAccurateOffset(): number {
     const shift = this.calculateOffset();
 
-    return this._centerShift(shift);
+    return this.centerShift(shift);
   }
 }
