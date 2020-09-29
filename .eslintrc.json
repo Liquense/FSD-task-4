@@ -31,9 +31,7 @@
         "ts": "never"
       }
     ],
-    //в FSD best practises частные методы рекомендуется начинать с "_"
-    //а no-underscore-dangle - одно правило из набора для контрибьюторов TS
-    "no-underscore-dangle": "off",
-    "linebreak-style": "off"
+    "linebreak-style": "off",
+    "no-undef": "off"
   }
 }
