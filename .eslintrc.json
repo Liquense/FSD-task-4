@@ -31,7 +31,6 @@
         "ts": "never"
       }
     ],
-    "linebreak-style": "off",
     "no-undef": "off"
   }
 }
