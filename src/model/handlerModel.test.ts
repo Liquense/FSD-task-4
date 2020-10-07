@@ -1,4 +1,3 @@
-/* eslint-disable no-undef,dot-notation */
 import SliderModel from './sliderModel';
 import HandlerModel from './handlerModel';
 
@@ -14,10 +13,9 @@ test('Инициализация', () => {
   HandlerModel.prototype.setItemIndex = jest.fn();
 
   testHandlerModel = new HandlerModel('testVal', 5, testModel, 0);
-  expect(testHandlerModel.item).toBe('testVal');
+  expect(testHandlerModel.getItem()).toBe('testVal');
   expect(testHandlerModel.itemIndex).toBe(5);
   expect(testHandlerModel.handlerIndex).toBe(0);
-  expect(testHandlerModel['_parentModel']).toBe(testModel);
   expect(testHandlerModel.setItemIndex).toBeCalledWith(5);
 
   HandlerModel.prototype.setItemIndex = origSetItemIndex;
@@ -38,6 +36,6 @@ test('Установка нового значения', () => {
   expect(spyCalculateValue).toBeCalledWith(testHandlerModel.itemIndex);
   expect(spyReleaseItem).toBeCalledWith(oldItemIndex);
   expect(spyOccupyItem).toBeCalledWith(newItemIndex, testHandlerModel.handlerIndex);
-  expect(testHandlerModel['_position']).toBe(0.9);
+  expect(testHandlerModel.getPosition()).toBe(0.9);
   expect(spyHandlerValueChanged).toBeCalledWith(testHandlerModel);
 });

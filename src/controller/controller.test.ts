@@ -1,23 +1,23 @@
-/* eslint-disable no-undef,@typescript-eslint/ban-ts-ignore,dot-notation */
-import Controller from './controller';
+/* eslint-disable dot-notation,@typescript-eslint/ban-ts-ignore */
+import { KeyStringObj } from '../utils/interfacesAndTypes';
 import SliderModel from '../model/sliderModel';
-import View from '../view/defaultView';
+import View from '../view/pluginView';
 import { addListenerAfter } from '../utils/common';
-import { KeyStringObj } from '../utils/types';
+
+import Controller from './controller';
 
 jest.mock('../utils/common');
-jest.mock('../view/defaultView');
+jest.mock('../view/pluginView');
 jest.mock('../model/sliderModel');
 
 let testController: Controller & KeyStringObj;
 const rootElement = document.createElement('div');
 document.body.appendChild(rootElement);
 
-const mockAddListenerAfter = addListenerAfter as unknown as jest.Mock;
-const mockModel = SliderModel as unknown as jest.Mock;
-const mockView = View as unknown as jest.Mock;
+const mockAddListenerAfter = addListenerAfter as jest.Mock;
+const mockModel = SliderModel as jest.Mock;
+const mockView = View as jest.Mock;
 
-const viewsParamName = '_views';
 describe('Инициализация контроллера', () => {
   beforeEach(() => {
     mockAddListenerAfter.mockClear();
@@ -28,8 +28,8 @@ describe('Инициализация контроллера', () => {
   test('Создание и присваивание экземпляров SliderModel и View', () => {
     testController = new Controller(rootElement);
 
-    expect(testController[viewsParamName][0]).toBe(mockView.mock.instances[0]);
-    expect(testController['_model']).toBe(mockModel.mock.instances[0]);
+    expect(testController['views'][0]).toBe(mockView.mock.instances[0]);
+    expect(testController['model']).toBe(mockModel.mock.instances[0]);
   });
 
   test('Назначение слушателей на нужные функции', () => {
@@ -37,72 +37,77 @@ describe('Инициализация контроллера', () => {
 
     expect(mockAddListenerAfter).toBeCalledWith(
       'handlerValueChanged',
-      testController['_boundPassHandlerValueChange'],
-      testController['_model'],
+      testController['boundPassHandlerValueChange'],
+      testController['model'],
     );
     expect(mockAddListenerAfter).toBeCalledWith(
-      'handlerPositionChanged',
-      testController['_boundPassHandlerPositionChange'],
-      testController[viewsParamName][0],
+      'handleHandlerPositionChanged',
+      testController['boundPassHandlerPositionChange'],
+      testController['views'][0],
     );
   });
 
   test('Передача данных о слайдере от модели к виду', () => {
-    const testData = { test: 'data1' };
-    // @ts-ignore
+    const testData = {
+      step: 0, absoluteStep: 0, min: 0, max: 0,
+    };
     SliderModel.prototype.getSliderData = jest.fn(() => testData);
 
     testController = new Controller(rootElement);
 
-    expect(testController['_model'].getSliderData).toBeCalled();
-    expect(testController[viewsParamName][0].passDataProps).toBeCalledWith(testData);
+    expect(testController['model'].getSliderData).toBeCalled();
+    expect(testController['views'][0].passDataProps).toBeCalledWith(testData);
   });
 
   describe('Передача данных о хэндлерах в вид', () => {
+    const testHandlersArray = [
+      {
+        handlerIndex: 0, item: 'test1', positionPart: 0.5, itemIndex: 0,
+      },
+      {
+        handlerIndex: 1, item: 'test2', positionPart: 1, itemIndex: 1,
+      },
+    ];
+
+
     test('Без опциональных параметров', () => {
       testController = new Controller(rootElement);
 
-      expect(testController['_model'].getHandlersData).toBeCalled();
-      expect(testController[viewsParamName][0].initHandlers).toBeCalledWith(undefined);
+      expect(testController['model'].getHandlersData).toBeCalled();
+      expect(testController['views'][0].initHandlers).toBeCalledWith(undefined);
     });
 
-    test('C опциональными параметрами', () => {
-      // Без кастомных хэндлеров
-      let testParameters = {};
-      const testHandlersArray = [
-        { index: 0, value: 'test1', positionPart: 0.5 },
-        { index: 1, value: 'test2', positionPart: 1 },
-      ];
+    test('C опциональными параметрами (стандартные хэндлеры)', () => {
+      const testParameters = {};
       const testHandlersData = { customHandlers: false, handlersArray: testHandlersArray };
 
-      // @ts-ignore
       SliderModel.prototype.getHandlersData = jest.fn(() => testHandlersData);
 
-      // @ts-ignore
       testController = new Controller(rootElement, testParameters);
-      expect(testController['_model'].getHandlersData).toBeCalled();
-      expect(testController[viewsParamName][0].initHandlers).toBeCalledWith(testHandlersData);
+      expect(testController['model'].getHandlersData).toBeCalled();
+      expect(testController['views'][0].initHandlers).toBeCalledWith(testHandlersData);
+    });
 
-      // с кастомными хэндлерами
+    test('C опциональными параметрами (пользовательские хэндлеры)', () => {
       const testHandlersData2 = [
-        { value: 2, withTooltip: true, isEnd: false },
-        { value: 3 },
+        {
+          itemIndex: 2, value: 2, withTooltip: true, isEnd: false,
+        },
+        { itemIndex: 3, value: 3 },
       ];
 
-      testParameters = { handlers: testHandlersData2 };
+      const testParameters = { handlers: testHandlersData2 };
       mockView.mockClear();
       mockModel.mockClear();
 
       testController = new Controller(rootElement, testParameters);
-      expect(testController['_model'].getHandlersData).toBeCalled();
-      expect(testController[viewsParamName][0].initHandlers).toBeCalledWith({
+      expect(testController['model'].getHandlersData).toBeCalled();
+      expect(testController['views'][0].initHandlers).toBeCalledWith({
         customHandlers: false,
-        handlersArray: [
-          {
-            index: 0, value: 'test1', positionPart: 0.5, withTooltip: true, isEnd: false,
-          },
-          { index: 1, value: 'test2', positionPart: 1 },
-        ],
+        handlersArray: testHandlersArray.map(
+          (handler, index) => (
+            { ...testHandlersData2[index], ...handler }),
+        ),
       });
     });
   });
@@ -121,13 +126,13 @@ describe('Функции', () => {
 
   describe('Добавление новых видов', () => {
     test('Один', () => {
-      const handlersDataModel = testController['_model'].getHandlersData();
+      const handlersDataModel = testController['model'].getHandlersData();
 
-      const views = [...testController[viewsParamName]];
+      const views = [...testController['views']];
       const testView = new View(null);
       testController.addView(testView);
       views.push(testView);
-      expect(testController[viewsParamName]).toStrictEqual(views);
+      expect(testController['views']).toStrictEqual(views);
       expect(testView.initHandlers).toBeCalledWith(handlersDataModel);
 
       // с хэндлерами, переданными при создании контроллера
@@ -143,14 +148,14 @@ describe('Функции', () => {
     test('Несколько', () => {
       const mockAddView = jest.spyOn(testController, 'addView');
 
-      const oldViews = [...testController[viewsParamName]];
+      const oldViews = [...testController['views']];
       const testViews = [
         new View(null, null),
         new View(null, null),
       ];
       testController.addViews(testViews);
       const newViews = [...oldViews, ...testViews];
-      expect(testController[viewsParamName]).toStrictEqual(newViews);
+      expect(testController['views']).toStrictEqual(newViews);
       expect(mockAddView).toBeCalledTimes(testViews.length);
     });
   });
@@ -159,94 +164,94 @@ describe('Функции', () => {
     const testHandlerData = { test1: 'test', test2: 'another data' };
 
     testController.addHandler(222, 2);
-    expect(testController['_model'].addHandler).toBeCalledWith(222);
-    testController['_views'].forEach((view) => {
+    expect(testController['model'].addHandler).toBeCalledWith(222);
+    testController['views'].forEach((view) => {
       expect(view.addHandler).not.toBeCalled();
     });
 
-    (testController['_model'].addHandler as jest.Mock).mockImplementationOnce(() => testHandlerData);
+    (testController['model'].addHandler as jest.Mock).mockImplementationOnce(() => testHandlerData);
     testController.addHandler(111, null);
-    expect(testController['_model'].addHandler).toBeCalledWith(111);
-    testController['_views'].forEach((view) => {
+    expect(testController['model'].addHandler).toBeCalledWith(111);
+    testController['views'].forEach((view) => {
       expect(view.addHandler).toBeCalledWith({ ...testHandlerData, rangePair: null });
     });
   });
 
   test('Удаление хэндлера', () => {
-    (testController['_model'].removeHandler as jest.Mock)
+    (testController['model'].removeHandler as jest.Mock)
       .mockImplementationOnce(() => false)
       .mockImplementationOnce(() => true);
 
     testController.removeHandler(1);
-    expect(testController['_model'].removeHandler).toBeCalledWith(1);
-    testController['_views'].forEach((view) => {
+    expect(testController['model'].removeHandler).toBeCalledWith(1);
+    testController['views'].forEach((view) => {
       expect(view.removeHandler).not.toBeCalled();
     });
 
     testController.removeHandler(2);
-    expect(testController['_model'].removeHandler).toBeCalledWith(2);
-    testController['_views'].forEach((view) => {
+    expect(testController['model'].removeHandler).toBeCalledWith(2);
+    testController['views'].forEach((view) => {
       expect(view.removeHandler).toBeCalledWith(2);
     });
   });
 
   test('Назначение минимума, максимума и шага', () => {
-    clearObjsFunctionMock(testController['_views'], 'passDataProps');
+    clearObjsFunctionMock(testController['views'], 'passDataProps');
 
     testController.setMin(null);
     testController.setMax(null);
     testController.setStep(null);
-    expect(testController['_model'].setMinMax).not.toBeCalled();
-    expect(testController['_model'].setStep).not.toBeCalled();
-    testController['_views'].forEach((view) => {
+    expect(testController['model'].setMinMax).not.toBeCalled();
+    expect(testController['model'].setStep).not.toBeCalled();
+    testController['views'].forEach((view) => {
       expect(view.passDataProps).not.toBeCalled();
     });
 
     const randomNumber = Math.random();
-    (testController['_model'].getSliderData as jest.Mock).mockImplementation(() => randomNumber);
+    (testController['model'].getSliderData as jest.Mock).mockImplementation(() => randomNumber);
     // минимум
     testController.setMin(1);
-    expect(testController['_model'].setMinMax).toBeCalledWith({ min: 1 });
-    testController['_views'].forEach((view) => {
-      expect(view.passDataProps).toBeCalledWith(testController['_model'].getSliderData());
+    expect(testController['model'].setMinMax).toBeCalledWith({ min: 1 });
+    testController['views'].forEach((view) => {
+      expect(view.passDataProps).toBeCalledWith(testController['model'].getSliderData());
     });
     // максимум
     testController.setMax(2);
-    expect(testController['_model'].setMinMax).toBeCalledWith({ max: 2 });
-    testController['_views'].forEach((view) => {
-      expect(view.passDataProps).toBeCalledWith(testController['_model'].getSliderData());
+    expect(testController['model'].setMinMax).toBeCalledWith({ max: 2 });
+    testController['views'].forEach((view) => {
+      expect(view.passDataProps).toBeCalledWith(testController['model'].getSliderData());
     });
     // шаг
     testController.setStep(3);
-    expect(testController['_model'].setStep).toBeCalledWith({ step: 3 });
-    testController['_views'].forEach((view) => {
-      expect(view.passDataProps).toBeCalledWith(testController['_model'].getSliderData());
+    expect(testController['model'].setStep).toBeCalledWith({ step: 3 });
+    testController['views'].forEach((view) => {
+      expect(view.passDataProps).toBeCalledWith(testController['model'].getSliderData());
     });
   });
 
   test('Назначение видимости подсказок и разметки и вертикального отображения слайдера', () => {
-    clearObjsFunctionMock(testController['_views'], 'passVisualProps');
+    clearObjsFunctionMock(testController['views'], 'passVisualProps');
 
     testController.setTooltipVisibility(null);
     testController.setVertical(null);
     testController.setMarkupVisibility(null);
-    testController['_views'].forEach((view) => {
+    testController['views'].forEach((view) => {
       expect(view.passVisualProps).not.toBeCalled();
     });
 
     // минимум
     testController.setTooltipVisibility(true);
-    testController['_views'].forEach((view) => {
+    testController['views'].forEach((view) => {
       expect(view.passVisualProps).toBeCalledWith({ tooltipsVisible: true });
     });
     // максимум
     testController.setVertical(false);
-    testController['_views'].forEach((view) => {
+    testController['views'].forEach((view) => {
       expect(view.passVisualProps).toBeCalledWith({ isVertical: false });
     });
     // шаг
     testController.setMarkupVisibility(true);
-    testController['_views'].forEach((view) => {
+    testController['views'].forEach((view) => {
       expect(view.passVisualProps).toBeCalledWith({ withMarkup: true });
     });
   });
@@ -255,18 +260,18 @@ describe('Функции', () => {
     mockModel.mockClear();
 
     const testData = { index: 0, position: 0.5 };
-    testController['_passHandlerPositionChange'](testData);
+    testController['passHandlerPositionChange'](testData);
 
-    expect(testController['_model'].handleHandlerPositionChanged).toBeCalledWith(testData);
+    expect(testController['model'].handleHandlerPositionChanged).toBeCalledWith(testData);
   });
 
   test('Передача изменения значения хэндлера в вид', () => {
     mockView.mockClear();
 
     const testData = { index: 0, relativeValue: 0.5, item: 'test!' };
-    testController['_passHandlerValueChange'](testData);
+    testController['passHandlerValueChange'](testData);
 
-    expect(testController[viewsParamName][0].handlersValuesChangedListener)
+    expect(testController['views'][0].handlersValuesChangedListener)
       .toBeCalledWith(testData);
   });
 });

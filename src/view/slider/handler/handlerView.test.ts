@@ -1,76 +1,71 @@
-/* eslint-disable no-undef,@typescript-eslint/ban-ts-ignore */
 import HandlerView from './handlerView';
 import SliderView from '../sliderView';
 import TooltipView from './tooltip/tooltipView';
-import { KeyStringObj, Presentable } from '../../../utils/types';
+import { KeyStringObj, Presentable } from '../../../utils/interfacesAndTypes';
 
 import Mock = jest.Mock;
 
 jest.mock('../sliderView');
 jest.mock('./tooltip/tooltipView');
 
-const verticalClass = 'vertical';
-const horizontalClass = 'horizontal';
 const testSlider = new SliderView(null, null);
 testSlider.getOrientationClass = jest.fn(function () {
-  return this.isVertical ? verticalClass : horizontalClass;
+  return this.isVertical ? 'vertical' : 'horizontal';
 });
-// для простоты длина слайдера будет 100
-testSlider.calculateHandlerOffset = jest.fn((positionPart) => positionPart * 100);
-let testHandler: HandlerView;
-// @ts-ignore
-testSlider.handlersContainer = document.body;
 
-function createTestHandler(index = 0, positionPart = 0.5, value: Presentable = 'test') {
-  return new HandlerView(testSlider, { handlerIndex: index, positionPart, item: value });
+testSlider.calculateHandlerOffset = jest.fn((positionPart) => positionPart * 100);
+testSlider.getHandlersContainer = jest.fn(() => document.body);
+
+let testHandler: HandlerView;
+function createTestHandler(index = 0, positionPart = 0.5, item: Presentable = 'test') {
+  return new HandlerView(testSlider, { handlerIndex: index, positionPart, item });
 }
 
+const mockTooltip = (TooltipView as unknown as Mock);
+
 describe('Инициализация', () => {
-  test('Установка значений полей', async () => {
-    const mockTooltip = (TooltipView as unknown as Mock);
-    mockTooltip.mockClear();
-    // только с обязательными параметрами
+  describe('Установка значений полей', () => {
     const index = 0;
     const positionPart = 0.5;
     const item = 'test';
-    testHandler = createTestHandler(index, positionPart, item);
 
-    expect(testHandler.index).toBe(index);
-    expect(testHandler.positionPart).toBe(positionPart);
-    expect(testHandler.value).toBe(item);
-    expect(testHandler.rangePair).toBe(undefined);
-    expect(mockTooltip).toBeCalledWith(
-      testHandler.element.wrap,
-      testHandler, { visibilityState: true, item },
-    );
-    await new Promise((resolve) => {
-      requestAnimationFrame(() => {
-        expect(testHandler.tooltip.updateHTML).toBeCalled();
-        resolve();
+    beforeAll(() => {
+      mockTooltip.mockClear();
+    });
+
+    test('с только обязательными параметрами', () => {
+      testHandler = createTestHandler(index, positionPart, item);
+
+      expect(testHandler.getIndex()).toBe(index);
+      expect(testHandler.getPositionPart()).toBe(positionPart);
+      expect(testHandler.getRangePair()).toBe(undefined);
+      expect(mockTooltip).toBeCalledWith(
+        testHandler.getElement().wrap,
+        testHandler, { visibilityState: true, item },
+      );
+    });
+
+    test('с необязательными параметрами', () => {
+      mockTooltip.mockClear();
+      const withTooltip = false;
+      const rangePair: string = null;
+      testHandler = new HandlerView(testSlider, {
+        handlerIndex: index, positionPart, item, withTooltip, rangePair,
       });
-    });
 
-    // с необязательными параметрами
-    mockTooltip.mockClear();
-    const withTooltip = false;
-    const rangePair: string = null;
-    testHandler = new HandlerView(testSlider, {
-      handlerIndex: index, positionPart, item, withTooltip, rangePair,
+      expect(testHandler.getRangePair()).toBe(rangePair);
+      expect(mockTooltip).toBeCalledWith(
+        testHandler.getElement().wrap,
+        testHandler, { visibilityState: withTooltip, item },
+      );
     });
-
-    expect(testHandler.rangePair).toBe(rangePair);
-    expect(mockTooltip).toBeCalledWith(
-      testHandler.element.wrap,
-      testHandler, { visibilityState: withTooltip, item },
-    );
   });
 });
 
 test('Установка позиции', () => {
+  mockTooltip.mockClear();
   testHandler = createTestHandler();
-  testHandler.element.body.getBoundingClientRect = jest.fn(() => ({
-    // поскольку в тестах ничего не рендерится и функция всегда будет возвращать нули,
-    // вручную зададим размер элемента (остальное не интересует)
+  testHandler.getBody().getBoundingClientRect = jest.fn(() => ({
     height: 10,
     width: 10,
     x: 0,
@@ -82,40 +77,29 @@ test('Установка позиции', () => {
     toJSON: undefined,
   }));
 
-  testHandler.tooltip.getSize = function () {
-    return 10;
-  };
+  mockTooltip.prototype.getSize.mockImplementation(() => 10);
 
   function checkSettingPosition(isVertical: boolean, value: number) {
-    // @ts-ignore
-    testSlider.expandDimension = isVertical ? 'height' : 'width';
-    // @ts-ignore
-    testSlider.offsetDirection = isVertical ? 'top' : 'left';
+    testSlider.getOffsetDirection = jest.fn(() => (isVertical ? 'top' : 'left'));
+    testSlider.getExpandDimension = jest.fn(() => (isVertical ? 'height' : 'width'));
 
-    (testHandler.tooltip.updateHTML as Mock).mockClear();
     testHandler.setPosition(value);
-    expect((testHandler.element.wrap.style as KeyStringObj)[testSlider.offsetDirection]).toBe(`${value * 100}px`);
-    expect(testHandler.tooltip.updateHTML).toBeCalled();
+    expect((testHandler.getElement().wrap.style as KeyStringObj)[testSlider.getOffsetDirection()])
+      .toBe(`${value * 100}px`);
+    expect(mockTooltip.prototype.updateHTML).toBeCalled();
   }
 
   checkSettingPosition(true, 0.5);
   checkSettingPosition(false, 0.1);
-
-  (testHandler.tooltip.updateHTML as Mock).mockClear();
-  testHandler.element = undefined;
-  testHandler.setPosition(0.5);
-  expect(testHandler.tooltip.updateHTML).not.toBeCalled();
 });
 
 test('Получение центра хэндлера', () => {
   testHandler = createTestHandler();
-  testHandler.element.body.getBoundingClientRect = jest.fn(() => ({
-    // поскольку в тестах ничего не рендерится и функция всегда будет возвращать нули,
-    // вручную зададим размер элемента (остальное не интересует)
+  testHandler.getElement().body.getBoundingClientRect = jest.fn(() => ({
     height: 10,
     width: 10,
     left: 0,
-    top: 10, // для рассчета центра элемента
+    top: 10,
     bottom: 0,
     right: 0,
     x: 0,
@@ -123,15 +107,16 @@ test('Получение центра хэндлера', () => {
     toJSON: undefined,
   }));
 
-  testSlider.isVertical = false;
-  expect(testHandler.positionCoordinate).toBe(5);
+  testSlider.getIsVertical = jest.fn(() => false);
+  expect(testHandler.getPositionCoordinate()).toBe(5);
 
-  testSlider.isVertical = true;
-  expect(testHandler.positionCoordinate).toBe(15);
+  testSlider.getIsVertical = jest.fn(() => true);
+  expect(testHandler.getPositionCoordinate()).toBe(15);
 });
 
 describe('Вспомогательные функции', () => {
   beforeEach(() => {
+    mockTooltip.mockClear();
     document.body.innerHTML = '';
     testHandler = createTestHandler();
   });
@@ -139,25 +124,34 @@ describe('Вспомогательные функции', () => {
   test('Получение HTML-тела', () => {
     const body = document.body.querySelector('.liquidSlider__handlerBody');
 
-    expect(testHandler.body).toBe(body);
+    expect(testHandler.getBody()).toBe(body);
   });
 
   test('Установка видимости тултипа', () => {
-    const mockTooltip = (TooltipView as unknown as Mock);
-    mockTooltip.mockClear();
+    testHandler.setTooltipVisibility(true);
+    expect(mockTooltip.prototype.setVisibility).toBeCalledWith(true);
 
-    let testingVisibilityState = true;
-    testHandler.setTooltipVisibility(testingVisibilityState);
-    expect(testHandler.tooltip.setVisibility).toBeCalledWith(testingVisibilityState);
-
-    testingVisibilityState = false;
-    testHandler.setTooltipVisibility(testingVisibilityState);
-    expect(testHandler.tooltip.setVisibility).toBeCalledWith(testingVisibilityState);
+    testHandler.setTooltipVisibility(false);
+    expect(mockTooltip.prototype.setVisibility).toBeCalledWith(false);
   });
 
   test('Удаление', () => {
-    expect(document.body.innerHTML).toBe(testHandler.element.wrap.outerHTML);
+    expect(document.body.innerHTML).toBe(testHandler.getElement().wrap.outerHTML);
     testHandler.remove();
     expect(document.body.innerHTML).toBe('');
+  });
+
+  test('Получение значения', () => {
+    const testItem = 'test';
+    mockTooltip.prototype.getItem.mockImplementationOnce(() => testItem);
+
+    expect(testHandler.getItem()).toBe(testItem);
+  });
+
+  test('Получение элемента подсказки ползунка', () => {
+    const testElement = 'testElement';
+    mockTooltip.prototype.getElement.mockImplementationOnce(() => testElement);
+
+    expect(testHandler.getTooltipElement()).toBe(testElement);
   });
 });

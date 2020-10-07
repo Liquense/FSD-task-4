@@ -1,7 +1,6 @@
-/* eslint-disable no-undef */
-import View from './defaultView';
+import View from './pluginView';
 import SliderView from './slider/sliderView';
-import { KeyStringObj } from '../utils/types';
+import { KeyStringObj } from '../utils/interfacesAndTypes';
 
 jest.mock('./slider/sliderView');
 const wrapperElement = document.createElement('div');
@@ -15,7 +14,7 @@ test('Создание экземпляра класса', () => {
 
   const testParameters = { test1: 't1' };
   testView = new View(wrapperElement, testParameters);
-  expect(testView.body).toBe(wrapperElement);
+  expect(testView.getBody()).toBe(wrapperElement);
   expect(mockSlider).toBeCalledWith(testView, testParameters);
 });
 
@@ -71,7 +70,7 @@ describe('Функции', () => {
   });
 
   test('Передача данных об изменении позиции хэндлера в виде объекта', () => {
-    const result = testView.handlerPositionChanged(0, 0.5);
+    const result = testView.handleHandlerPositionChanged(0, 0.5);
     expect(result).toStrictEqual({ index: 0, position: 0.5, view: testView });
   });
 

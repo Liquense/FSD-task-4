@@ -1,62 +1,60 @@
-/* eslint-disable no-undef,dot-notation */
-import HandlerView from '../handlerView';
-import TooltipView from './tooltipView';
-import SliderView from '../../sliderView';
-import { KeyStringObj, Presentable } from '../../../../utils/types';
+/* eslint-disable dot-notation */
+import { KeyStringObj, Presentable } from '../../../../utils/interfacesAndTypes';
 
-jest.mock('../handlerView');
+import SliderView from '../../sliderView';
+
+import HandlerView from '../handlerView';
+
+import TooltipView from './tooltipView';
+
 jest.mock('../../sliderView');
 
+jest.mock('../handlerView');
 
 const defaultOrientationClass = 'defaultOrientClass';
 
-const slider = new SliderView(null, {});
-slider.getOrientationClass = jest.fn(() => defaultOrientationClass);
+const mockSlider = new SliderView(null, {});
+mockSlider.getOrientationClass = jest.fn(() => defaultOrientationClass);
 
-const handler = new HandlerView(null, { handlerIndex: 0, positionPart: 0, item: 'test' });
-handler.ownerSlider = slider;
-handler.element = { body: document.body, wrap: null };
-
+const handler = new HandlerView(mockSlider, { handlerIndex: 0, positionPart: 0, item: 'test' });
+handler.getOwnerSlider = jest.fn(() => mockSlider);
+handler.getBody = jest.fn(() => document.body);
 
 beforeEach(() => {
   document.body.innerHTML = '';
 });
 
 describe('Создание экземпляра', () => {
-  let createElementFunc: Function; let setVisibilityFunc: Function; let
-    initDefaultParametersFunc: Function;
-  const mockCreateElement = jest.fn(); const mockSetVisibility = jest.fn(); const
-    mockInitDefaultParameters = jest.fn();
+  let createElementFunc: Function;
+  let setVisibilityFunc: Function;
+  const mockCreateElement = jest.fn();
+  const mockSetVisibility = jest.fn();
 
   beforeAll(() => {
-    createElementFunc = TooltipView.prototype['_createElement'];
-    TooltipView.prototype['_createElement'] = mockCreateElement.mockImplementation(
-      function (parentElement) { createElementFunc.apply(this, [parentElement]); },
+    createElementFunc = TooltipView.prototype['createElement'];
+    TooltipView.prototype['createElement'] = mockCreateElement.mockImplementation(
+      function (parentElement) {
+        createElementFunc.apply(this, [parentElement]);
+      },
     );
 
     setVisibilityFunc = TooltipView.prototype.setVisibility;
     TooltipView.prototype.setVisibility = mockSetVisibility;
-
-    initDefaultParametersFunc = TooltipView.prototype['_initDefaultParameters'];
-    TooltipView.prototype['_initDefaultParameters'] = mockInitDefaultParameters.mockImplementation(
-      function () { return initDefaultParametersFunc.apply(this); },
-    );
   });
 
   test('Запуск функций для инициализации', () => {
-    const testTooltip = new TooltipView(handler.element.body, handler);
+    const testTooltip = new TooltipView(handler.getBody(), handler);
 
     expect(mockCreateElement).toBeCalled();
     expect(mockSetVisibility).toBeCalled();
-    expect(mockInitDefaultParameters).toBeCalled();
   });
 
   test('Корректное заполнение свойств', () => {
-    const tooltip: TooltipView & KeyStringObj = new TooltipView(handler.element.body, handler);
-    expect(tooltip.value).toBe(undefined);
+    const tooltip: TooltipView & KeyStringObj = new TooltipView(handler.getBody(), handler);
+    expect(tooltip.getItem()).toBe(undefined);
 
     mockSetVisibility.mock.calls = [];
-    const testTooltip = new TooltipView(handler.element.body, handler,
+    const testTooltip = new TooltipView(handler.getBody(), handler,
       {
         visibilityState: false,
         item: 'testValue',
@@ -67,21 +65,18 @@ describe('Создание экземпляра', () => {
 
   test('Создание элемента в DOM', () => {
     document.body.innerHTML = '';
-    const testTooltip = new TooltipView(handler.element.body, handler);
+    const testTooltip = new TooltipView(handler.getBody(), handler);
 
-    expect(handler.element.body.innerHTML)
+    expect(document.body.innerHTML)
       .toBe('<div class="liquidSlider__handlerTooltip defaultOrientClass">undefined</div>');
   });
 
   afterAll(() => {
-    TooltipView.prototype['_createElement'] = function (parentElement) {
+    TooltipView.prototype['createElement'] = function (parentElement) {
       createElementFunc.apply(this, [parentElement]);
     };
     TooltipView.prototype.setVisibility = function (visibilityState) {
       setVisibilityFunc.apply(this, [visibilityState]);
-    };
-    TooltipView.prototype['_initDefaultParameters'] = function () {
-      return initDefaultParametersFunc.apply(this);
     };
   });
 });
@@ -90,40 +85,39 @@ describe('Функционал', () => {
     let tooltip: TooltipView;
 
     beforeAll(() => {
-      tooltip = new TooltipView(handler.element.body, handler);
+      tooltip = new TooltipView(handler.getBody(), handler);
     });
 
     test('Показать', () => {
       tooltip.setVisibility(true);
-      expect(tooltip.element.classList).toContain('liquidSlider__handlerTooltip_visible');
-      expect(tooltip.element.classList).not.toContain('liquidSlider__handlerTooltip_hidden');
+      expect(tooltip.getElement().classList).toContain('liquidSlider__handlerTooltip_visible');
+      expect(tooltip.getElement().classList).not.toContain('liquidSlider__handlerTooltip_hidden');
     });
 
     test('Скрыть', () => {
       tooltip.setVisibility(false);
-      expect(tooltip.element.classList).toContain('liquidSlider__handlerTooltip_hidden');
-      expect(tooltip.element.classList).not.toContain('liquidSlider__handlerTooltip_visible');
+      expect(tooltip.getElement().classList).toContain('liquidSlider__handlerTooltip_hidden');
+      expect(tooltip.getElement().classList).not.toContain('liquidSlider__handlerTooltip_visible');
     });
   });
 
-  test('Получение размера', () => {
-    const tooltip = new TooltipView(handler.element.body, handler);
+  describe('Получение размера', () => {
+    const tooltip = new TooltipView(handler.getBody(), handler);
 
-    slider.isVertical = false;
-    expect(tooltip.getSize()).toBe(tooltip.element.getBoundingClientRect().width);
+    mockSlider.getExpandDimension = jest.fn(() => 'width');
+    expect(tooltip.getSize()).toBe(tooltip.getElement().getBoundingClientRect().width);
 
-    slider.isVertical = true;
-    expect(tooltip.getSize()).toBe(tooltip.element.getBoundingClientRect().height);
+    mockSlider.getExpandDimension = jest.fn(() => 'height');
+    expect(tooltip.getSize()).toBe(tooltip.getElement().getBoundingClientRect().height);
   });
 
   test('Установка значения', () => {
-    const tooltip = new TooltipView(handler.element.body, handler);
+    const tooltip = new TooltipView(handler.getBody(), handler);
 
     function testValueChange(testValue: Presentable): void {
-      tooltip.value = testValue;
-      expect(tooltip['_value']).toBe(testValue);
-      expect(tooltip['_innerHTML']).toBe(testValue.toString());
-      expect(tooltip['_element'].innerHTML).toBe(testValue.toString());
+      tooltip.setItem(testValue);
+      expect(tooltip.getItem()).toBe(testValue);
+      expect(tooltip.getElement().innerHTML).toBe(testValue.toString());
     }
 
     testValueChange('testValue');

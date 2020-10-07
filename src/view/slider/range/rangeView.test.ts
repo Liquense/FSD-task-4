@@ -1,19 +1,17 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore,no-undef,dot-notation */
-import RangeView from './rangeView';
 import SliderView from '../sliderView';
 import HandlerView from '../handler/handlerView';
+
+import RangeView from './rangeView';
 
 jest.mock('../handler/handlerView');
 jest.mock('../sliderView');
 let testRange: RangeView;
 
 const testSlider = new SliderView(null, {});
-// @ts-ignore
-testSlider.scaleStart = 0;
-// @ts-ignore
-testSlider.scaleEnd = 100;
-// @ts-ignore
-testSlider.scaleBorderWidth = 2;
+testSlider.getScaleStart = jest.fn(() => 0);
+testSlider.getScaleEnd = jest.fn(() => 100);
+testSlider.getScaleBorderWidth = jest.fn(() => 2);
 
 const horizontalClass = 'horizontal';
 const verticalClass = 'vertical';
@@ -37,67 +35,61 @@ describe('Инициализация', () => {
 
   describe('Правильное назначение хэндлеров', () => {
     test('Один хэндлер', () => {
-      firstHandler.rangePair = 'start';
+      firstHandler.getRangePair = jest.fn(() => 'start');
       testRange = new RangeView(testSlider, document.body, firstHandler);
-      expect(testRange.endHandler).toBe(firstHandler);
+      expect(testRange.getEndHandler()).toBe(firstHandler);
 
-      firstHandler.rangePair = 'end';
+      firstHandler.getRangePair = jest.fn(() => 'end');
       testRange = new RangeView(testSlider, document.body, firstHandler);
-      expect(testRange.startHandler).toBe(firstHandler);
+      expect(testRange.getStartHandler()).toBe(firstHandler);
     });
     test('Два хэндлера', () => {
-      const testTwoHandlers = function (firstPos: number, secondPos: number) {
-        // @ts-ignore
-        firstHandler.positionPart = firstPos;
-        // @ts-ignore
-        secondHandler.positionPart = secondPos;
+      const testTwoHandlers = (firstPos: number, secondPos: number): void => {
+        firstHandler.getPositionPart = jest.fn(() => firstPos);
+        secondHandler.getPositionPart = jest.fn(() => secondPos);
         testRange = new RangeView(testSlider, document.body, firstHandler, secondHandler);
       };
 
       testTwoHandlers(0, 0);
-      expect(testRange.startHandler).toBe(firstHandler);
-      expect(testRange.endHandler).toBe(secondHandler);
+      expect(testRange.getStartHandler()).toBe(firstHandler);
+      expect(testRange.getEndHandler()).toBe(secondHandler);
 
       testTwoHandlers(0, 1);
-      expect(testRange.startHandler).toBe(firstHandler);
-      expect(testRange.endHandler).toBe(secondHandler);
+      expect(testRange.getStartHandler()).toBe(firstHandler);
+      expect(testRange.getEndHandler()).toBe(secondHandler);
 
       testTwoHandlers(1, 0);
-      expect(testRange.startHandler).toBe(secondHandler);
-      expect(testRange.endHandler).toBe(firstHandler);
+      expect(testRange.getStartHandler()).toBe(secondHandler);
+      expect(testRange.getEndHandler()).toBe(firstHandler);
     });
   });
 
   describe('Создание HTML-тела', () => {
     test('Создание горизонтально', () => {
       const expectedBody = document.body.querySelector(`.liquidSlider__range.${horizontalClass}`);
-      expect(testRange['_element']).toBe(expectedBody);
+      expect(testRange['element']).toBe(expectedBody);
     });
     test('Создание вертикально', () => {
       document.body.innerHTML = '';
-      testSlider.isVertical = true;
+      testSlider.getOrientationClass = jest.fn(() => 'vertical');
       testRange = new RangeView(testSlider, document.body, firstHandler, secondHandler);
 
       const expectedBody = document.body.querySelector(`.liquidSlider__range.${verticalClass}`);
-      expect(testRange['_element']).toBe(expectedBody);
+      expect(testRange['element']).toBe(expectedBody);
     });
 
     describe('Добавление стилей', () => {
       beforeAll(() => {
-        // @ts-ignore
-        firstHandler.positionCoordinate = 20;
-        // @ts-ignore
-        secondHandler.positionCoordinate = 80;
+        firstHandler.getPositionCoordinate = jest.fn(() => 20);
+        secondHandler.getPositionCoordinate = jest.fn(() => 80);
       });
 
       test('Один хэндлер', async () => {
         function initTest(handlerSide: string, offsetDirection: string, expandDimension: string) {
           return new Promise((resolve) => {
-            firstHandler.rangePair = handlerSide;
-            // @ts-ignore
-            testSlider.offsetDirection = offsetDirection;
-            // @ts-ignore
-            testSlider.expandDimension = expandDimension;
+            firstHandler.getRangePair = jest.fn(() => handlerSide);
+            testSlider.getOffsetDirection = jest.fn(() => offsetDirection);
+            testSlider.getExpandDimension = jest.fn(() => expandDimension);
 
             testRange = new RangeView(testSlider, document.body, firstHandler);
 
@@ -108,34 +100,30 @@ describe('Инициализация', () => {
         }
 
         await initTest('end', 'left', 'width');
-        expect(testRange['_element'].style.left).toBe('20px');
-        expect(testRange['_element'].style.width).toBe('78px');
+        expect(testRange['element'].style.left).toBe('20px');
+        expect(testRange['element'].style.width).toBe('78px');
 
         await initTest('end', 'top', 'height');
-        expect(testRange['_element'].style.top).toBe('20px');
-        expect(testRange['_element'].style.height).toBe('78px');
+        expect(testRange['element'].style.top).toBe('20px');
+        expect(testRange['element'].style.height).toBe('78px');
 
         await initTest('start', 'left', 'width');
-        expect(testRange['_element'].style.left).toBe('2px');
-        expect(testRange['_element'].style.width).toBe('18px');
+        expect(testRange['element'].style.left).toBe('2px');
+        expect(testRange['element'].style.width).toBe('18px');
 
         await initTest('start', 'top', 'height');
-        expect(testRange['_element'].style.top).toBe('2px');
-        expect(testRange['_element'].style.height).toBe('18px');
+        expect(testRange['element'].style.top).toBe('2px');
+        expect(testRange['element'].style.height).toBe('18px');
       });
 
       test('Два хэндлера', async () => {
-        // @ts-ignore
-        firstHandler.positionPart = 0;
-        // @ts-ignore
-        secondHandler.positionPart = 1;
+        firstHandler.getPositionPart = jest.fn(() => 0);
+        secondHandler.getPositionPart = jest.fn(() => 1);
 
         function initTest(offsetDirection: string, expandDimension: string): Promise<boolean> {
           return new Promise((resolve) => {
-            // @ts-ignore
-            testSlider.offsetDirection = offsetDirection;
-            // @ts-ignore
-            testSlider.expandDimension = expandDimension;
+            testSlider.getOffsetDirection = jest.fn(() => offsetDirection);
+            testSlider.getExpandDimension = jest.fn(() => expandDimension);
 
             testRange = new RangeView(testSlider, document.body, firstHandler, secondHandler);
 
@@ -146,12 +134,12 @@ describe('Инициализация', () => {
         }
 
         await initTest('left', 'width');
-        expect(testRange['_element'].style.left).toBe('20px');
-        expect(testRange['_element'].style.width).toBe('60px');
+        expect(testRange['element'].style.left).toBe('20px');
+        expect(testRange['element'].style.width).toBe('60px');
 
         await initTest('top', 'height');
-        expect(testRange['_element'].style.top).toBe('20px');
-        expect(testRange['_element'].style.height).toBe('60px');
+        expect(testRange['element'].style.top).toBe('20px');
+        expect(testRange['element'].style.height).toBe('60px');
       });
     });
   });
@@ -166,11 +154,11 @@ describe('Инициализация', () => {
 
     expect(mockUpdatePosition.mock.calls.length).toBe(0);
 
-    testSlider.isVertical = true;
+    testSlider.getIsVertical = jest.fn(() => true);
     firstHandler.refreshPosition();
     expect(mockUpdatePosition.mock.calls.length).toBe(1);
 
-    testSlider.isVertical = false;
+    testSlider.getIsVertical = jest.fn(() => false);
     secondHandler.refreshPosition();
     expect(mockUpdatePosition.mock.calls.length).toBe(2);
   });

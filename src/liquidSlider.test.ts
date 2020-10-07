@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-// eslint-disable-next-line import/no-extraneous-dependencies
 import * as $ from 'jquery';
 import './liquidSlider';
 import Controller from './controller/controller';
@@ -11,7 +9,6 @@ const $testDiv = $(document.body.appendChild(document.createElement('div')));
 
 test('Инициализация слайдера', () => {
   const testParameters = { something: '', anotherArg: 'test1', withMarkup: '' };
-
 
   $testDiv.liquidSlider();
   expect(Controller).toBeCalledWith(

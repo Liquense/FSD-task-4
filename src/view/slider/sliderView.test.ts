@@ -1,30 +1,32 @@
-// в тестах приходится хакать области видимости и не только
-/* eslint-disable no-undef,dot-notation,@typescript-eslint/ban-ts-ignore */
+/* eslint-disable dot-notation,@typescript-eslint/ban-ts-ignore */
+
+import PluginView from '../pluginView';
+
 import SliderView from './sliderView';
-import View from '../defaultView';
-import TooltipView from './handler/tooltip/tooltipView';
+
 import MarkupView from './markup/markupView';
 
-jest.mock('../defaultView');
+import TooltipView from './handler/tooltip/tooltipView';
+import HandlerView from './handler/handlerView';
+import RangeView from './range/rangeView';
 
-const testView = new View(null, null);
-Object.defineProperty(testView, 'body', {
-  get(): HTMLElement {
-    return document.body.appendChild(document.createElement('div'));
-  },
-  configurable: true,
-});
+import Mock = jest.Mock;
 
-testView.handlerPositionChanged = jest.fn(() => undefined);
+jest.mock('../pluginView');
+
+const testView = new PluginView(null, null);
+testView.getBody = jest.fn(
+  () => document.body.appendChild(document.createElement('div')),
+);
+
+testView.handleHandlerPositionChanged = jest.fn(() => undefined);
 let testSlider: SliderView;
 
 function resetHTML(): void {
   document.body.innerHTML = '';
-  Object.defineProperty(testView, 'body', {
-    get(): HTMLElement {
-      return document.body.appendChild(document.createElement('div'));
-    },
-  });
+  testView.getBody = jest.fn(
+    () => document.body.appendChild(document.createElement('div')),
+  );
 }
 
 describe('Инициализация', () => {
@@ -32,11 +34,9 @@ describe('Инициализация', () => {
     test('Без передачи необязательных параметров', () => {
       testSlider = new SliderView(testView);
 
-      expect(testSlider.isVertical).toBe(undefined);
-      expect(testSlider.isReversed).toBe(false);
-      expect(testSlider['_tooltipsAlwaysVisible']).toBe(undefined);
-      expect(testSlider['_withMarkup']).toBe(undefined);
+      expect(testSlider.getIsVertical()).toBe(undefined);
     });
+
     test('С передачей необязательных параметров', () => {
       testSlider = new SliderView(
         testView, {
@@ -44,10 +44,10 @@ describe('Инициализация', () => {
         },
       );
 
-      expect(testSlider.isVertical).toBe(true);
-      expect(testSlider.isReversed).toBe(false);
-      expect(testSlider['_tooltipsAlwaysVisible']).toBe(false);
-      expect(testSlider['_withMarkup']).toBe(true);
+      expect(testSlider.getIsVertical()).toBe(true);
+      expect(testSlider['isRangesInverted']).toBe(false);
+      expect(testSlider['tooltipsAlwaysVisible']).toBe(false);
+      expect(testSlider['withMarkup']).toBe(true);
     });
   });
 
@@ -60,14 +60,14 @@ describe('Инициализация', () => {
     const scale = document.body.querySelector('.liquidSlider__scale');
     const handlers = document.body.querySelector('.liquidSlider__handlers');
 
-    expect(testSlider.bodyElement === testSlider['_elements'].body && testSlider['_elements'].body === body).toBeTruthy();
-    expect(testSlider.handlersContainer === testSlider['_elements'].handlers && testSlider['_elements'].handlers === handlers).toBeTruthy();
-    expect(testSlider['_elements'].wrap).toBe(wrap);
-    expect(testSlider['_elements'].scale).toBe(scale);
+    expect(testSlider.getBodyElement() === testSlider['elements'].body && testSlider['elements'].body === body).toBeTruthy();
+    expect(testSlider.getHandlersContainer() === testSlider['elements']['handlers'] && testSlider['elements']['handlers'] === handlers).toBeTruthy();
+    expect(testSlider['elements'].wrap).toBe(wrap);
+    expect(testSlider['elements'].scale).toBe(scale);
   });
 
   test('Создание хэндлеров', () => {
-    testSlider.isReversed = false;
+    testSlider.setRangesInversion(false);
     testSlider.initHandlers(
       {
         customHandlers: false,
@@ -77,10 +77,10 @@ describe('Инициализация', () => {
         ],
       },
     );
-    expect(testSlider.handlers[0].rangePair).toBe(1);
-    expect(testSlider.handlers[1].rangePair).toBe(0);
+    expect(testSlider['handlers'][0].getRangePair()).toBe(1);
+    expect(testSlider['handlers'][1].getRangePair()).toBe(0);
 
-    testSlider.isReversed = true;
+    testSlider.setRangesInversion(true);
     testSlider.initHandlers(
       {
         customHandlers: false,
@@ -89,9 +89,9 @@ describe('Инициализация', () => {
         ],
       },
     );
-    expect(testSlider.handlers[0].rangePair).toBe('end');
+    expect(testSlider['handlers'][0].getRangePair()).toBe('end');
 
-    testSlider.isReversed = false;
+    testSlider.setRangesInversion(false);
     testSlider.initHandlers(
       {
         customHandlers: false,
@@ -100,7 +100,7 @@ describe('Инициализация', () => {
         ],
       },
     );
-    expect(testSlider.handlers[0].rangePair).toBe('start');
+    expect(testSlider['handlers'][0].getRangePair()).toBe('start');
 
     testSlider.initHandlers(
       {
@@ -118,57 +118,60 @@ describe('Инициализация', () => {
         ],
       },
     );
-    expect(testSlider.handlers[0].rangePair).toBe('start');
-    expect(testSlider.handlers[1].rangePair).toBe(null);
-    expect(testSlider.handlers[2].rangePair).toBe('end');
+    expect(testSlider['handlers'][0].getRangePair()).toBe('start');
+    expect(testSlider['handlers'][1].getRangePair()).toBe(null);
+    expect(testSlider['handlers'][2].getRangePair()).toBe('end');
   });
 
-  test('Связывание хэндлеров в диапазоны', () => {
-    testSlider.isReversed = false;
-    testSlider.initHandlers(
-      {
-        customHandlers: false,
-        handlersArray: [
-          { handlerIndex: 0, item: 'test', positionPart: 0.4 },
-          { handlerIndex: 1, item: 'test2', positionPart: 0.9 },
-        ],
-      },
-    );
-    testSlider.createRanges();
-    expect(testSlider['_ranges'][0].startHandler).toBe(testSlider.handlers[0]);
-    expect(testSlider['_ranges'][0].endHandler).toBe(testSlider.handlers[1]);
+  describe('Связывание хэндлеров в диапазоны', () => {
+    describe('Стандартные', () => {
+      test('Без инверсии диапазонов', () => {
+        testSlider.setRangesInversion(false);
+        testSlider.initHandlers({
+          customHandlers: false,
+          handlersArray: [
+            { handlerIndex: 0, item: 'test', positionPart: 0.4 },
+            { handlerIndex: 1, item: 'test2', positionPart: 0.9 },
+          ],
+        });
+        testSlider.createRanges();
+        expect(testSlider['ranges'][0].getStartHandler()).toBe(testSlider['handlers'][0]);
+        expect(testSlider['ranges'][0].getEndHandler()).toBe(testSlider['handlers'][1]);
+      });
 
-    testSlider.isReversed = true;
-    testSlider.initHandlers(
-      {
-        customHandlers: false,
-        handlersArray: [
-          { handlerIndex: 0, item: 'test', positionPart: 0.4 },
-          { handlerIndex: 1, item: 'test2', positionPart: 0.9 },
-        ],
-      },
-    );
-    testSlider.clearRanges();
-    testSlider.createRanges();
-    expect(testSlider['_ranges'][0].startHandler).toBe(null);
-    expect(testSlider['_ranges'][0].endHandler).toBe(testSlider.handlers[0]);
-    expect(testSlider['_ranges'][1].startHandler).toBe(testSlider.handlers[1]);
-    expect(testSlider['_ranges'][1].endHandler).toBe(null);
+      test('С инверсией диапазонов', () => {
+        testSlider.setRangesInversion(true);
+        testSlider.initHandlers({
+          customHandlers: false,
+          handlersArray: [
+            { handlerIndex: 0, item: 'test', positionPart: 0.4 },
+            { handlerIndex: 1, item: 'test2', positionPart: 0.9 },
+          ],
+        });
+        testSlider.clearRanges();
+        testSlider.createRanges();
+        expect(testSlider['ranges'][0].getStartHandler()).toBe(null);
+        expect(testSlider['ranges'][0].getEndHandler()).toBe(testSlider['handlers'][0]);
+        expect(testSlider['ranges'][1].getStartHandler()).toBe(testSlider['handlers'][1]);
+        expect(testSlider['ranges'][1].getEndHandler()).toBe(null);
+      });
 
-    testSlider.initHandlers({
-      customHandlers: false,
-      handlersArray: [
-        { handlerIndex: 0, item: 'test', positionPart: 0.4 },
-      ],
+      test('Один хэндлер', () => {
+        testSlider.initHandlers({
+          customHandlers: false,
+          handlersArray: [
+            { handlerIndex: 0, item: 'test', positionPart: 0.4 },
+          ],
+        });
+        testSlider.clearRanges();
+        testSlider.createRanges();
+        expect(testSlider['ranges'][0].getStartHandler()).toBe(testSlider['handlers'][0]);
+        expect(testSlider['ranges'][0].getEndHandler()).toBe(null);
+      });
     });
-    testSlider.clearRanges();
-    testSlider.createRanges();
-    expect(testSlider['_ranges'][0].startHandler).toBe(testSlider.handlers[0]);
-    expect(testSlider['_ranges'][0].endHandler).toBe(null);
 
-    // Кастомные
-    testSlider.initHandlers(
-      {
+    test('Пользовательские', () => {
+      testSlider.initHandlers({
         customHandlers: true,
         handlersArray: [
           {
@@ -181,15 +184,15 @@ describe('Инициализация', () => {
             handlerIndex: 2, item: 'test', positionPart: 0.7, rangePair: 'end',
           },
         ],
-      },
-    );
-    testSlider.clearRanges();
-    testSlider.createRanges();
-    expect(testSlider['_ranges'][0].startHandler).toBe(null);
-    expect(testSlider['_ranges'][0].endHandler).toBe(testSlider.handlers[0]);
-    expect(testSlider['_ranges'][1].startHandler).toBe(testSlider.handlers[2]);
-    expect(testSlider['_ranges'][1].endHandler).toBe(null);
-    expect(testSlider['_ranges'][2]).toBe(undefined);
+      });
+      testSlider.clearRanges();
+      testSlider.createRanges();
+      expect(testSlider['ranges'][0].getStartHandler()).toBe(null);
+      expect(testSlider['ranges'][0].getEndHandler()).toBe(testSlider['handlers'][0]);
+      expect(testSlider['ranges'][1].getStartHandler()).toBe(testSlider['handlers'][2]);
+      expect(testSlider['ranges'][1].getEndHandler()).toBe(null);
+      expect(testSlider['ranges'][2]).toBe(undefined);
+    });
   });
 
   describe('Проверка слушателей событий', () => {
@@ -197,11 +200,9 @@ describe('Инициализация', () => {
       resetHTML();
       testSlider = new SliderView(testView);
 
-      testSlider.bodyElement.style.width = '100px';
-      testSlider.getScaleLength = (): number => 100;
-      Object.defineProperty(testSlider, 'scaleStart', {
-        get: jest.fn(() => 0),
-      });
+      testSlider.getBodyElement().style.width = '100px';
+      testSlider.getScaleLength = jest.fn(() => 100);
+      testSlider.getScaleStart = jest.fn(() => 0);
 
       testSlider.initHandlers(
         {
@@ -212,12 +213,8 @@ describe('Инициализация', () => {
           ],
         },
       );
-      Object.defineProperty(testSlider.handlers[0], 'positionCoordinate', {
-        get: jest.fn(() => 40),
-      });
-      Object.defineProperty(testSlider.handlers[1], 'positionCoordinate', {
-        get: jest.fn(() => 90),
-      });
+      testSlider['handlers'][0].getPositionCoordinate = jest.fn(() => 40);
+      testSlider['handlers'][1].getPositionCoordinate = jest.fn(() => 90);
     });
 
     describe('Нажатие на кнопку мыши', () => {
@@ -231,7 +228,7 @@ describe('Инициализация', () => {
         spyOnPreventDefault = jest.spyOn(testMouseDownEvent, 'preventDefault');
 
         simulateMouseDown = (coordinate: number): void => {
-          if (testSlider.isVertical) {
+          if (testSlider.getIsVertical()) {
             Object.defineProperty(testMouseDownEvent, 'clientY', {
               get(): number { return coordinate; },
               configurable: true,
@@ -243,46 +240,42 @@ describe('Инициализация', () => {
             });
           }
 
-          testSlider.bodyElement.dispatchEvent(testMouseDownEvent);
+          testSlider.getBodyElement().dispatchEvent(testMouseDownEvent);
         };
 
         testClicks = (): void => {
-          for (let i = 0; i <= 100; i += 1) {
-            (testView.handlerPositionChanged as jest.Mock).mockClear();
+          const checkDisabledTooltipsVisibility = (handler: HandlerView): void => {
+            if (handler !== testSlider['activeHandler']) {
+              expect(handler.getTooltipElement().classList)
+                .toContain(`${TooltipView.DEFAULT_CLASS}_hidden`);
+            }
+          };
+
+          new Array(100).fill(0).forEach((handler, i) => {
             // несмотря на клик, позиции хэндлеров остаются неизменными,
             // потому что вью мокнут и нет обмена данными с моделью
+            (testView.handleHandlerPositionChanged as jest.Mock).mockClear();
             simulateMouseDown(i);
 
-            if (i <= 65) expect(testSlider['_activeHandler']).toBe(testSlider.handlers[0]);
-            else expect(testSlider['_activeHandler']).toBe(testSlider.handlers[1]);
+            if (i <= 65) expect(testSlider['activeHandler']).toBe(testSlider['handlers'][0]);
+            else expect(testSlider['activeHandler']).toBe(testSlider['handlers'][1]);
 
-            expect(testSlider['_activeHandler'].body).toBe(document.activeElement);
+            expect(testSlider['activeHandler'].getBody()).toBe(document.activeElement);
 
-            if (
-              (testSlider.calculateMouseRelativePos(testMouseDownEvent as MouseEvent) !== 0.4)
-                && (testSlider.calculateMouseRelativePos(testMouseDownEvent as MouseEvent) !== 0.9)
-            ) {
-              expect(testView.handlerPositionChanged).toBeCalledWith(
-                testSlider['_activeHandler'].index, i / 100,
+            if ((testSlider.calculateMouseRelativePos(testMouseDownEvent) !== 0.4)
+                && (testSlider.calculateMouseRelativePos(testMouseDownEvent) !== 0.9)) {
+              expect(testView.handleHandlerPositionChanged).toBeCalledWith(
+                testSlider['activeHandler'].getIndex(), i / 100,
               );
             }
 
-            // видимость тултипов
-            if (testSlider['_tooltipsAlwaysVisible']) {
-              expect(testSlider['_activeHandler'].tooltip.element.classList)
+            if (testSlider['tooltipsAlwaysVisible']) {
+              expect(testSlider['activeHandler'].getTooltipElement().classList)
                 .toContain(`${TooltipView.DEFAULT_CLASS}_visible`);
-            } else if (testSlider['_tooltipsAlwaysVisible'] !== undefined) {
-              // если значение передано и оно FALSE
-              // проверяем, что на неактивных хэндлерах тултипы не видны
-              // eslint-disable-next-line no-loop-func
-              testSlider.handlers.forEach((handler) => {
-                if (handler !== testSlider['_activeHandler']) {
-                  expect(handler.tooltip.element.classList)
-                    .toContain(`${TooltipView.DEFAULT_CLASS}_hidden`);
-                }
-              });
+            } else if (testSlider['tooltipsAlwaysVisible'] !== undefined) {
+              testSlider['handlers'].forEach(checkDisabledTooltipsVisibility);
             }
-          }
+          });
         };
       });
 
@@ -297,33 +290,37 @@ describe('Инициализация', () => {
         testSlider.setOrientation(true);
         testClicks();
 
-        // задиспатчить ивент не придумал как - таргет только для чтения.
-        // А диспатчить надо с документа, но так, чтобы таргет был чем-то внутри слайдера
-        // (вызов по координатам слайдера не прокатил)
-        // @ts-ignore
-        testSlider['_handleDocumentMouseDown']({ target: testSlider['_elements'].scale });
+        testSlider.getBodyElement().dispatchEvent(new Event('click'));
 
         expect(spyOnPreventDefault).toBeCalled();
-        expect(testSlider['_activeHandler'].body).toBe(document.activeElement); // проверка фокуса на активном хэндлере
+        expect(testSlider['activeHandler'].getBody()).toBe(document.activeElement);
       });
 
-      test('Вне слайдера', () => {
-        testSlider.setTooltipsVisibility(false);
+      describe('Вне слайдера', () => {
+        test('если изначально активного хэндлера нет', () => {
+          document.body.dispatchEvent(testMouseDownEvent);
+          expect(testSlider['activeHandler']).toBe(null);
+        });
 
-        document.body.dispatchEvent(testMouseDownEvent);
-        expect(testSlider['_activeHandler']).toBe(null); // если изначально активного хэндлера нет
-
-        simulateMouseDown(0);
-
-        document.body.dispatchEvent(testMouseDownEvent);
-        expect(testSlider['_activeHandler']).toBe(null); // если был активный хэндлер
+        test('если был активный хэндлер', () => {
+          simulateMouseDown(0);
+          document.body.dispatchEvent(testMouseDownEvent);
+          expect(testSlider['activeHandler']).toBe(null);
+        });
       });
     });
 
     describe('Движение мыши', () => {
-      test('Проверка срабатывания только при зажатии кнопки мыши', () => {
-        const testMouseMoveEvent = new Event('mousemove');
-        const testMouseDownEvent = new Event('mousedown');
+      let testMouseMoveEvent: Event;
+      let testMouseDownEvent: Event;
+      let testMouseUpEvent: Event;
+      let spyMouseMoveHandler: Mock;
+
+      beforeAll(() => {
+        testMouseMoveEvent = new Event('mousemove');
+        testMouseDownEvent = new Event('mousedown');
+        testMouseUpEvent = new Event('mouseup');
+
         // @ts-ignore
         testMouseMoveEvent.clientX = 40;
         // @ts-ignore
@@ -332,53 +329,46 @@ describe('Инициализация', () => {
         testMouseDownEvent.clientX = 40;
         // @ts-ignore
         testMouseDownEvent.clientY = 40;
+      });
 
-        const testMouseUpEvent = new Event('mouseup');
+      beforeEach(() => {
         // @ts-ignore
-        const spyMouseMoveHandler = jest.spyOn(testSlider, '_handleMouseMoveBound');
+        spyMouseMoveHandler = jest.spyOn(testSlider, 'handleMouseMoveBound');
+      });
 
-        document.body.dispatchEvent(testMouseMoveEvent);
-        // до нажатия не вызывается обработчик события движения
-        expect(spyMouseMoveHandler).not.toBeCalled();
-        testSlider.bodyElement.dispatchEvent(testMouseDownEvent);
-        spyMouseMoveHandler.mockClear();
-        document.body.dispatchEvent(testMouseMoveEvent);
-        // после нажатия, но до отпускания - вызывается
-        expect(spyMouseMoveHandler).toBeCalled();
+      describe('Проверка срабатывания только при зажатии кнопки мыши', () => {
+        test('До зажатия кнопки мыши обработчик перемещения не срабатывает', () => {
+          document.body.dispatchEvent(testMouseMoveEvent);
+          expect(spyMouseMoveHandler).not.toBeCalled();
+        });
 
-        document.body.dispatchEvent(testMouseUpEvent);
-        spyMouseMoveHandler.mockClear();
-        document.body.dispatchEvent(testMouseMoveEvent);
-        // после отпускания мыши - снова не вызывается
-        expect(spyMouseMoveHandler).not.toBeCalled();
+        test('Во время зажатия обработчик срабатывает', () => {
+          testSlider.getBodyElement().dispatchEvent(testMouseDownEvent);
+          document.body.dispatchEvent(testMouseMoveEvent);
+          expect(spyMouseMoveHandler).toBeCalled();
+        });
+
+        test('После отпускания снова не срабатывает', () => {
+          document.body.dispatchEvent(testMouseUpEvent);
+          document.body.dispatchEvent(testMouseMoveEvent);
+          expect(spyMouseMoveHandler).not.toBeCalled();
+        });
       });
 
       test('Выход за пределы окна браузера', () => {
-        const testMouseMoveEvent = new Event('mousemove');
-        const testMouseDownEvent = new Event('mousedown');
-        // @ts-ignore
-        testMouseDownEvent.clientX = 40;
-        // @ts-ignore
-        testMouseDownEvent.clientY = 40;
-        // @ts-ignore
-        const spyMouseMoveHandler = jest.spyOn(testSlider, '_handleMouseMoveBound');
-
-        spyMouseMoveHandler.mockClear();
-        testSlider.bodyElement.dispatchEvent(testMouseDownEvent);
+        testSlider.getBodyElement().dispatchEvent(testMouseDownEvent);
         document.body.dispatchEvent(testMouseMoveEvent);
         expect(spyMouseMoveHandler).toBeCalled();
 
         spyMouseMoveHandler.mockClear();
         // @ts-ignore
-        // нас интересует только это свойство
-        testSlider['_handleWindowMouseOut']({ target: { nodeName: 'not-HTML' } });
+        testSlider['handleWindowMouseOut']({ target: { nodeName: 'not-HTML' } });
         document.body.dispatchEvent(testMouseMoveEvent);
         expect(spyMouseMoveHandler).toBeCalled();
 
         spyMouseMoveHandler.mockClear();
         // @ts-ignore
-        // нас интересует только это свойство
-        testSlider['_handleWindowMouseOut']({ target: { nodeName: 'HTML' } });
+        testSlider['handleWindowMouseOut']({ target: { nodeName: 'HTML' } });
         document.body.dispatchEvent(testMouseMoveEvent);
         expect(spyMouseMoveHandler).not.toBeCalled();
       });
@@ -391,28 +381,24 @@ describe('Функции', () => {
     resetHTML();
     testSlider = new SliderView(testView);
 
-    testSlider.initHandlers(
-      {
-        customHandlers: false,
-        handlersArray: [
-          { handlerIndex: 0, item: 'test', positionPart: 0.4 },
-          { handlerIndex: 1, item: 'test2', positionPart: 0.9 },
-        ],
-      },
-    );
+    testSlider.initHandlers({
+      customHandlers: false,
+      handlersArray: [
+        { handlerIndex: 0, item: 'test', positionPart: 0.4 },
+        { handlerIndex: 1, item: 'test2', positionPart: 0.9 },
+      ],
+    });
   });
 
   test('Установка видимости тултипов', () => {
-    const spyHandlersSetVisibility = testSlider.handlers.map((handler) => jest.spyOn(handler, 'setTooltipVisibility'));
+    const spyHandlersSetVisibility = testSlider['handlers'].map((handler) => jest.spyOn(handler, 'setTooltipVisibility'));
 
     function testTooltipsVisibilityVarSetting(stateToSet: boolean): void {
       testSlider.setTooltipsVisibility(stateToSet);
-      const stateToCheck = (stateToSet === undefined) || (stateToSet === null)
-        ? testSlider['_tooltipsAlwaysVisible'] : stateToSet;
-      expect(testSlider['_tooltipsAlwaysVisible']).toBe(stateToCheck);
+      const stateToCheck = stateToSet ?? testSlider['tooltipsAlwaysVisible'];
+      expect(testSlider['tooltipsAlwaysVisible']).toBe(stateToCheck);
 
       spyHandlersSetVisibility.forEach((spyFunc) => {
-        // проверка вызова функции у каждого тултипа с обработанным значением
         expect(spyFunc).toBeCalledWith(stateToCheck);
       });
     }
@@ -424,31 +410,31 @@ describe('Функции', () => {
   });
 
   test('Создание разметки', async () => {
-    testSlider.isVertical = false;
+    testSlider.setOrientation(false);
     const origGetScaleLength = testSlider.getScaleLength;
     const mockAddMark = jest.fn();
     MarkupView.prototype.addMark = mockAddMark;
 
-    testSlider['_markup'] = undefined;
-    testSlider.update(); // грубо говоря тест на то, что нет исключения
+    testSlider['markup'] = undefined;
+    testSlider.update();
 
     testSlider.clearRanges();
-    testSlider['_withMarkup'] = true;
+    testSlider['withMarkup'] = true;
     testSlider.initHandlers({
       customHandlers: false,
       handlersArray: [{ handlerIndex: 0, item: 'test', positionPart: 0.5 }],
     });
     testSlider.getScaleLength = (): number => 100;
 
-    expect(testSlider['_markup']?.ownerSlider).toBe(testSlider);
+    expect(testSlider['markup']?.ownerSlider).toBe(testSlider);
     await new Promise((resolve) => requestAnimationFrame(() => {
       resolve();
     }));
 
-    const marksCount = 1 / testSlider['_step'] + 1; // 1 - потому что во View относительные величины от 0 до 1. А +1 - потому что включая нулевую отметку
+    const marksCount = 1 / testSlider['step'] + 1;
     expect(mockAddMark.mock.calls.length).toBe(marksCount);
     for (let i = 1; i < marksCount; i += 1) {
-      expect(mockAddMark).toBeCalledWith(Number.parseFloat((testSlider['_step'] * i).toFixed(4)), 0);
+      expect(mockAddMark).toBeCalledWith(Number.parseFloat((testSlider['step'] * i).toFixed(4)), 0);
     }
 
     testSlider.getScaleLength = origGetScaleLength;
@@ -463,10 +449,10 @@ describe('Функции', () => {
         positionPart: 1,
       }],
     });
-    const spySetValue1 = jest.spyOn(testSlider.handlers[0], 'setValue');
-    const spySetValue2 = jest.spyOn(testSlider.handlers[1], 'setValue');
-    const spySetPosition1 = jest.spyOn(testSlider.handlers[0], 'setPosition');
-    const spySetPosition2 = jest.spyOn(testSlider.handlers[1], 'setPosition');
+    const spySetValue1 = jest.spyOn(testSlider['handlers'][0], 'setItem');
+    const spySetValue2 = jest.spyOn(testSlider['handlers'][1], 'setItem');
+    const spySetPosition1 = jest.spyOn(testSlider['handlers'][0], 'setPosition');
+    const spySetPosition2 = jest.spyOn(testSlider['handlers'][1], 'setPosition');
 
     const newValue1 = 'new test';
     const newValue2 = 'new test2';
@@ -489,7 +475,7 @@ describe('Функции', () => {
     testSlider.createRanges();
 
     const spies: jest.SpyInstance[] = [];
-    testSlider['_ranges'].forEach((range) => {
+    testSlider['ranges'].forEach((range) => {
       spies.push(jest.spyOn(range, 'refreshPosition'));
     });
 
@@ -505,20 +491,20 @@ describe('Функции', () => {
       });
     }
 
-    let prevStep = testSlider['_step'];
-    let prevMin = testSlider['_min'];
-    let prevMax = testSlider['_max'];
-    let prevVerticality = testSlider.isVertical;
-    let prevTooltipVisibility = testSlider['_tooltipsAlwaysVisible'];
-    let prevMarkupVisibility = testSlider['_withMarkup'];
+    let prevStep = testSlider['step'];
+    let prevMin = testSlider['min'];
+    let prevMax = testSlider['max'];
+    let prevVerticality = testSlider.getIsVertical();
+    let prevTooltipVisibility = testSlider['tooltipsAlwaysVisible'];
+    let prevMarkupVisibility = testSlider['withMarkup'];
 
     function checkOldValues(): void {
-      expect(testSlider['_step']).toBe(prevStep);
-      expect(testSlider['_min']).toBe(prevMin);
-      expect(testSlider['_max']).toBe(prevMax);
-      expect(testSlider.isVertical).toBe(prevVerticality);
-      expect(testSlider['_tooltipsAlwaysVisible']).toBe(prevTooltipVisibility);
-      expect(testSlider['_withMarkup']).toBe(prevMarkupVisibility);
+      expect(testSlider['step']).toBe(prevStep);
+      expect(testSlider['min']).toBe(prevMin);
+      expect(testSlider['max']).toBe(prevMax);
+      expect(testSlider.getIsVertical()).toBe(prevVerticality);
+      expect(testSlider['tooltipsAlwaysVisible']).toBe(prevTooltipVisibility);
+      expect(testSlider['withMarkup']).toBe(prevMarkupVisibility);
     }
 
     mockClearSpies(spies);
@@ -531,19 +517,19 @@ describe('Функции', () => {
       step: 2, min: -2, max: 22, isVertical: false, tooltipsVisible: false, withMarkup: true,
     });
     checkSpiesToBeCalledOnce(spies);
-    expect(testSlider['_step']).toBe(2);
-    expect(testSlider['_min']).toBe(-2);
-    expect(testSlider['_max']).toBe(22);
-    expect(testSlider.isVertical).toBe(false);
-    expect(testSlider['_tooltipsAlwaysVisible']).toBe(false);
-    expect(testSlider['_withMarkup']).toBe(true);
+    expect(testSlider['step']).toBe(2);
+    expect(testSlider['min']).toBe(-2);
+    expect(testSlider['max']).toBe(22);
+    expect(testSlider.getIsVertical()).toBe(false);
+    expect(testSlider['tooltipsAlwaysVisible']).toBe(false);
+    expect(testSlider['withMarkup']).toBe(true);
 
-    prevStep = testSlider['_step'];
-    prevMin = testSlider['_min'];
-    prevMax = testSlider['_max'];
-    prevVerticality = testSlider.isVertical;
-    prevTooltipVisibility = testSlider['_tooltipsAlwaysVisible'];
-    prevMarkupVisibility = testSlider['_withMarkup'];
+    prevStep = testSlider['step'];
+    prevMin = testSlider['min'];
+    prevMax = testSlider['max'];
+    prevVerticality = testSlider.getIsVertical();
+    prevTooltipVisibility = testSlider['tooltipsAlwaysVisible'];
+    prevMarkupVisibility = testSlider['withMarkup'];
 
     mockClearSpies(spies);
     testSlider.update({ step: null });
@@ -556,66 +542,73 @@ describe('Функции', () => {
     const testEvent = new Event('mousedown');
 
     testSlider.addOnMouseDownListener(mockListener);
-    testSlider['_elements'].body.dispatchEvent(testEvent);
+    testSlider['elements'].body.dispatchEvent(testEvent);
     expect(mockListener).toBeCalledWith(testEvent);
   });
 
   test('Добавление нового хэндлера', () => {
-    const prevHandlers = [...testSlider.handlers];
-    const prevRanges = [...testSlider['_ranges']];
+    const prevHandlers = [...testSlider['handlers']];
+    const prevRanges = [...testSlider['ranges']];
     testSlider.addHandler(null);
-    expect(testSlider.handlers).toStrictEqual(prevHandlers);
+    expect(testSlider['handlers']).toStrictEqual(prevHandlers);
 
     const testParams = {
       positionPart: 0.2, item: 'hello', handlerIndex: 33, rangePair: null as number,
     };
     testSlider.addHandler(testParams);
-    const newStartHandler = testSlider.handlers[testSlider.handlers.length - 1];
-    expect(testSlider.handlers.length === prevHandlers.length + 1).toBeTruthy();
-    expect(newStartHandler.positionPart).toBe(testParams.positionPart);
-    expect(newStartHandler.value).toBe(testParams.item);
-    expect(newStartHandler.index).toBe(testParams.handlerIndex);
-    expect(newStartHandler.rangePair).toBe(testParams.rangePair);
-    expect(testSlider['_ranges']).toStrictEqual(prevRanges);
+    const newStartHandler = testSlider['handlers'][testSlider['handlers'].length - 1];
+    expect(testSlider['handlers'].length === prevHandlers.length + 1).toBeTruthy();
+    expect(newStartHandler.getPositionPart()).toBe(testParams.positionPart);
+    expect(newStartHandler.getItem()).toBe(testParams.item);
+    expect(newStartHandler.getIndex()).toBe(testParams.handlerIndex);
+    expect(newStartHandler.getRangePair()).toBe(testParams.rangePair);
+    expect(testSlider['ranges']).toStrictEqual(prevRanges);
 
     testParams.handlerIndex = 22;
     testParams.rangePair = 33;
     testParams.positionPart = 0.3;
     testSlider.addHandler(testParams);
-    const newEndHandler = testSlider.handlers[testSlider.handlers.length - 1];
-    const newRange = testSlider['_ranges'][testSlider['_ranges'].length - 1];
-    expect(newRange.startHandler).toBe(newStartHandler);
-    expect(newRange.endHandler).toBe(newEndHandler);
+    const newEndHandler = testSlider['handlers'][testSlider['handlers'].length - 1];
+    const newRange = testSlider['ranges'][testSlider['ranges'].length - 1];
+    expect(newRange.getStartHandler()).toBe(newStartHandler);
+    expect(newRange.getEndHandler()).toBe(newEndHandler);
   });
 
-  test('Удаление хэндлера', () => {
-    const prevHandlers = [...testSlider.handlers];
-    const prevRanges = [...testSlider['_ranges']];
-
-    // хэндлер без диапазона
+  describe('Удаление хэндлера', () => {
+    let prevHandlers: HandlerView[];
+    let prevRanges: RangeView[];
     const testParams = {
       positionPart: 0.2, item: 'hello', handlerIndex: 44, rangePair: null as number,
     };
-    testSlider.addHandler(testParams);
-    testSlider.removeHandler(44);
-    expect(testSlider.handlers).toStrictEqual(prevHandlers);
 
-    // с диапазоном
-    testSlider.addHandler(testParams);
-    expect(testSlider['_ranges']).toStrictEqual(prevRanges);
-    testParams.handlerIndex = 55;
-    testParams.rangePair = 44;
-    testParams.positionPart = 0.9;
-    testSlider.addHandler(testParams);
-    expect(testSlider['_ranges'].length === prevRanges.length + 1).toBeTruthy();
+    beforeAll(() => {
+      prevHandlers = [...testSlider['handlers']];
+      prevRanges = [...testSlider['ranges']];
+    });
 
-    testSlider.removeHandler(44);
-    expect(testSlider['_ranges']).toStrictEqual(prevRanges);
+    test('Без диапазона', () => {
+      testSlider.addHandler(testParams);
+      testSlider.removeHandler(44);
+      expect(testSlider['handlers']).toStrictEqual(prevHandlers);
+    });
+
+    test('С диапазоном', () => {
+      testSlider.addHandler(testParams);
+      expect(testSlider['ranges']).toStrictEqual(prevRanges);
+      testParams.handlerIndex = 55;
+      testParams.rangePair = 44;
+      testParams.positionPart = 0.9;
+      testSlider.addHandler(testParams);
+      expect(testSlider['ranges'].length === prevRanges.length + 1).toBeTruthy();
+
+      testSlider.removeHandler(44);
+      expect(testSlider['ranges']).toStrictEqual(prevRanges);
+    });
   });
 
   test('Получение начала шкалы', () => {
-    const oldGetBoundingClientRect = testSlider['_elements'].scale.getBoundingClientRect;
-    testSlider['_elements'].scale.getBoundingClientRect = jest.fn(() => ({
+    const oldGetBoundingClientRect = testSlider['elements'].scale.getBoundingClientRect;
+    testSlider['elements'].scale.getBoundingClientRect = jest.fn(() => ({
       toJSON: undefined,
       height: 0,
       width: 0,
@@ -624,20 +617,20 @@ describe('Функции', () => {
       bottom: 0,
       right: 0,
       left: 1,
-      top: 2, // нас интересуют эти свойства
+      top: 2,
     }));
-    testSlider.isVertical = false;
-    expect(testSlider.scaleStart).toBe(1);
+    testSlider.setOrientation(false);
+    expect(testSlider.getScaleStart()).toBe(1);
 
-    testSlider.isVertical = true;
-    expect(testSlider.scaleStart).toBe(2);
+    testSlider.setOrientation(true);
+    expect(testSlider.getScaleStart()).toBe(2);
 
-    testSlider['_elements'].scale.getBoundingClientRect = oldGetBoundingClientRect;
+    testSlider['elements'].scale.getBoundingClientRect = oldGetBoundingClientRect;
   });
 
   test('Получение Конца шкалы', () => {
-    const oldGetBoundingClientRect = testSlider['_elements'].scale.getBoundingClientRect;
-    testSlider['_elements'].scale.getBoundingClientRect = jest.fn(() => ({
+    const oldGetBoundingClientRect = testSlider['elements'].scale.getBoundingClientRect;
+    testSlider['elements'].scale.getBoundingClientRect = jest.fn(() => ({
       toJSON: undefined,
       height: 0,
       width: 0,
@@ -646,14 +639,14 @@ describe('Функции', () => {
       left: 0,
       top: 0,
       bottom: 3,
-      right: 4, // нас интересуют эти свойства
+      right: 4,
     }));
-    testSlider.isVertical = false;
-    expect(testSlider.scaleEnd).toBe(4);
+    testSlider.setOrientation(false);
+    expect(testSlider.getScaleEnd()).toBe(4);
 
-    testSlider.isVertical = true;
-    expect(testSlider.scaleEnd).toBe(3);
+    testSlider.setOrientation(true);
+    expect(testSlider.getScaleEnd()).toBe(3);
 
-    testSlider['_elements'].scale.getBoundingClientRect = oldGetBoundingClientRect;
+    testSlider['elements'].scale.getBoundingClientRect = oldGetBoundingClientRect;
   });
 });
