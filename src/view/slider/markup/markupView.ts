@@ -5,7 +5,7 @@ import {
 
 
 export default class MarkupView {
-  public wrap: HTMLElement = undefined;
+  private wrap: HTMLElement;
 
   private marks: HTMLElement[] = [];
 
@@ -15,6 +15,10 @@ export default class MarkupView {
       public ownerSlider: Orientable & ScaleOwner & SliderContainer,
   ) {
     this.createWrap();
+  }
+
+  public getWrap(): HTMLElement {
+    return this.wrap;
   }
 
   public clearAllMarks(): void {

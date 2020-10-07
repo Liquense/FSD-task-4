@@ -1,7 +1,7 @@
 import SliderView from './slider/sliderView';
 import { Presentable, Listenable, View } from '../utils/interfacesAndTypes';
 
-export default class DefaultView implements Listenable, View {
+export default class PluginView implements Listenable, View {
   listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 
   private readonly element: HTMLElement;

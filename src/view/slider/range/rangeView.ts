@@ -8,9 +8,9 @@ import {
 import { KeyStringObj, Orientable, ScaleOwner } from '../../../utils/interfacesAndTypes';
 
 export default class RangeView {
-  public startHandler: HandlerView;
+  private startHandler: HandlerView;
 
-  public endHandler: HandlerView;
+  private endHandler: HandlerView;
 
   private static readonly DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__range`;
 
@@ -27,9 +27,9 @@ export default class RangeView {
     if (secondHandler) {
       this.arrangeHandlers(firstHandler, secondHandler);
     } else {
-      this.startHandler = HANDLER_PAIR_OPTIONS.get(firstHandler.rangePair)
+      this.startHandler = HANDLER_PAIR_OPTIONS.get(firstHandler.getRangePair())
         ? firstHandler : null;
-      this.endHandler = HANDLER_PAIR_OPTIONS.get(firstHandler.rangePair)
+      this.endHandler = HANDLER_PAIR_OPTIONS.get(firstHandler.getRangePair())
         ? null : firstHandler;
     }
 
@@ -45,6 +45,14 @@ export default class RangeView {
         this.handlerRefreshPositionName, this.boundRefreshPosition, this.endHandler,
       );
     }
+  }
+
+  public getStartHandler(): HandlerView {
+    return this.startHandler;
+  }
+
+  public getEndHandler(): HandlerView {
+    return this.endHandler;
   }
 
   public refreshPosition(): void {
@@ -100,7 +108,7 @@ export default class RangeView {
   private boundRefreshPosition = this.refreshPosition.bind(this);
 
   private arrangeHandlers(firstHandler: HandlerView, secondHandler: HandlerView): void {
-    if (firstHandler.positionPart <= secondHandler.positionPart) {
+    if (firstHandler.getPositionPart() <= secondHandler.getPositionPart()) {
       this.startHandler = firstHandler;
       this.endHandler = secondHandler;
     } else {

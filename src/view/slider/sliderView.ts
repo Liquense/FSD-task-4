@@ -18,11 +18,11 @@ import MarkupView from './markup/markupView';
 export default class SliderView implements Slider {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 
-  public isReversed = false;
+  private isRangesInverted = false;
 
-  public handlerSize = 0;
+  private handlerSize = 0;
 
-  public handlers: HandlerView[] = [];
+  private handlers: HandlerView[] = [];
 
   private static DEFAULT_CLASS = 'liquidSlider';
 
@@ -78,7 +78,7 @@ export default class SliderView implements Slider {
       this.isVertical = parameters.isVertical;
     }
     if (parameters?.isReversed !== undefined) {
-      this.isReversed = parameters.isReversed;
+      this.isRangesInverted = parameters.isReversed;
     }
     if (parameters?.showTooltips !== undefined) {
       this.setTooltipsVisibility(parameters.showTooltips);
@@ -90,6 +90,10 @@ export default class SliderView implements Slider {
     this.createElements();
     this.setMouseEvents();
     this.setResizeObserver();
+  }
+
+  public setRangesInversion(isInverted: boolean): void {
+    this.isRangesInverted = isInverted;
   }
 
   public getBodyElement(): HTMLElement {
@@ -146,15 +150,15 @@ export default class SliderView implements Slider {
     );
   }
 
-  public setOrientation(newState: boolean): void {
+  public setOrientation(isVertical: boolean): void {
     const operableObjects: KeyStringObj[] = [this.elements];
 
-    if (this.markup?.wrap) {
-      operableObjects.push({ wrap: this.markup.wrap });
+    if (this.markup?.getWrap()) {
+      operableObjects.push({ wrap: this.markup.getWrap() });
     }
 
     this.handlers.forEach((handler) => {
-      operableObjects.push(handler.element);
+      operableObjects.push(handler.getElement());
       operableObjects.push(handler.getTooltipElement());
     });
 
@@ -163,7 +167,7 @@ export default class SliderView implements Slider {
     });
 
     const oldOrientClass = this.getOrientationClass();
-    this.isVertical = newState;
+    this.isVertical = isVertical;
     const newOrientClass = this.getOrientationClass();
 
     operableObjects.forEach((obj) => {
@@ -198,7 +202,7 @@ export default class SliderView implements Slider {
     const mouseCoordinate = this.isVertical ? mouseEvent.clientY : mouseEvent.clientX;
     const initialOffset = this.handlerSize / 2;
     const scaledCoordinate = (mouseCoordinate - this.getScaleStart() - initialOffset)
-          / this.calculateShrinkRatio();
+      / this.calculateShrinkRatio();
 
     return clamp((scaledCoordinate) / this.getScaleLength(), 0, 1);
   }
@@ -244,14 +248,14 @@ export default class SliderView implements Slider {
       if (!handlersData.customHandlers) {
         if (handlers.length === 2) {
           if (index === 0) {
-            newHandler.rangePair = this.isReversed ? this.rangePairStartKey : 1;
+            newHandler.setRangePair(this.isRangesInverted ? this.rangePairStartKey : 1);
           }
           if (index === 1) {
-            newHandler.rangePair = this.isReversed ? this.rangePairEndKey : 0;
+            newHandler.setRangePair(this.isRangesInverted ? this.rangePairEndKey : 0);
           }
         } else {
-          newHandler.rangePair = this.isReversed
-            ? this.rangePairEndKey : this.rangePairStartKey;
+          newHandler
+            .setRangePair(this.isRangesInverted ? this.rangePairEndKey : this.rangePairStartKey);
         }
       }
 
@@ -293,7 +297,7 @@ export default class SliderView implements Slider {
 
   public removeHandler(handlerIndex: number): void {
     const handlerToRemoveIndex = this.handlers.findIndex(
-      (handler) => handler.index === handlerIndex,
+      (handler) => handler.getIndex() === handlerIndex,
     );
     const handlerToRemove = this.handlers[handlerToRemoveIndex];
 
@@ -330,24 +334,23 @@ export default class SliderView implements Slider {
 
     handlers.forEach(({ index, item, relativeValue }) => {
       const realIndex = this.handlers.findIndex(
-        (handler) => handler.index === index,
+        (handler) => handler.getIndex() === index,
       );
       if (realIndex === -1) {
         return;
       }
 
-      this.handlers[realIndex].setValue(item);
+      this.handlers[realIndex].setItem(item);
       this.handlers[realIndex].setPosition(relativeValue);
     });
   }
 
-  // обновление информации для отображения (для изменений после создания)
   public update(
     data?:
-          {
-              min?: number; max?: number; step?: number;
-              isVertical?: boolean; tooltipsVisible?: boolean; withMarkup?: boolean;
-          },
+      {
+          min?: number; max?: number; step?: number;
+          isVertical?: boolean; tooltipsVisible?: boolean; withMarkup?: boolean;
+      },
   ): void {
     if (Number.isFinite(data?.step)) {
       this.step = data.step;
@@ -407,6 +410,7 @@ export default class SliderView implements Slider {
     });
 
     this.elements.body.addEventListener('mousedown', SliderView.preventDefault);
+
     wrap.append(this.elements.body);
     wrap.append(this.elements.min);
     wrap.append(this.elements.max);
@@ -501,12 +505,11 @@ export default class SliderView implements Slider {
       });
     }
 
-    // в standardize результат округляется до 4-х знаков после запятой
-    if (standardMousePosition === roundToDecimal(closestHandler.positionPart, 4)) {
+    if (standardMousePosition === roundToDecimal(closestHandler.getPositionPart(), 4)) {
       return;
     }
 
-    this.parentView.handleHandlerPositionChanged(closestHandler.index, standardMousePosition);
+    this.parentView.handleHandlerPositionChanged(closestHandler.getIndex(), standardMousePosition);
   }
 
   private deactivateActiveHandler(): void {
@@ -547,20 +550,21 @@ export default class SliderView implements Slider {
   }
 
   private findSuitableHandler(firstHandler: HandlerView): HandlerView {
-    return this.handlers.find((handler) => handler.index === firstHandler.rangePair);
+    return this.handlers.find(
+      (handler) => handler.getIndex() === firstHandler.getRangePair(),
+    );
   }
 
   private createRange(handler: HandlerView): RangeView {
-    if (handler.rangePair === null) {
+    if (handler.getRangePair() === null) {
       return null;
     }
 
     const secondHandler = this.findSuitableHandler(handler);
 
-    // если хэндлера с нужным индексом не находится и пара не нужна
     if (!secondHandler) {
-      if ((handler.rangePair !== this.rangePairStartKey)
-              && (handler.rangePair !== this.rangePairEndKey)) return null;
+      if ((handler.getRangePair() !== this.rangePairStartKey)
+              && (handler.getRangePair() !== this.rangePairEndKey)) return null;
     }
 
     return new RangeView(this, this.elements.scale, handler, secondHandler);
@@ -572,10 +576,13 @@ export default class SliderView implements Slider {
     this.updateMarkup();
   }
 
-  private updateMarkup(): void {
+  private clearMarkup(): void {
     if (!this.markup) { return; }
-
     this.markup.clearAllMarks();
+  }
+
+  private updateMarkup(): void {
+    this.clearMarkup();
 
     if (!this.withMarkup) { return; }
 

@@ -1,4 +1,4 @@
-import DefaultView from '../view/defaultView';
+import PluginView from '../view/pluginView';
 import SliderModel from '../model/sliderModel';
 import { addListenerAfter } from '../utils/common';
 import { Presentable, Listenable, View } from '../utils/interfacesAndTypes';
@@ -33,7 +33,7 @@ export default class Controller {
             }[];
         },
     ) {
-      const newView = new DefaultView(element, parameters);
+      const newView = new PluginView(element, parameters);
       this.views = [newView];
       this.model = new SliderModel(parameters);
 

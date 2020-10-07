@@ -7,20 +7,20 @@ import {
 } from '../../../utils/interfacesAndTypes';
 
 export default class HandlerView implements Listenable, SliderElement {
-  public readonly tooltip: TooltipView;
-
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 
-  public index: number;
+  private readonly tooltip: TooltipView;
 
-  public positionPart: number;
+  private readonly index: number;
 
-  public element: {
+  private positionPart: number;
+
+  private element: {
     wrap: HTMLElement;
     body: HTMLElement;
   };
 
-  public rangePair: number | string;
+  private rangePair: number | string;
 
   private static DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__handler`;
 
@@ -47,7 +47,7 @@ export default class HandlerView implements Listenable, SliderElement {
     this.tooltip = new TooltipView(
       this.element.wrap, this, { visibilityState: withTooltip, item: params.item },
     );
-    this.setValue(params.item);
+    this.setItem(params.item);
 
     requestAnimationFrame(this.refreshPosition.bind(this));
   }
@@ -61,6 +61,26 @@ export default class HandlerView implements Listenable, SliderElement {
     return this.ownerSlider.getIsVertical() ? elementCenter.y : elementCenter.x;
   }
 
+  public getElement(): {wrap: HTMLElement; body: HTMLElement} {
+    return this.element;
+  }
+
+  public getRangePair(): number | string {
+    return this.rangePair;
+  }
+
+  public setRangePair(rangePair: number | string): void {
+    this.rangePair = rangePair;
+  }
+
+  public getIndex(): number {
+    return this.index;
+  }
+
+  public getPositionPart(): number {
+    return this.positionPart;
+  }
+
   public getBody(): HTMLElement {
     return this.element.body;
   }
@@ -71,20 +91,20 @@ export default class HandlerView implements Listenable, SliderElement {
     ];
   }
 
-  public getValue(): Presentable {
-    return this.tooltip.getValue();
+  public getItem(): Presentable {
+    return this.tooltip.getItem();
   }
 
-  public setValue(value: Presentable): void {
-    this.tooltip.setValue(value);
-  }
-
-  public calculateOffset(): number {
-    return this.ownerSlider.calculateHandlerOffset(this.positionPart);
+  public setItem(value: Presentable): void {
+    this.tooltip.setItem(value);
   }
 
   public getTooltipElement(): HTMLElement {
     return this.tooltip.getElement();
+  }
+
+  public calculateOffset(): number {
+    return this.ownerSlider.calculateHandlerOffset(this.positionPart);
   }
 
   public refreshPosition(): void {
@@ -99,9 +119,7 @@ export default class HandlerView implements Listenable, SliderElement {
 
   public setPosition(newPositionPart: number): void {
     this.positionPart = newPositionPart;
-    if (this.element) {
-      this.refreshPosition();
-    }
+    this.refreshPosition();
   }
 
   public setTooltipVisibility(stateToSet: boolean): void {
