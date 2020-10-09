@@ -135,7 +135,6 @@ describe('Функции', () => {
       expect(testController['views']).toStrictEqual(views);
       expect(testView.initHandlers).toBeCalledWith(handlersDataModel);
 
-      // с хэндлерами, переданными при создании контроллера
       const testHandlers = [{ itemIndex: 2 }, { itemIndex: 3, somethingElse: 'test1' }];
       testController = new Controller(rootElement, { handlers: testHandlers });
       testController.addView(testView);
@@ -145,6 +144,7 @@ describe('Функции', () => {
       };
       expect(testView.initHandlers).toBeCalledWith(handlersDataModel);
     });
+
     test('Несколько', () => {
       const mockAddView = jest.spyOn(testController, 'addView');
 
@@ -201,7 +201,8 @@ describe('Функции', () => {
     testController.setMin(null);
     testController.setMax(null);
     testController.setStep(null);
-    expect(testController['model'].setMinMax).not.toBeCalled();
+    expect(testController['model'].setMin).not.toBeCalled();
+    expect(testController['model'].setMax).not.toBeCalled();
     expect(testController['model'].setStep).not.toBeCalled();
     testController['views'].forEach((view) => {
       expect(view.passDataProps).not.toBeCalled();
@@ -209,21 +210,21 @@ describe('Функции', () => {
 
     const randomNumber = Math.random();
     (testController['model'].getSliderData as jest.Mock).mockImplementation(() => randomNumber);
-    // минимум
+
     testController.setMin(1);
-    expect(testController['model'].setMinMax).toBeCalledWith({ min: 1 });
+    expect(testController['model'].setMin).toBeCalledWith(1);
     testController['views'].forEach((view) => {
       expect(view.passDataProps).toBeCalledWith(testController['model'].getSliderData());
     });
-    // максимум
+
     testController.setMax(2);
-    expect(testController['model'].setMinMax).toBeCalledWith({ max: 2 });
+    expect(testController['model'].setMax).toBeCalledWith(2);
     testController['views'].forEach((view) => {
       expect(view.passDataProps).toBeCalledWith(testController['model'].getSliderData());
     });
-    // шаг
+
     testController.setStep(3);
-    expect(testController['model'].setStep).toBeCalledWith({ step: 3 });
+    expect(testController['model'].setStep).toBeCalledWith(3);
     testController['views'].forEach((view) => {
       expect(view.passDataProps).toBeCalledWith(testController['model'].getSliderData());
     });
@@ -239,17 +240,17 @@ describe('Функции', () => {
       expect(view.passVisualProps).not.toBeCalled();
     });
 
-    // минимум
+
     testController.setTooltipVisibility(true);
     testController['views'].forEach((view) => {
       expect(view.passVisualProps).toBeCalledWith({ tooltipsVisible: true });
     });
-    // максимум
+
     testController.setVertical(false);
     testController['views'].forEach((view) => {
       expect(view.passVisualProps).toBeCalledWith({ isVertical: false });
     });
-    // шаг
+
     testController.setMarkupVisibility(true);
     testController['views'].forEach((view) => {
       expect(view.passVisualProps).toBeCalledWith({ withMarkup: true });

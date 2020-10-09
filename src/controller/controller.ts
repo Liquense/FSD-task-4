@@ -153,7 +153,7 @@ export default class Controller {
         return;
       }
 
-      this.model.setMinMax({ min: newMin });
+      this.model.setMin(newMin);
       this.passSliderData();
     }
 
@@ -162,7 +162,7 @@ export default class Controller {
         return;
       }
 
-      this.model.setMinMax({ max: newMax });
+      this.model.setMax(newMax);
       this.passSliderData();
     }
 
@@ -171,7 +171,7 @@ export default class Controller {
         return;
       }
 
-      this.model.setStep({ step: newStep });
+      this.model.setStep(newStep);
       this.passSliderData();
     }
 

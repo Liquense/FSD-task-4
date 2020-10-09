@@ -263,69 +263,67 @@ describe('Функции', () => {
     expect(testModel['items']).toBe(testItems);
   });
 
-  test('Установка минимальных и максимальных значений', () => {
-    let oldMax = testModel.getMax();
-    let oldMin = testModel.getMin();
-    // проверяем исходные данные
-    testModel.setMinMax();
-    expect(testModel.getMax()).toBe(oldMax);
-    expect(testModel.getMin()).toBe(oldMin);
+  describe('Установка минимальных и максимальных значений', () => {
+    let oldMax: number;
+    let oldMin: number;
+    let newMin: number;
+    let newMax: number;
 
-    // устанавливаем только минимум
-    // если минимум меньше старого максимума - ничего не происходит
-    let newMin = 20; let
-      newMax: number;
-    testModel.setMinMax({ min: newMin });
-    expect(testModel.getMin()).toBe(oldMin);
-    expect(testModel.getMax()).toBe(oldMax);
-    // если всё в порядке - должен поменяться минимум у модели
-    newMin = 5;
-    testModel.setMinMax({ min: newMin });
-    expect(testModel.getMin()).toBe(newMin);
-    expect(testModel.getMax()).toBe(oldMax);
-    expect(testModel['handlers'][0].itemIndex).toBeGreaterThanOrEqual(newMin); // после установки минимума или максимума пересчитывается и положение хэндлеров
+    beforeEach(() => {
+      oldMax = testModel.getMax();
+      oldMin = testModel.getMin();
+    });
 
-    // устанавливаем только максимум
-    // если максимум меньше старого минимума - ничего не произойдёт
-    oldMin = newMin;
-    newMax = 0;
-    testModel.setMinMax({ max: newMax });
-    expect(testModel.getMin()).toBe(oldMin);
-    expect(testModel.getMax()).toBe(oldMax);
-    // если всё в порядке - меняется максимум у модели
-    newMax = 30;
-    testModel.setMinMax({ max: newMax });
-    expect(testModel.getMin()).toBe(oldMin);
-    expect(testModel.getMax()).toBe(newMax);
+    test('Установка минимума', () => {
+      // если минимум больше старого максимума - ничего не происходит
+      newMin = 20;
+      testModel.setMin(newMin);
+      expect(testModel.getMin()).toBe(oldMin);
+      // если всё в порядке - должен поменяться минимум у модели
+      newMin = 5;
+      testModel.setMin(newMin);
+      expect(testModel.getMin()).toBe(newMin);
+      expect(testModel['handlers'][0].itemIndex).toBeGreaterThanOrEqual(newMin);
+    });
 
-    // устанавливаем минимум и максимум
-    // Если минимум больше максимума - ничего не происходит
-    oldMax = newMax;
-    newMin = 10;
-    newMax = 0;
-    testModel.setMinMax({ max: newMax, min: newMin });
-    expect(testModel.getMax()).toBe(oldMax);
-    expect(testModel.getMin()).toBe(oldMin);
-    // если всё нормально - меняются оба значения
-    newMax = 100;
-    testModel.setMinMax({ min: newMin, max: newMax });
-    expect(testModel.getMin()).toBe(newMin);
-    expect(testModel.getMax()).toBe(newMax);
+    test('Установка максимума', () => {
+      // устанавливаем только максимум
+      // если максимум меньше старого минимума - ничего не произойдёт
+      newMax = -1;
+      testModel.setMax(newMax);
+      expect(testModel.getMax()).toBe(oldMax);
+      // если всё в порядке - меняется максимум у модели
+      newMax = 30;
+      testModel.setMax(newMax);
+      expect(testModel.getMax()).toBe(newMax);
+    });
+
+    test('Установка минимума и максимума', () => {
+      // устанавливаем минимум и максимум
+      // Если минимум больше максимума - ничего не происходит
+      oldMax = testModel.getMax();
+      newMin = 10;
+      newMax = 0;
+      testModel.setMinMax(newMax, newMin);
+      expect(testModel.getMax()).toBe(oldMax);
+      expect(testModel.getMin()).toBe(oldMin);
+      // если всё нормально - меняются оба значения
+      newMax = 100;
+      testModel.setMinMax(newMin, newMax);
+      expect(testModel.getMin()).toBe(newMin);
+      expect(testModel.getMax()).toBe(newMax);
+    });
   });
 
   test('Установка шага значений', () => {
-    const oldStep = testModel['step'];
-    // если ничего не передано - ничего не меняется
-    testModel.setStep();
-    expect(testModel['step']).toBe(oldStep);
-
+    testModel.setItems(['']);
     // если переданы пользовательские значения, то шаг округляется
-    const testItems = [1, 'test', 3];
-    testModel.setStep({ step: 2.6, items: testItems });
+    testModel.setStep(2.6);
     expect(testModel['step']).toBe(3);
 
     // если пользовательские значения не переданы, шаг может быть и дробным
-    testModel.setStep({ step: 2.6 });
+    testModel.setItems(null);
+    testModel.setStep(2.6);
     expect(testModel['step']).toBe(2.6);
   });
 
@@ -338,9 +336,9 @@ describe('Функции', () => {
     expect(testModel['handlers']).toStrictEqual(oldHandlers); // если его убрать (.pop() выше), то будет старый набор хэндлеров
 
     // если все значения заняты
-    testModel.setMinMax({ min: 0, max: 1 });
-    testModel.setStep({ step: 1 });
-    testModel.addHandler(1); // на этот хэндлер места хватит
+    testModel.setMinMax(0, 1);
+    testModel.setStep(1);
+    testModel.addHandler(1);
     oldHandlers = [...testModel['handlers']];
     const functionResult = testModel.addHandler(1); // а на этот - нет
     expect(testModel['handlers']).toStrictEqual(oldHandlers);

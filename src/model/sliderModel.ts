@@ -1,9 +1,9 @@
 import { standardize } from '../utils/common';
-import { Presentable, Listenable } from '../utils/interfacesAndTypes';
+import { Presentable, Listenable, SliderModelParams } from '../utils/interfacesAndTypes';
 import HandlerModel, { ModelItemManager, SliderDataContainer } from './handlerModel';
 
 export default class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
-  listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
+  public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 
   private items: Array<Presentable>;
 
@@ -17,29 +17,23 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
 
   private handlers: HandlerModel[] = [];
 
-  private withCustomHandlers: boolean;
+  private isHandlersCustom: boolean;
 
-  constructor(parameters?: {
-    isRange?: boolean;
-    min?: number;
-    max?: number;
-    step?: number;
-    items?: Array<Presentable>;
-    values?: number[];
-    handlers?: {
-      itemIndex: number;
-    }[];
-  }) {
-    this.setMinMax(parameters);
-    this.setStep(parameters);
-    this.setItems(parameters?.items);
+  private isItemsCustom: boolean;
 
-    if (parameters?.handlers?.length) {
-      this.withCustomHandlers = true;
-      this.createHandlers(parameters.handlers);
+  constructor({
+    isRange, min, max, step, items, values, handlers,
+  }: SliderModelParams = {}) {
+    this.setMinMax(min, max);
+    this.setItems(items);
+    this.setStep(step);
+
+    if (handlers?.length) {
+      this.isHandlersCustom = true;
+      this.createHandlers(handlers);
     } else {
-      this.withCustomHandlers = false;
-      this.generateDefaultHandlersItemIndexes(parameters?.isRange ? 2 : 1, parameters?.values);
+      this.isHandlersCustom = false;
+      this.generateDefaultHandlersItemIndexes(isRange ? 2 : 1, values);
     }
   }
 
@@ -55,6 +49,34 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     return this.max - this.min;
   }
 
+  public getHandlersData(): {
+    customHandlers: boolean;
+    handlersArray: {
+      handlerIndex: number; item: Presentable; positionPart: number; itemIndex: number;
+    }[];
+    } {
+    return {
+      customHandlers: this.isHandlersCustom,
+      handlersArray: this.handlers.map(
+        (handler) => ({
+          handlerIndex: handler.handlerIndex,
+          item: handler.getItem(),
+          positionPart: handler.getPosition(),
+          itemIndex: handler.itemIndex,
+        }),
+      ),
+    };
+  }
+
+  public getSliderData(): { step: number; absoluteStep: number; min: number; max: number } {
+    return {
+      step: this.step / this.getRange(),
+      absoluteStep: this.step,
+      min: this.min,
+      max: this.max,
+    };
+  }
+
   public addHandler(
     itemIndex: number,
   ): { positionPart: number; item: Presentable; handlerIndex: number; itemIndex: number } {
@@ -65,7 +87,7 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     if (newHandler) {
       this.handlers.push(newHandler);
       newHandler.handlerIndex = newHandlerIndex;
-      this.withCustomHandlers = true;
+      this.isHandlersCustom = true;
 
       return {
         positionPart: newHandler.getPosition(),
@@ -130,53 +152,41 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
   public setItems(items: Presentable[]): void {
     if (items?.length) {
       this.items = items;
+      this.isItemsCustom = true;
       this.initItemsMinMax(items.length);
     } else {
       this.items = null;
+      this.isItemsCustom = false;
     }
   }
 
-  /**
-   * Устанавливает шаг значений, используемый в слайдере.
-   * @param data
-   *      @param data.items - пользовательские значения.
-   *      Если переданы - шаг должен быть целым числом, поскольку работа будет с массивом.
-   * @private
-   */
-  public setStep(data?: { step?: number; items?: Presentable[] }): void {
-    if (!data?.step) {
-      return;
-    }
+  public setStep(step: number): void {
+    if (!step) return;
 
-    this.step = data.items ? Math.round(data.step) : data.step;
-
+    this.step = this.isItemsCustom ? Math.round(step) : step;
     this.updateHandlersPositions();
   }
 
-  /**
-   * Устанавливает минимальное и максимальное значение слайдера.
-   * Если ничего не передано, то остаются прежние значения.
-   * @param data
-   * @private
-   */
-  public setMinMax(data?: { min?: number; max?: number }): void {
-    const newMinGreaterThanOldMax = data?.min > this.max;
-    const newMaxLesserThanOldMin = data?.max < this.min;
-    const singleExtremumChecks = (newMinGreaterThanOldMax || newMaxLesserThanOldMin);
-    const maxLesserThanMin = data?.min > data?.max;
+  public setMin(min: number): void {
+    if (min > this.max) return;
+    this.min = min;
+  }
 
-    if (singleExtremumChecks || maxLesserThanMin) {
-      return;
-    }
+  public setMax(max: number): void {
+    if (max < this.min) return;
+    this.max = max;
+  }
 
-    if (data?.min !== undefined) {
-      this.min = data.min;
-    }
-    if (data?.max !== undefined) {
-      this.max = data.max;
-    }
+  public setMinMax(min = this.min, max = this.max): void {
+    if (Number.isFinite(min) && Number.isFinite(max)) {
+      if (min > max) return;
 
-    this.updateHandlersPositions();
+      this.min = min;
+      this.max = max;
+    } else {
+      this.setMin(min);
+      this.setMax(max);
+    }
   }
 
   public handlerValueChanged(changedHandler: HandlerModel):
@@ -193,34 +203,6 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
       index: changedHandler.handlerIndex,
       relativeValue: changedHandler.getPosition(),
       item: changedHandler.getItem(),
-    };
-  }
-
-  public getHandlersData(): {
-    customHandlers: boolean;
-    handlersArray: {
-      handlerIndex: number; item: Presentable; positionPart: number; itemIndex: number;
-    }[];
-    } {
-    return {
-      customHandlers: this.withCustomHandlers,
-      handlersArray: this.handlers.map(
-        (handler) => ({
-          handlerIndex: handler.handlerIndex,
-          item: handler.getItem(),
-          positionPart: handler.getPosition(),
-          itemIndex: handler.itemIndex,
-        }),
-      ),
-    };
-  }
-
-  public getSliderData(): { step: number; absoluteStep: number; min: number; max: number } {
-    return {
-      step: this.step / this.getRange(),
-      absoluteStep: this.step,
-      min: this.min,
-      max: this.max,
     };
   }
 
@@ -267,9 +249,7 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
 
 
   private createHandlers(handlersItemIndexes: { itemIndex: number }[]): void {
-    if (!handlersItemIndexes?.length) {
-      return;
-    }
+    if (!handlersItemIndexes?.length) { return; }
 
     this.occupiedItems = [];
     this.handlers = [];

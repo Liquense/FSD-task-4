@@ -73,6 +73,17 @@ interface Listenable {
 
 type KeyStringObj = { [key: string]: any };
 type Presentable = { toString(): string } | string;
+type SliderModelParams = {
+  isRange?: boolean;
+  min?: number;
+  max?: number;
+  step?: number;
+  items?: Array<Presentable>;
+  values?: number[];
+  handlers?: {
+    itemIndex: number;
+  }[];
+};
 
 export {
   View, Orientable, SliderContainer, ScaleOwner, HandlersOwner, SliderElement, Slider, Listenable,
