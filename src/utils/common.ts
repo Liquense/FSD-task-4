@@ -18,12 +18,10 @@ function bindListeners(
   const context = executorContext;
   const pureFunc = executorContext.listenDictionary[executor].func;
 
-  // параметры функций действительно могут быть любыми
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context[executor] = (...args: any): void => {
     const functionResult = pureFunc.call(executorContext, ...args);
 
-    // добавляется выполнение всех слушателей после исполнения функции
     listeners.forEach((listener) => {
       listener(functionResult);
     });
@@ -86,25 +84,16 @@ export function standardize(
   value: number, parameters: { min: number; max: number; step: number },
 ): number {
   const min = Math.min(parameters.max, parameters.min);
-  const max = Math.max(parameters.max, parameters.min); // на всякий случай
+  const max = Math.max(parameters.max, parameters.min);
+  if (value > max) return max;
+  if (value < min) return min;
 
-  if (value > max) {
-    return max;
-  }
-  if (value < min) {
-    return min;
-  }
-
-  let resultValue: number;
   const remainder = (value - min) % parameters.step;
+  if (remainder === 0) return value;
 
-  if (remainder === 0) {
-    return value;
-  }
-  if (parameters.step / 2 > remainder) {
-    resultValue = value - remainder; // ближе к нижней части шага
-  } else {
-    resultValue = value + (parameters.step - remainder); // ближе к верхней части
+  let resultValue = value - remainder;
+  if ((parameters.step / 2) < remainder) {
+    resultValue += parameters.step;
   }
 
   resultValue = clamp(resultValue, min, max);

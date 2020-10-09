@@ -39,7 +39,6 @@ describe('Функции', () => {
   }
 
   beforeEach(() => {
-    // пересоздание экземпляра класса, чтобы быть уверенным, что ...instances[0] - наш слайдер
     mockSlider.mockClear();
     testView = new View(wrapperElement, null);
     mockSliderInstance = mockSlider.mock.instances[0] as jest.Mock;

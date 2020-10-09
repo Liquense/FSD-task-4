@@ -517,7 +517,6 @@ export default class SliderView implements Slider {
   }
 
   private activateHandler(handlerToActivate: HandlerView): void {
-    // убираем отображение тултипа с предыдущего
     if (this.activeHandler) {
       this.activeHandler.setTooltipVisibility(this.tooltipsAlwaysVisible);
     }

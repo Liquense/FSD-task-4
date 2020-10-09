@@ -87,5 +87,5 @@ type SliderModelParams = {
 
 export {
   View, Orientable, SliderContainer, ScaleOwner, HandlersOwner, SliderElement, Slider, Listenable,
-  KeyStringObj, Presentable,
+  KeyStringObj, Presentable, SliderModelParams,
 };

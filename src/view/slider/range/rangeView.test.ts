@@ -164,9 +164,8 @@ describe('Инициализация', () => {
   });
 });
 test('Функция проверки наличия хэндлера', () => {
-  // эти хэндлеры добавлены при создании
   expect(testRange.hasHandler(firstHandler)).toBeTruthy();
   expect(testRange.hasHandler(secondHandler)).toBeTruthy();
-  // вообще левый хэндлер
+
   expect(testRange.hasHandler(new HandlerView(null, null))).toBeFalsy();
 });
