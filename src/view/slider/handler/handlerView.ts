@@ -133,16 +133,15 @@ export default class HandlerView implements Listenable, SliderElement {
   private createElement(parentElement: HTMLElement): void {
     const wrap = document.createElement('div');
     const body = document.createElement('div');
-    const orientationClass = this.ownerSlider.getOrientationClass();
 
     this.element = { wrap, body };
     this.element.body.setAttribute('tabindex', '-1');
 
-    wrap.classList.add(`${HandlerView.DEFAULT_CLASS}Container`, orientationClass);
+    wrap.classList.add(`${HandlerView.DEFAULT_CLASS}-container`);
     wrap.classList.add(...this.additionalClasses);
     parentElement.appendChild(wrap);
 
-    body.classList.add(`${HandlerView.DEFAULT_CLASS}Body`, orientationClass);
+    body.classList.add(`${HandlerView.DEFAULT_CLASS}-body`);
     wrap.appendChild(body);
   }
 

@@ -151,33 +151,12 @@ export default class SliderView implements Slider {
   }
 
   public setOrientation(isVertical: boolean): void {
-    const operableObjects: KeyStringObj[] = [this.elements];
-
-    if (this.markup?.getWrap()) {
-      operableObjects.push({ wrap: this.markup.getWrap() });
-    }
-
-    this.handlers.forEach((handler) => {
-      operableObjects.push(handler.getElement());
-      operableObjects.push(handler.getTooltipElement());
-    });
-
-    this.ranges.forEach((range) => {
-      operableObjects.push(range);
-    });
-
     const oldOrientClass = this.getOrientationClass();
     this.isVertical = isVertical;
     const newOrientClass = this.getOrientationClass();
 
-    operableObjects.forEach((obj) => {
-      Object.keys(obj).forEach((key) => {
-        if (obj[key]?.classList) {
-          obj[key].classList.remove(oldOrientClass);
-          obj[key].classList.add(newOrientClass);
-        }
-      });
-    });
+    this.elements.wrap.classList.remove(oldOrientClass);
+    this.elements.wrap.classList.add(newOrientClass);
   }
 
   public setTooltipsVisibility(stateToSet?: boolean): void {

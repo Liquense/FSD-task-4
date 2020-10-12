@@ -12,7 +12,7 @@ type TooltipViewParams = {
 };
 
 export default class TooltipView {
-  public static readonly DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__handlerTooltip`;
+  public static readonly DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__handler-tooltip`;
 
   public static readonly DEFAULT_VISIBLE_CLASS = `${TooltipView.DEFAULT_CLASS}_visible`;
 
@@ -86,10 +86,8 @@ export default class TooltipView {
   }
 
   private createElement(parentElement: HTMLElement): void {
-    const orientationClass = this.ownerHandler.getOwnerSlider().getOrientationClass();
-
     this.element = document.createElement('div');
-    this.element.classList.add(`${TooltipView.DEFAULT_CLASS}`, orientationClass);
+    this.element.classList.add(`${TooltipView.DEFAULT_CLASS}`);
     this.element.innerHTML = this.innerHTML;
 
     parentElement.appendChild(this.element);

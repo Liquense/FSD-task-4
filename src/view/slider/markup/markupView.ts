@@ -49,7 +49,7 @@ export default class MarkupView {
   private createWrap(): void {
     this.wrap = document.createElement('div');
 
-    this.wrap.classList.add(`${MarkupView.DEFAULT_CLASS}Wrap`, this.ownerSlider.getOrientationClass());
+    this.wrap.classList.add(`${MarkupView.DEFAULT_CLASS}-wrap`);
 
     this.ownerSlider
       .getBodyElement()
@@ -58,7 +58,6 @@ export default class MarkupView {
 
   private createMarkElement(): HTMLElement {
     const newMark = document.createElement('div');
-    newMark.classList.add(MarkupView.DEFAULT_CLASS, this.ownerSlider.getOrientationClass());
     this.wrap.appendChild(newMark);
 
     return newMark;
@@ -69,9 +68,8 @@ export default class MarkupView {
     const relativeHandlerSizeHalf = relativeHandlerSize / 2;
 
     return Number(
-      (
-        100 * (relativePosition + relativeHandlerSizeHalf - relativeMarkThicknessHalf)
-      ).toFixed(4),
+      (100 * (relativePosition + relativeHandlerSizeHalf - relativeMarkThicknessHalf))
+        .toFixed(4),
     );
   }
 }

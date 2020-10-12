@@ -1,4 +1,4 @@
-.liquidSlider, .liquidSlider * {
+@mixin commonStyles() {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -8,6 +8,7 @@ $sliderLength: 240px;
 
 $scaleThickness: 8px;
 $scaleBorderWidth: 1px;
+$scaleBorderRadius: 5px;
 
 $handlerSize: 14px;
 $handlerAddition: abs($handlerSize - $scaleThickness);
@@ -22,216 +23,220 @@ $tooltipBorderWidth: 1px;
 $markupThickness: 1px;
 $markupLength: $scaleThickness + 6px;
 
+$minmaxMargin: 5px;
+$minMaxFontSize: 10px;
+
 .liquidSlider {
+  $sliderBlock: &;
+
   outline: none;
   display: flex;
   align-items: center;
 
-
-  &.liquidSlider_horizontal {
+  &_horizontal {
     min-width: 200px;
     width: 100%;
     flex-direction: row;
     padding-top: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipPadding*2;
     padding-bottom: $handlerAddition/2 + $handlerBorderWidth;
+
+    #{$sliderBlock}__body {
+      width: inherit;
+      min-width: inherit;
+    }
+
+    #{$sliderBlock}__scale {
+      width: inherit;
+      min-width: inherit;
+      height: $scaleThickness;
+    }
+
+    #{$sliderBlock}__range {
+      height: $scaleThickness - $scaleBorderWidth*2;
+      top: $scaleBorderWidth;
+    }
+
+    #{$sliderBlock}__markup-wrap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: inherit;
+      height: $scaleThickness;
+    }
+
+    #{$sliderBlock}__markup {
+      position: absolute;
+      background-color: rgba(0, 0, 0, 0.3);
+      bottom: - abs($markupLength - $scaleThickness);
+      width: $markupThickness;
+      height: $markupLength;
+    }
+
+    #{$sliderBlock}__min {
+      margin-right: $minmaxMargin;
+    }
+
+    #{$sliderBlock}__max {
+      margin-left: $minmaxMargin;
+    }
+
+    #{$sliderBlock}__handlers {
+      height: $scaleThickness;
+      width: inherit;
+      min-width: inherit;
+    }
+
+    #{$sliderBlock}__handler-container {
+      flex-direction: column-reverse;
+      bottom: - abs($scaleThickness - $handlerSize) / 2;
+    }
   }
 
-  &.liquidSlider_vertical {
+  &_vertical {
     min-height: 200px;
     height: 100%;
     flex-direction: column;
     padding-left: $handlerAddition/2 + $handlerBorderWidth;
     padding-right: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipPadding*2;
-  }
+    margin-right: $minmaxMargin;
 
-  $minMaxFontSize: 10px;
-
-  .liquidSlider__min, .liquidSlider__max {
-    font-size: $minMaxFontSize;
-  }
-
-  $minmaxMargin: 5px;
-  .liquidSlider__min {
-    order: 0;
-
-    &.liquidSlider_horizontal {
-      margin-right: $minmaxMargin;
-    }
-
-    &.liquidSlider_vertical {
-      margin-bottom: $minmaxMargin;
-    }
-  }
-
-  .liquidSlider__max {
-    order: 2;
-
-    &.liquidSlider_horizontal {
-      margin-left: $minmaxMargin;
-    }
-
-    &.liquidSlider_vertical {
-      margin-top: $minmaxMargin;
-    }
-  }
-
-  .liquidSlider__body {
-    order: 1;
-
-    &.liquidSlider_horizontal {
-      width: inherit;
-      min-width: inherit;
-    }
-
-    &.liquidSlider_vertical {
+    #{$sliderBlock}__body {
       height: inherit;
       min-height: inherit;
     }
 
+    #{$sliderBlock}__scale {
+      height: inherit;
+      min-height: inherit;
+      width: $scaleThickness;
+    }
+
+    #{$sliderBlock}__range {
+      width: $scaleThickness - $scaleBorderWidth*2;
+      left: $scaleBorderWidth;
+    }
+
+    &#{$sliderBlock}__markup-wrap {
+      height: inherit;
+      width: $scaleThickness;
+    }
+
+    #{$sliderBlock}__markup {
+      left: - abs($markupLength - $scaleThickness);
+      height: $markupThickness;
+      width: $markupLength;
+    }
+
+    #{$sliderBlock}__min {
+      margin-bottom: $minmaxMargin;
+    }
+
+    #{$sliderBlock}__max {
+      margin-top: $minmaxMargin;
+    }
+
+    #{$sliderBlock}__handlers {
+      width: $scaleThickness;
+      height: inherit;
+      min-height: inherit;
+    }
+
+    #{$sliderBlock}__handler-container {
+      flex-direction: row;
+      left: - abs($scaleThickness - $handlerSize) / 2;
+    }
+  }
+
+  &__min, &__max {
+    font-size: $minMaxFontSize;
+  }
+
+  &__min {
+    order: 0;
+  }
+
+  &__max {
+    order: 2;
+  }
+
+  &__body {
+    order: 1;
     position: relative;
+  }
 
-    .liquidSlider__scale {
-      $scaleBorderRadius: 5px;
-      background-color: rgba(200, 200, 200, 0.3);
-      border: solid $scaleBorderWidth black;
-      border-radius: $scaleBorderRadius;
+  &__markup {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
 
-      &.liquidSlider_horizontal {
-        width: inherit;
-        min-width: inherit;
-        height: $scaleThickness;
-      }
+  &__handlers {
+    position: absolute;
+    top: 0;
+  }
 
-      &.liquidSlider_vertical {
-        height: inherit;
-        min-height: inherit;
-        width: $scaleThickness;
-      }
+  &__scale {
+    @include commonStyles();
 
-      .liquidSlider__range {
-        position: absolute;
-        background-color: #83d3e9;
-        border-radius: $scaleBorderRadius;
+    background-color: rgba(200, 200, 200, 0.3);
+    border: solid $scaleBorderWidth black;
+    border-radius: $scaleBorderRadius;
+  }
 
-        &.liquidSlider_vertical {
-          width: $scaleThickness - $scaleBorderWidth*2;
-          left: $scaleBorderWidth;
-        }
+  &__range {
+    position: absolute;
+    background-color: #83d3e9;
+    border-radius: $scaleBorderRadius;
+  }
 
-        &.liquidSlider_horizontal {
-          height: $scaleThickness - $scaleBorderWidth*2;
-          top: $scaleBorderWidth;
-        }
-      }
-    }
+  &__handler-container {
+    position: absolute;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+  }
 
-    .liquidSlider__markupWrap {
-      position: absolute;
-      top: 0;
-      left: 0;
+  &__handler-body {
+    @include commonStyles();
 
-      .liquidSlider__markup {
-        position: absolute;
-        background-color: rgba(0, 0, 0, 0.3);
-      }
+    height: $handlerSize;
+    width: $handlerSize;
+    border-radius: 50%;
+    background-color: #ffb6b0;
+    border: solid $handlerBorderWidth darkgrey;
+    outline: none;
 
-      &.liquidSlider_horizontal {
-        width: inherit;
-        height: $scaleThickness;
+    &:hover, &:focus {
+      border-color: #593832;
 
-        .liquidSlider__markup {
-          bottom: - abs($markupLength - $scaleThickness);
-          width: $markupThickness;
-          height: $markupLength;
-        }
-      }
-
-      &.liquidSlider_vertical {
-        height: inherit;
-        width: $scaleThickness;
-
-        .liquidSlider__markup {
-          left: - abs($markupLength - $scaleThickness);
-          height: $markupThickness;
-          width: $markupLength;
-        }
+      + #{$sliderBlock}__handler-tooltip {
+        visibility: visible;
       }
     }
+  }
 
-    .liquidSlider__handlers {
-      position: absolute;
-      top: 0;
+  &__handler-tooltip {
+    @include commonStyles();
 
-      &.liquidSlider_horizontal {
-        height: $scaleThickness;
-        width: inherit;
-        min-width: inherit;
-      }
+    height: $tooltipHeight + $tooltipPadding * 2;
+    padding: $tooltipPadding;
+    background-color: rgba(255, 255, 255, 0.75);
+    border: solid $tooltipBorderWidth rgba(0, 0, 0, 0.25);
+    border-radius: 20%;
+    font-size: 14px;
+    line-height: $tooltipHeight - $tooltipBorderWidth*2;
+    text-align: center;
+    user-select: none;
 
-      &.liquidSlider_vertical {
-        width: $scaleThickness;
-        height: inherit;
-        min-height: inherit;
-      }
+    > * {
+      height: $tooltipHeight;
+    }
 
-      .liquidSlider__handlerContainer {
-        position: absolute;
-        display: flex;
+    &_visible {
+      visibility: visible;
+    }
 
-        &.liquidSlider_horizontal {
-          flex-direction: column-reverse;
-          bottom: - abs($scaleThickness - $handlerSize) / 2;
-        }
-
-        &.liquidSlider_vertical {
-          flex-direction: row;
-          left: - abs($scaleThickness - $handlerSize) / 2;
-        }
-
-        justify-content: start;
-        align-items: center;
-
-        .liquidSlider__handlerTooltip {
-          height: $tooltipHeight + $tooltipPadding * 2;
-          padding: $tooltipPadding;
-          background-color: rgba(255, 255, 255, 0.75);
-          border: solid $tooltipBorderWidth rgba(0, 0, 0, 0.25);
-          border-radius: 20%;
-          font-size: 14px;
-          line-height: $tooltipHeight - $tooltipBorderWidth*2;
-          text-align: center;
-          user-select: none;
-
-          > * {
-            height: $tooltipHeight;
-          }
-
-          &.liquidSlider__handlerTooltip_visible {
-            visibility: visible;
-          }
-
-          &.liquidSlider__handlerTooltip_hidden {
-            visibility: hidden;
-          }
-        }
-
-        .liquidSlider__handlerBody {
-          height: $handlerSize;
-          width: $handlerSize;
-          border-radius: 50%;
-          background-color: #ffb6b0;
-          border: solid $handlerBorderWidth darkgrey;
-          outline: none;
-
-          &:hover, &:focus {
-            border-color: #593832;
-
-            + .liquidSlider__handlerTooltip {
-              visibility: visible;
-            }
-          }
-        }
-      }
+    &_hidden {
+      visibility: hidden;
     }
   }
 }

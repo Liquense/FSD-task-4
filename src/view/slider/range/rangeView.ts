@@ -97,10 +97,9 @@ export default class RangeView {
 
   private createElement(): void {
     const body = document.createElement('div');
-    const orientationClass = this.parentSlider.getOrientationClass();
 
     this.element = body;
-    body.classList.add(`${RangeView.DEFAULT_CLASS}`, orientationClass);
+    body.classList.add(`${RangeView.DEFAULT_CLASS}`);
 
     this.parentElement.appendChild(body);
   }
