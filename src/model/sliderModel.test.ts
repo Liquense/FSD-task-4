@@ -385,7 +385,7 @@ describe('Функции', () => {
 
   describe('Удаление хэндлера', () => {
     let oldHandlers: HandlerModel[];
-    let removingResult: boolean;
+    let removingResult: number;
     let removingIndex = 1;
 
     beforeEach(() => {
@@ -400,7 +400,7 @@ describe('Функции', () => {
       removingResult = testModel.removeHandler(removingIndex);
       expect(testModel['handlers'].length === oldHandlers.length - 1).toBeTruthy();
       expect(testModel['handlers'].some((handler) => handler.handlerIndex === removingIndex)).toBeFalsy();
-      expect(removingResult).toBeTruthy();
+      expect(removingResult).toBe(removingIndex);
     });
 
     test('Если хэндлера с таким индексом нет', () => {
@@ -408,7 +408,7 @@ describe('Функции', () => {
       expect(testModel['handlers'].some((handler) => handler.handlerIndex === removingIndex)).toBeFalsy();
       removingResult = testModel.removeHandler(removingIndex);
       expect(testModel['handlers'].length === oldHandlers.length).toBeTruthy();
-      expect(removingResult).toBeFalsy();
+      expect(removingResult).toBe(null);
     });
   });
 });

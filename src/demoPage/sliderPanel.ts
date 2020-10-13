@@ -208,9 +208,7 @@ export default class SliderPanel implements Listenable, View {
     this.elements.markupVisibilityInput.addEventListener('change', this.boundMarkupInputChange);
   }
 
-  private boundNewHandlerElementsClick = this.newHandlerElementsClick.bind(this);
-
-  private newHandlerElementsClick(): void {
+  private newHandlerElementsClick = (): void => {
     const itemIndex = Number.parseFloat(this.elements.newHandlerElements.itemIndexInput.value);
     if (Number.isNaN(itemIndex)) return;
 
@@ -276,7 +274,7 @@ export default class SliderPanel implements Listenable, View {
     const newHandlerButton = document.createElement('button');
     newHandlerButton.innerText = 'Создать \n новый хэндлер';
     newHandlerButton.classList.add(`${SliderPanel.classPrefix}__${baseClass}-button`);
-    newHandlerButton.addEventListener('click', this.boundNewHandlerElementsClick);
+    newHandlerButton.addEventListener('click', this.newHandlerElementsClick);
     newHandlerWrap.append(newHandlerButton);
 
     this.elements.newHandlerElements = {

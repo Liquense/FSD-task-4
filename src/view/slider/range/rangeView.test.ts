@@ -66,7 +66,7 @@ describe('Инициализация', () => {
 
   describe('Создание HTML-тела', () => {
     test('Создание горизонтально', () => {
-      const expectedBody = document.body.querySelector(`.liquidSlider__range.${horizontalClass}`);
+      const expectedBody = document.body.querySelector('.liquidSlider__range');
       expect(testRange['element']).toBe(expectedBody);
     });
     test('Создание вертикально', () => {
@@ -74,7 +74,7 @@ describe('Инициализация', () => {
       testSlider.getOrientationClass = jest.fn(() => 'vertical');
       testRange = new RangeView(testSlider, document.body, firstHandler, secondHandler);
 
-      const expectedBody = document.body.querySelector(`.liquidSlider__range.${verticalClass}`);
+      const expectedBody = document.body.querySelector('.liquidSlider__range');
       expect(testRange['element']).toBe(expectedBody);
     });
 

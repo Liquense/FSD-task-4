@@ -122,7 +122,7 @@ describe('Вспомогательные функции', () => {
   });
 
   test('Получение HTML-тела', () => {
-    const body = document.body.querySelector('.liquidSlider__handlerBody');
+    const body = document.body.querySelector('.liquidSlider__handler-body');
 
     expect(testHandler.getBody()).toBe(body);
   });
