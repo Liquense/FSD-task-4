@@ -103,12 +103,8 @@ export default class HandlerView implements Listenable, SliderElement {
     return this.tooltip.getElement();
   }
 
-  public calculateOffset(): number {
-    return this.ownerSlider.calculateHandlerOffset(this.positionPart);
-  }
-
   public refreshPosition(): void {
-    const offset = this.calculateAccurateOffset();
+    const offset = this.calculateOffset();
 
     this.element.wrap.style.removeProperty('left');
     this.element.wrap.style.removeProperty('top');
@@ -159,8 +155,8 @@ export default class HandlerView implements Listenable, SliderElement {
     return (shift - 0.5 * tooltipExcess);
   }
 
-  private calculateAccurateOffset(): number {
-    const shift = this.calculateOffset();
+  private calculateOffset(): number {
+    const shift = this.ownerSlider.calculateHandlerOffset(this.positionPart);
 
     return this.centerShift(shift);
   }

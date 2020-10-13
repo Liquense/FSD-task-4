@@ -58,6 +58,7 @@ export default class MarkupView {
 
   private createMarkElement(): HTMLElement {
     const newMark = document.createElement('div');
+    newMark.classList.add(MarkupView.DEFAULT_CLASS);
     this.wrap.appendChild(newMark);
 
     return newMark;

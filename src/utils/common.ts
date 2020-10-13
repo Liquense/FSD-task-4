@@ -1,10 +1,15 @@
 import { KeyStringObj, Listenable } from './interfacesAndTypes';
 
-export const DEFAULT_SLIDER_PARAMS = { isVertical: false, showTooltips: true, withMarkup: false };
+const DEFAULT_SLIDER_PARAMS = { isVertical: false, showTooltips: true, withMarkup: false };
 
-export const DEFAULT_SLIDER_CLASS = 'liquidSlider';
+const DEFAULT_SLIDER_CLASS = 'liquidSlider';
 
-export function parseClassesString(classesString: string): string[] {
+const HANDLER_PAIR_OPTIONS = new Map()
+  .set(null, null)
+  .set('start', false)
+  .set('end', true);
+
+function parseClassesString(classesString: string): string[] {
   if (!classesString?.trim()) {
     return undefined;
   }
@@ -28,7 +33,7 @@ function bindListeners(
   };
 }
 
-export function addListenerAfter(
+function addListenerAfter(
   executorName: string, listener: Function, executorContext: Listenable & KeyStringObj,
 ): void {
   if (!executorContext) return;
@@ -50,7 +55,7 @@ export function addListenerAfter(
   bindListeners(executorName, listeners, executorContext);
 }
 
-export function removeListener(
+function removeListener(
   executor: string, listener: Function, executorContext: Listenable,
 ): void {
   if (!executorContext?.listenDictionary?.[executor]) {
@@ -66,11 +71,11 @@ export function removeListener(
   listeners.splice(listenerIndex, 1);
 }
 
-export function clamp(num: number, min: number, max: number): number {
+function clamp(num: number, min: number, max: number): number {
   return Math.min(Math.max(num, min), max);
 }
 
-export function roundToDecimal(numToRound: number, decimalsCount: number): number {
+function roundToDecimal(numToRound: number, decimalsCount: number): number {
   let multiplier = 1;
 
   for (let i = 0; i < decimalsCount; i += 1) {
@@ -80,7 +85,7 @@ export function roundToDecimal(numToRound: number, decimalsCount: number): numbe
   return Math.round((numToRound + Number.EPSILON) * multiplier) / multiplier;
 }
 
-export function standardize(
+function standardize(
   value: number, parameters: { min: number; max: number; step: number },
 ): number {
   const min = Math.min(parameters.max, parameters.min);
@@ -100,7 +105,7 @@ export function standardize(
   return roundToDecimal(resultValue, 4);
 }
 
-export function calculateElementCenter(DOMElement: Element): { x: number; y: number } {
+function calculateElementCenter(DOMElement: Element): { x: number; y: number } {
   const thisRect = DOMElement.getBoundingClientRect();
 
   return {
@@ -109,7 +114,53 @@ export function calculateElementCenter(DOMElement: Element): { x: number; y: num
   };
 }
 
-export const HANDLER_PAIR_OPTIONS = new Map()
-  .set(null, null)
-  .set('start', false)
-  .set('end', true);
+const preventDefault = (event: Event): void => event.preventDefault();
+
+function createElement(
+  elementName: string, classes: string, wrap?: HTMLElement,
+): HTMLElement {
+  const propElement = document.createElement(elementName);
+  propElement.classList.add(classes);
+
+  if (wrap) wrap.append(propElement);
+
+  return propElement;
+}
+
+function createLabel(
+  labelText: string, classes: string, wrap?: HTMLElement,
+): HTMLElement {
+  const label = createElement(
+    'label', classes, wrap,
+  );
+  label.innerText = labelText;
+
+  return label;
+}
+
+function createInput(
+  classes: string, wrap?: HTMLElement, isCheckbox?: boolean,
+): HTMLInputElement {
+  const input = createElement('input',
+    classes, wrap);
+
+  if (isCheckbox) input.setAttribute('type', 'checkbox');
+
+  return (input as HTMLInputElement);
+}
+
+function createButton(
+  text: string, classes: string, wrap?: HTMLElement,
+): HTMLButtonElement {
+  const button = createElement('button', classes, wrap) as HTMLButtonElement;
+  button.innerText = text;
+
+  return button;
+}
+
+export {
+  DEFAULT_SLIDER_CLASS, DEFAULT_SLIDER_PARAMS, HANDLER_PAIR_OPTIONS,
+  parseClassesString, addListenerAfter, removeListener, standardize, calculateElementCenter, clamp,
+  roundToDecimal, preventDefault,
+  createElement, createLabel, createInput, createButton,
+};

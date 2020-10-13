@@ -12,20 +12,16 @@ $(panelSelector).get().forEach((panelWrap) => {
   panels.push(new SliderPanel(panelWrap));
 });
 
-const slider = $(sliderInitSelector).liquidSlider({
+panels[0].initSlider($(sliderInitSelector), {
   min: -50,
   max: 20,
   step: 1,
   isVertical: true,
 });
-slider.addView(panels[0]);
-panels[0].boundController = slider;
 
-const slider2 = $(sliderInitSelector).liquidSlider({ isReversed: true });
-slider2.addView(panels[1]);
-panels[1].boundController = slider2;
+panels[1].initSlider($(sliderInitSelector), { isReversed: true });
 
-const slider3 = $(sliderInitSelector).liquidSlider({
+panels[2].initSlider($(sliderInitSelector), {
   items: [
     1,
     { toString(): string { return 'two'; } },
@@ -39,19 +35,17 @@ const slider3 = $(sliderInitSelector).liquidSlider({
   isVertical: true,
   withMarkup: true,
 });
-slider3.addView(panels[2]);
-panels[2].boundController = slider3;
 
-const slider4 = $(sliderInitSelector).liquidSlider({
-  handlers: [
-    { rangePair: 'start' },
-    { itemIndex: 2, rangePair: 0 },
-    { itemIndex: 3, rangePair: 3 },
-    { itemIndex: 6 },
-  ],
-  showTooltips: false,
-  withMarkup: true,
-  isVertical: false,
-});
-slider4.addView(panels[3]);
-panels[3].boundController = slider4;
+panels[3].initSlider($(sliderInitSelector),
+  {
+    handlers: [
+      { itemIndex: 2, rangePair: 'start' as const },
+      { itemIndex: 4, rangePair: 0 },
+      { itemIndex: 6, rangePair: 3 },
+      { itemIndex: 7 },
+    ],
+    step: 2,
+    showTooltips: false,
+    withMarkup: true,
+    isVertical: false,
+  });

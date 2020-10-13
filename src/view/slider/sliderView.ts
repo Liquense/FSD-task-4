@@ -6,7 +6,7 @@ import {
 import {
   addListenerAfter,
   clamp,
-  DEFAULT_SLIDER_CLASS,
+  DEFAULT_SLIDER_CLASS, preventDefault,
   roundToDecimal,
   standardize,
 } from '../../utils/common';
@@ -366,8 +366,6 @@ export default class SliderView implements Slider {
     this.handlerSize = exemplarHandler.getSize();
   }
 
-  private static preventDefault = (event: Event): void => event.preventDefault();
-
   private createElements(): void {
     const parentElement = this.parentView.getBody();
     this.elements = {
@@ -388,7 +386,7 @@ export default class SliderView implements Slider {
       element.classList.add(`${DEFAULT_SLIDER_CLASS}__${elementName}`);
     });
 
-    this.elements.body.addEventListener('mousedown', SliderView.preventDefault);
+    this.elements.body.addEventListener('mousedown', preventDefault);
 
     wrap.append(this.elements.body);
     wrap.append(this.elements.min);
@@ -582,12 +580,12 @@ export default class SliderView implements Slider {
   private refreshElements(): void {
     this.updateMarkup();
 
-    this.ranges.forEach((range) => {
-      range.refreshPosition();
-    });
-
     this.handlers.forEach((handler) => {
       handler.refreshPosition();
+    });
+
+    this.ranges.forEach((range) => {
+      range.refreshPosition();
     });
 
     this.elements.min.innerText = this.min?.toFixed(2);
