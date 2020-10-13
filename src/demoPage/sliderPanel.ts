@@ -1,6 +1,6 @@
 import Controller from '../controller/controller';
 import {
-  Listenable, View, KeyStringObj, Presentable,
+  Listenable, View, KeyStringObj, Presentable, SliderPluginParams,
 } from '../utils/interfacesAndTypes';
 
 

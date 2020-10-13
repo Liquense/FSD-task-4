@@ -72,7 +72,9 @@ interface Listenable {
 }
 
 type KeyStringObj = { [key: string]: any };
+
 type Presentable = { toString(): string } | string;
+
 type SliderModelParams = {
   isRange?: boolean;
   min?: number;
@@ -85,7 +87,28 @@ type SliderModelParams = {
   }[];
 };
 
+type SliderPluginParams = {
+  items?: Presentable[];
+  values?: number[];
+  isRange?: boolean;
+  isVertical?: boolean;
+  isReversed?: boolean;
+  min?: number;
+  max?: number;
+  step?: number;
+  showTooltips?: boolean;
+  withMarkup?: boolean;
+  handlers?: {
+    itemIndex: number;
+    additionalClasses?: string;
+    rangePair?: number | 'start' | 'end';
+    tooltip?: {
+      additionalClasses?: string;
+    };
+  }[];
+};
+
 export {
   View, Orientable, SliderContainer, ScaleOwner, HandlersOwner, SliderElement, Slider, Listenable,
-  KeyStringObj, Presentable, SliderModelParams,
+  KeyStringObj, Presentable, SliderModelParams, SliderPluginParams,
 };

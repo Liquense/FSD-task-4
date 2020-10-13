@@ -1,7 +1,7 @@
 import * as $ from 'jquery';
 
 import Controller from './controller/controller';
-import { Presentable } from './utils/interfacesAndTypes';
+import { SliderPluginParams } from './utils/interfacesAndTypes';
 import { DEFAULT_SLIDER_PARAMS } from './utils/common';
 
 /**
@@ -29,26 +29,7 @@ import { DEFAULT_SLIDER_PARAMS } from './utils/common';
  *          @param parameters.handlers.tooltip.additionalClasses пользовательские классы
  */
 $.fn.liquidSlider = function liquidSlider(
-  parameters?: {
-        items?: Presentable[];
-        values?: number[];
-        isRange?: boolean;
-        isVertical?: boolean;
-        isReversed?: boolean;
-        min?: number;
-        max?: number;
-        step?: number;
-        showTooltips?: boolean;
-        withMarkup?: boolean;
-        handlers?: {
-            itemIndex: number;
-            additionalClasses?: string;
-            rangePair?: number | 'start' | 'end';
-            tooltip?: {
-                additionalClasses?: string;
-            };
-        }[];
-    },
+  parameters?: SliderPluginParams,
 ): Controller {
   return new Controller($(this).get()[0], { ...DEFAULT_SLIDER_PARAMS, ...parameters });
 };
