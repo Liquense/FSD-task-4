@@ -144,23 +144,13 @@ export default class HandlerView implements Listenable, SliderElement {
     wrap.appendChild(body);
   }
 
-  /**
-   * Добавляет смещение для правильного отображения хэндлера и тултипа, если тултип больше
-   * @param shift
-   * @private
-   */
-  private centerShift(shift: number): number {
-    const handlerSize = this.getSize();
-    const tooltipSize = this.tooltip.getSize();
-
-    const tooltipExcess = Math.max(0, tooltipSize - handlerSize);
-
-    return (shift - 0.5 * tooltipExcess);
-  }
-
   private calculateOffset(): number {
     const shift = this.ownerSlider.calculateHandlerOffset(this.positionPart);
 
-    return this.centerShift(shift);
+    const handlerSize = this.getSize();
+    const tooltipSize = this.tooltip.getSize();
+    const tooltipExcess = Math.max(0, tooltipSize - handlerSize);
+
+    return shift - 0.5 * tooltipExcess;
   }
 }

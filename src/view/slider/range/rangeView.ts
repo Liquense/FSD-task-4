@@ -38,12 +38,12 @@ export default class RangeView {
     requestAnimationFrame(this.refreshPosition.bind(this));
     if (this.startHandler) {
       addListenerAfter(
-        this.handlerRefreshPositionName, this.boundRefreshPosition, this.startHandler,
+        this.handlerRefreshPositionName, this.refreshPosition, this.startHandler,
       );
     }
     if (this.endHandler) {
       addListenerAfter(
-        this.handlerRefreshPositionName, this.boundRefreshPosition, this.endHandler,
+        this.handlerRefreshPositionName, this.refreshPosition, this.endHandler,
       );
     }
   }
@@ -56,7 +56,7 @@ export default class RangeView {
     return this.endHandler;
   }
 
-  public refreshPosition(): void {
+  public refreshPosition = (): void => {
     const { parentSlider } = this;
 
     const firstCoordinate = this.startHandler
@@ -74,11 +74,7 @@ export default class RangeView {
     const offset = startCoordinate;
     const length = endCoordinate - startCoordinate;
 
-    this.element.style.removeProperty('left');
-    this.element.style.removeProperty('top');
-    this.element.style.removeProperty('width');
-    this.element.style.removeProperty('height');
-
+    this.clearPositionStyles();
 
     (this.element.style as KeyStringObj)[parentSlider.getOffsetDirection()] = `${offset}px`;
     (this.element.style as KeyStringObj)[parentSlider.getExpandDimension()] = `${length}px`;
@@ -90,10 +86,17 @@ export default class RangeView {
 
   public remove(): void {
     removeListener(
-      this.handlerRefreshPositionName, this.boundRefreshPosition, this.startHandler,
+      this.handlerRefreshPositionName, this.refreshPosition, this.startHandler,
     );
-    removeListener(this.handlerRefreshPositionName, this.boundRefreshPosition, this.endHandler);
+    removeListener(this.handlerRefreshPositionName, this.refreshPosition, this.endHandler);
     this.element.remove();
+  }
+
+  private clearPositionStyles(): void {
+    this.element.style.removeProperty('left');
+    this.element.style.removeProperty('top');
+    this.element.style.removeProperty('width');
+    this.element.style.removeProperty('height');
   }
 
   private createElement(): void {
@@ -104,8 +107,6 @@ export default class RangeView {
 
     this.parentElement.appendChild(body);
   }
-
-  private boundRefreshPosition = this.refreshPosition.bind(this);
 
   private arrangeHandlers(firstHandler: HandlerView, secondHandler: HandlerView): void {
     if (firstHandler.getPositionPart() <= secondHandler.getPositionPart()) {

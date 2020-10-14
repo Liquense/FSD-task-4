@@ -25,8 +25,6 @@ export default class SliderView implements Slider {
 
   private handlers: HandlerView[] = [];
 
-  private static DEFAULT_CLASS = 'liquidSlider';
-
   private isVertical: boolean;
 
   private elements: {
@@ -171,7 +169,8 @@ export default class SliderView implements Slider {
   }
 
   public getOrientationClass(): string {
-    return this.isVertical ? `${DEFAULT_SLIDER_CLASS}_vertical` : `${SliderView.DEFAULT_CLASS}_horizontal`;
+    return this.isVertical
+      ? `${DEFAULT_SLIDER_CLASS}_vertical` : `${DEFAULT_SLIDER_CLASS}_horizontal`;
   }
 
   /**
@@ -280,7 +279,6 @@ export default class SliderView implements Slider {
       (handler) => handler.getIndex() === handlerIndex,
     );
     const handlerToRemove = this.handlers[handlerToRemoveIndex];
-
     const rangesToRemove = this.ranges.filter((range) => range.hasHandler(handlerToRemove));
 
     rangesToRemove.forEach((range) => {
@@ -383,6 +381,8 @@ export default class SliderView implements Slider {
     parentElement.replaceWith(wrap);
 
     Object.keys(this.elements).forEach((elementName) => {
+      if (elementName === 'wrap') return;
+
       const element = this.elements[elementName];
       element.classList.add(`${DEFAULT_SLIDER_CLASS}__${elementName}`);
     });

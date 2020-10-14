@@ -27,7 +27,7 @@ export default class MarkupView {
   }
 
   public addMark(relativePosition: number, relativeHandlerSize: number): void {
-    const newMark = this.createMarkElement();
+    const newMark = this.createMarkHTML();
     this.marks.push(newMark);
 
     const markOffset = this.calculateMarkOffset(relativePosition, relativeHandlerSize);
@@ -56,7 +56,7 @@ export default class MarkupView {
       .insertBefore(this.wrap, this.ownerSlider.getHandlersContainer());
   }
 
-  private createMarkElement(): HTMLElement {
+  private createMarkHTML(): HTMLElement {
     const newMark = document.createElement('div');
     newMark.classList.add(MarkupView.DEFAULT_CLASS);
     this.wrap.appendChild(newMark);

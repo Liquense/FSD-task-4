@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import * as $ from 'jquery';
 import { DEFAULT_SLIDER_PARAMS } from './constants';
 import './liquidSlider';
@@ -11,11 +12,13 @@ const $testDiv = $(document.body.appendChild(document.createElement('div')));
 test('Инициализация слайдера', () => {
   const testParameters = { something: '', anotherArg: 'test1', withMarkup: '' };
 
+  // @ts-ignore
   $testDiv.liquidSlider();
   expect(Controller).toBeCalledWith(
     $testDiv.get()[0], { isVertical: false, showTooltips: true, withMarkup: false },
   );
 
+  // @ts-ignore
   $testDiv.liquidSlider(testParameters);
   expect(Controller).toBeCalledWith(
     $testDiv.get()[0], { ...DEFAULT_SLIDER_PARAMS, ...testParameters },
