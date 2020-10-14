@@ -1,8 +1,8 @@
-import { DEFAULT_SLIDER_CLASS } from '../../../utils/common';
+import { DEFAULT_SLIDER_CLASS } from '../../../constants';
+
 import {
   KeyStringObj, Orientable, ScaleOwner, SliderContainer,
 } from '../../../utils/interfacesAndTypes';
-
 
 export default class MarkupView {
   private wrap: HTMLElement;

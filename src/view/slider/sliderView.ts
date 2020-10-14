@@ -6,14 +6,15 @@ import {
 import {
   addListenerAfter,
   clamp,
-  DEFAULT_SLIDER_CLASS, preventDefault,
+  preventDefault,
   roundToDecimal,
   standardize,
-} from '../../utils/common';
+} from '../../utils/functions';
 
 import HandlerView from './handler/handlerView';
 import RangeView from './range/rangeView';
 import MarkupView from './markup/markupView';
+import { DEFAULT_SLIDER_CLASS } from '../../constants';
 
 export default class SliderView implements Slider {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };

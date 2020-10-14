@@ -1,11 +1,12 @@
-import HandlerView from '../handler/handlerView';
+import { DEFAULT_SLIDER_CLASS, HANDLER_PAIR_OPTIONS } from '../../../constants';
+
 import {
   addListenerAfter,
-  DEFAULT_SLIDER_CLASS,
-  HANDLER_PAIR_OPTIONS,
   removeListener,
-} from '../../../utils/common';
+} from '../../../utils/functions';
 import { KeyStringObj, Orientable, ScaleOwner } from '../../../utils/interfacesAndTypes';
+
+import HandlerView from '../handler/handlerView';
 
 export default class RangeView {
   private startHandler: HandlerView;

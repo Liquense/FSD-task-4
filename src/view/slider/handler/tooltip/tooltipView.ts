@@ -1,4 +1,5 @@
-import { DEFAULT_SLIDER_CLASS } from '../../../../utils/common';
+import { DEFAULT_SLIDER_CLASS } from '../../../../constants';
+
 import {
   KeyStringObj,
   Presentable,

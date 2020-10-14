@@ -7,7 +7,7 @@ import {
   parseClassesString,
   removeListener,
   standardize,
-} from './common';
+} from './functions';
 import { KeyStringObj, Listenable } from './interfacesAndTypes';
 
 describe('Парсинг строки классов', () => {
@@ -133,7 +133,6 @@ describe('Слушатель', () => {
       secondTestListenerCalls += 1;
       testCalls();
     });
-
 
     test('удаление первого слушателя', () => {
       removeListener('testExecutor', testListener, testContext);

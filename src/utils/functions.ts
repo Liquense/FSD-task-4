@@ -1,14 +1,5 @@
 import { KeyStringObj, Listenable } from './interfacesAndTypes';
 
-const DEFAULT_SLIDER_PARAMS = { isVertical: false, showTooltips: true, withMarkup: false };
-
-const DEFAULT_SLIDER_CLASS = 'liquidSlider';
-
-const HANDLER_PAIR_OPTIONS = new Map()
-  .set(null, null)
-  .set('start', false)
-  .set('end', true);
-
 function parseClassesString(classesString: string): string[] {
   if (!classesString?.trim()) {
     return undefined;
@@ -159,7 +150,6 @@ function createButton(
 }
 
 export {
-  DEFAULT_SLIDER_CLASS, DEFAULT_SLIDER_PARAMS, HANDLER_PAIR_OPTIONS,
   parseClassesString, addListenerAfter, removeListener, standardize, calculateElementCenter, clamp,
   roundToDecimal, preventDefault,
   createElement, createLabel, createInput, createButton,

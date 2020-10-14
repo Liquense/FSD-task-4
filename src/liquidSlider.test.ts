@@ -1,7 +1,8 @@
 import * as $ from 'jquery';
+import { DEFAULT_SLIDER_PARAMS } from './constants';
 import './liquidSlider';
+
 import Controller from './controller/controller';
-import { DEFAULT_SLIDER_PARAMS } from './utils/common';
 
 jest.mock('./controller/controller');
 

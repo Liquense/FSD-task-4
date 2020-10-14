@@ -1,6 +1,5 @@
-import { clamp } from '../utils/common';
+import { clamp } from '../utils/functions';
 import { Presentable, Listenable } from '../utils/interfacesAndTypes';
-
 
 export default class HandlerModel implements Listenable {
   public listenDictionary: {[key: string]: { func: Function; listeners: Function[] }};

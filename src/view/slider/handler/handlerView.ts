@@ -1,10 +1,13 @@
-import { calculateElementCenter, DEFAULT_SLIDER_CLASS } from '../../../utils/common';
-import TooltipView from './tooltip/tooltipView';
+import { DEFAULT_SLIDER_CLASS } from '../../../constants';
+
+import { calculateElementCenter } from '../../../utils/functions';
 import {
   KeyStringObj, Presentable,
   Listenable,
   SliderElement, Slider,
 } from '../../../utils/interfacesAndTypes';
+
+import TooltipView from './tooltip/tooltipView';
 
 export default class HandlerView implements Listenable, SliderElement {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };

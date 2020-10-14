@@ -4,7 +4,7 @@ import {
 } from '../utils/interfacesAndTypes';
 import {
   createButton, createElement, createInput, createLabel,
-} from '../utils/common';
+} from '../utils/functions';
 
 import './sliderPanel.scss';
 

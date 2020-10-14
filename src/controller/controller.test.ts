@@ -2,7 +2,7 @@
 import { KeyStringObj } from '../utils/interfacesAndTypes';
 import SliderModel from '../model/sliderModel';
 import View from '../view/pluginView';
-import { addListenerAfter } from '../utils/common';
+import { addListenerAfter } from '../utils/functions';
 
 import Controller from './controller';
 
@@ -68,7 +68,6 @@ describe('Инициализация контроллера', () => {
         handlerIndex: 1, item: 'test2', positionPart: 1, itemIndex: 1,
       },
     ];
-
 
     test('Без опциональных параметров', () => {
       testController = new Controller(rootElement);
@@ -239,7 +238,6 @@ describe('Функции', () => {
     testController['views'].forEach((view) => {
       expect(view.passVisualProps).not.toBeCalled();
     });
-
 
     testController.setTooltipVisibility(true);
     testController['views'].forEach((view) => {

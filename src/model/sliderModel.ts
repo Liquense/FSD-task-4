@@ -1,4 +1,4 @@
-import { standardize } from '../utils/common';
+import { standardize } from '../utils/functions';
 import { Presentable, Listenable, SliderModelParams } from '../utils/interfacesAndTypes';
 import HandlerModel, { ModelItemManager, SliderDataContainer } from './handlerModel';
 
@@ -255,7 +255,6 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     this.min = 0;
     this.max = itemsCount - 1;
   }
-
 
   private createHandlers(handlersItemIndexes: { itemIndex: number }[]): void {
     if (!handlersItemIndexes?.length) { return; }

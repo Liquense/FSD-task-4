@@ -1,6 +1,6 @@
 import PluginView from '../view/pluginView';
 import SliderModel from '../model/sliderModel';
-import { addListenerAfter } from '../utils/common';
+import { addListenerAfter } from '../utils/functions';
 import {
   Presentable, Listenable, View, SliderPluginParams,
 } from '../utils/interfacesAndTypes';
