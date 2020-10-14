@@ -147,20 +147,28 @@ describe('Инициализация', () => {
   });
 
   test('Подписка на изменения хэндлеров', () => {
-    const spyRefreshPositionListener = jest.spyOn(testRange, 'refreshPosition');
-    console.log(firstHandler.listenDictionary['refreshPosition'].func);
+    firstHandler.getPositionPart = jest.fn(() => 1);
+    secondHandler.getPositionPart = jest.fn(() => 2);
+    testRange = new RangeView(testSlider, document.body, firstHandler, secondHandler);
 
-    expect(spyRefreshPositionListener.mock.calls.length).toBe(0);
-
-    testSlider.getIsVertical = jest.fn(() => true);
+    testSlider.getOffsetDirection = jest.fn(() => 'left');
+    testSlider.getExpandDimension = jest.fn(() => 'width');
+    firstHandler.getPositionCoordinate = jest.fn(() => 1);
+    secondHandler.getPositionCoordinate = jest.fn(() => 10);
     firstHandler.refreshPosition();
-    expect(spyRefreshPositionListener.mock.calls.length).toBe(1);
+    expect(testRange['element'].style.left).toBe('1px');
+    expect(testRange['element'].style.width).toBe('9px');
 
-    testSlider.getIsVertical = jest.fn(() => false);
-    secondHandler.refreshPosition();
-    expect(spyRefreshPositionListener.mock.calls.length).toBe(2);
+    testSlider.getOffsetDirection = jest.fn(() => 'top');
+    testSlider.getExpandDimension = jest.fn(() => 'height');
+    firstHandler.getPositionCoordinate = jest.fn(() => 2);
+    secondHandler.getPositionCoordinate = jest.fn(() => 5);
+    firstHandler.refreshPosition();
+    expect(testRange['element'].style.top).toBe('2px');
+    expect(testRange['element'].style.height).toBe('3px');
   });
 });
+
 test('Функция проверки наличия хэндлера', () => {
   expect(testRange.hasHandler(firstHandler)).toBeTruthy();
   expect(testRange.hasHandler(secondHandler)).toBeTruthy();
