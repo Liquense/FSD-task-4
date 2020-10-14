@@ -17,8 +17,6 @@ export default class RangeView {
 
   private element: HTMLElement;
 
-  private handlerRefreshPositionName = 'refreshPosition';
-
   constructor(
     private parentSlider: Orientable & ScaleOwner,
     public parentElement: HTMLElement,
@@ -38,12 +36,12 @@ export default class RangeView {
     requestAnimationFrame(this.refreshPosition.bind(this));
     if (this.startHandler) {
       addListenerAfter(
-        this.handlerRefreshPositionName, this.refreshPosition, this.startHandler,
+        'refreshPosition', this.refreshPosition, this.startHandler,
       );
     }
     if (this.endHandler) {
       addListenerAfter(
-        this.handlerRefreshPositionName, this.refreshPosition, this.endHandler,
+        'refreshPosition', this.refreshPosition, this.endHandler,
       );
     }
   }
@@ -86,9 +84,9 @@ export default class RangeView {
 
   public remove(): void {
     removeListener(
-      this.handlerRefreshPositionName, this.refreshPosition, this.startHandler,
+      'refreshPosition', this.refreshPosition, this.startHandler,
     );
-    removeListener(this.handlerRefreshPositionName, this.refreshPosition, this.endHandler);
+    removeListener('refreshPosition', this.refreshPosition, this.endHandler);
     this.element.remove();
   }
 

@@ -12,11 +12,11 @@ function bindListeners(
   executor: string, listeners: Function[], executorContext: Listenable & KeyStringObj,
 ): void {
   const context = executorContext;
-  const pureFunc = executorContext.listenDictionary[executor].func;
+  const pureFunc = context.listenDictionary[executor].func;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context[executor] = (...args: any): void => {
-    const functionResult = pureFunc.call(executorContext, ...args);
+    const functionResult = pureFunc.call(context, ...args);
 
     listeners.forEach((listener) => {
       listener(functionResult);
