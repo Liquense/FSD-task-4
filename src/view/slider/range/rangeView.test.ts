@@ -19,12 +19,14 @@ testSlider.getOrientationClass = jest.fn(function () {
   return this.isVertical ? verticalClass : horizontalClass;
 });
 
-const firstHandler = new HandlerView(testSlider, null);
-const secondHandler = new HandlerView(testSlider, null);
+let firstHandler: HandlerView;
+let secondHandler: HandlerView;
 
 describe('Инициализация', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
+    firstHandler = new HandlerView(testSlider, null);
+    secondHandler = new HandlerView(testSlider, null);
     testRange = new RangeView(testSlider, document.body, firstHandler, secondHandler);
   });
 
@@ -66,7 +68,7 @@ describe('Инициализация', () => {
 
   describe('Создание HTML-тела', () => {
     test('Создание горизонтально', () => {
-      const expectedBody = document.body.querySelector('.liquidSlider__range');
+      const expectedBody = document.body.querySelector('.liquid-slider__range');
       expect(testRange['element']).toBe(expectedBody);
     });
     test('Создание вертикально', () => {
@@ -74,12 +76,12 @@ describe('Инициализация', () => {
       testSlider.getOrientationClass = jest.fn(() => 'vertical');
       testRange = new RangeView(testSlider, document.body, firstHandler, secondHandler);
 
-      const expectedBody = document.body.querySelector('.liquidSlider__range');
+      const expectedBody = document.body.querySelector('.liquid-slider__range');
       expect(testRange['element']).toBe(expectedBody);
     });
 
     describe('Добавление стилей', () => {
-      beforeAll(() => {
+      beforeEach(() => {
         firstHandler.getPositionCoordinate = jest.fn(() => 20);
         secondHandler.getPositionCoordinate = jest.fn(() => 80);
       });
@@ -145,22 +147,18 @@ describe('Инициализация', () => {
   });
 
   test('Подписка на изменения хэндлеров', () => {
-    const mockUpdatePosition = jest.fn();
-    const origUpdatePosition = RangeView.prototype.refreshPosition;
+    const spyRefreshPositionListener = jest.spyOn(testRange, 'refreshPosition');
+    console.log(firstHandler.listenDictionary['refreshPosition'].func);
 
-    RangeView.prototype.refreshPosition = mockUpdatePosition;
-    testRange = new RangeView(testSlider, document.body, firstHandler, secondHandler);
-    RangeView.prototype.refreshPosition = origUpdatePosition;
-
-    expect(mockUpdatePosition.mock.calls.length).toBe(0);
+    expect(spyRefreshPositionListener.mock.calls.length).toBe(0);
 
     testSlider.getIsVertical = jest.fn(() => true);
     firstHandler.refreshPosition();
-    expect(mockUpdatePosition.mock.calls.length).toBe(1);
+    expect(spyRefreshPositionListener.mock.calls.length).toBe(1);
 
     testSlider.getIsVertical = jest.fn(() => false);
     secondHandler.refreshPosition();
-    expect(mockUpdatePosition.mock.calls.length).toBe(2);
+    expect(spyRefreshPositionListener.mock.calls.length).toBe(2);
   });
 });
 test('Функция проверки наличия хэндлера', () => {

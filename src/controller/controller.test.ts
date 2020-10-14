@@ -6,7 +6,7 @@ import { addListenerAfter } from '../utils/functions';
 
 import Controller from './controller';
 
-jest.mock('../utils/common');
+jest.mock('../utils/functions');
 jest.mock('../view/pluginView');
 jest.mock('../model/sliderModel');
 

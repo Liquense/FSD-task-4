@@ -100,7 +100,7 @@ describe('Функционал разметки', () => {
         function expectOffsetStyle(): void {
           testMarkup.addMark(0.5, 0);
           expect(testMarkup.getWrap().innerHTML).toBe(
-            `<div class="liquidSlider__markup" style="${testSlider.getOffsetDirection()}: 50%;"></div>`,
+            `<div class="liquid-slider__markup" style="${testSlider.getOffsetDirection()}: 50%;"></div>`,
           );
         }
 

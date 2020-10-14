@@ -55,10 +55,10 @@ describe('Инициализация', () => {
     resetHTML();
     testSlider = new SliderView(testView);
 
-    const wrap = document.body.querySelector('.liquidSlider');
-    const body = document.body.querySelector('.liquidSlider__body');
-    const scale = document.body.querySelector('.liquidSlider__scale');
-    const handlers = document.body.querySelector('.liquidSlider__handlers');
+    const wrap = document.body.querySelector('.liquid-slider');
+    const body = document.body.querySelector('.liquid-slider__body');
+    const scale = document.body.querySelector('.liquid-slider__scale');
+    const handlers = document.body.querySelector('.liquid-slider__handlers');
 
     expect(testSlider.getBodyElement() === testSlider['elements'].body && testSlider['elements'].body === body).toBeTruthy();
     expect(testSlider.getHandlersContainer() === testSlider['elements']['handlers'] && testSlider['elements']['handlers'] === handlers).toBeTruthy();

@@ -65,7 +65,7 @@ describe('Создание экземпляра', () => {
     const testTooltip = new TooltipView(handler.getBody(), handler);
 
     expect(document.body.innerHTML)
-      .toBe('<div class="liquidSlider__handler-tooltip">undefined</div>');
+      .toBe('<div class="liquid-slider__handler-tooltip">undefined</div>');
   });
 
   afterAll(() => {
@@ -87,14 +87,14 @@ describe('Функционал', () => {
 
     test('Показать', () => {
       tooltip.setVisibility(true);
-      expect(tooltip.getElement().classList).toContain('liquidSlider__handler-tooltip_visible');
-      expect(tooltip.getElement().classList).not.toContain('liquidSlider__handler-tooltip_hidden');
+      expect(tooltip.getElement().classList).toContain('liquid-slider__handler-tooltip_visible');
+      expect(tooltip.getElement().classList).not.toContain('liquid-slider__handler-tooltip_hidden');
     });
 
     test('Скрыть', () => {
       tooltip.setVisibility(false);
-      expect(tooltip.getElement().classList).toContain('liquidSlider__handler-tooltip_hidden');
-      expect(tooltip.getElement().classList).not.toContain('liquidSlider__handler-tooltip_visible');
+      expect(tooltip.getElement().classList).toContain('liquid-slider__handler-tooltip_hidden');
+      expect(tooltip.getElement().classList).not.toContain('liquid-slider__handler-tooltip_visible');
     });
   });
 
