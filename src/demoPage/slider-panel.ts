@@ -1,12 +1,12 @@
 import Controller from '../controller/controller';
 import {
   Listenable, View, KeyStringObj, Presentable, SliderPluginParams,
-} from '../utils/interfacesAndTypes';
+} from '../utils/interfaces-types';
 import {
   createButton, createElement, createInput, createLabel,
 } from '../utils/functions';
 
-import './sliderPanel.scss';
+import './slider-panel.scss';
 
 export default class SliderPanel implements Listenable, View {
   listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
@@ -332,10 +332,10 @@ export default class SliderPanel implements Listenable, View {
     const itemIndexInput = createElement('div', `${SliderPanel.classPrefix}__item`, valueWrap) as HTMLInputElement;
 
     const itemDeleteButton = createButton('х', `${SliderPanel.classPrefix}__delete-Button`, valueWrap);
-    const handleItemDeleteButtonClick = (): void => {
+    const handleItemRemoveButtonClick = (): void => {
       this.sliderController.removeHandler(handlerIndex);
     };
-    itemDeleteButton.addEventListener('click', handleItemDeleteButtonClick);
+    itemDeleteButton.addEventListener('click', handleItemRemoveButtonClick);
 
     this.elements.handlerInputs.push({
       wrap: valueWrap,

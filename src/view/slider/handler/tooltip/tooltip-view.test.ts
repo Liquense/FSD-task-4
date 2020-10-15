@@ -1,15 +1,15 @@
 /* eslint-disable dot-notation */
-import { KeyStringObj, Presentable } from '../../../../utils/interfacesAndTypes';
+import { KeyStringObj, Presentable } from '../../../../utils/interfaces-types';
 
-import SliderView from '../../sliderView';
+import SliderView from '../../slider-view';
 
-import HandlerView from '../handlerView';
+import HandlerView from '../handler-view';
 
-import TooltipView from './tooltipView';
+import TooltipView from './tooltip-view';
 
-jest.mock('../../sliderView');
+jest.mock('../../slider-view');
 
-jest.mock('../handlerView');
+jest.mock('../handler-view');
 
 const mockSlider = new SliderView(null, {});
 

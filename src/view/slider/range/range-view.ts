@@ -4,9 +4,9 @@ import {
   addListenerAfter,
   removeListener,
 } from '../../../utils/functions';
-import { KeyStringObj, Orientable, ScaleOwner } from '../../../utils/interfacesAndTypes';
+import { KeyStringObj, Orientable, ScaleOwner } from '../../../utils/interfaces-types';
 
-import HandlerView from '../handler/handlerView';
+import HandlerView from '../handler/handler-view';
 
 export default class RangeView {
   private startHandler: HandlerView;

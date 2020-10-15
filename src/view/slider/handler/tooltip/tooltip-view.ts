@@ -4,7 +4,7 @@ import {
   KeyStringObj,
   Presentable,
   SliderElement,
-} from '../../../../utils/interfacesAndTypes';
+} from '../../../../utils/interfaces-types';
 
 type TooltipViewParams = {
   bodyHTML?: string;

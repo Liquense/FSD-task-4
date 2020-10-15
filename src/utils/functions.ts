@@ -1,4 +1,4 @@
-import { KeyStringObj, Listenable } from './interfacesAndTypes';
+import { KeyStringObj, Listenable } from './interfaces-types';
 
 function parseClassesString(classesString: string): string[] {
   if (!classesString?.trim()) {

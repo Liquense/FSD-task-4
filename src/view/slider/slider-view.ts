@@ -2,7 +2,7 @@ import { ResizeObserver } from 'resize-observer';
 
 import {
   KeyStringObj, Presentable, Slider, View,
-} from '../../utils/interfacesAndTypes';
+} from '../../utils/interfaces-types';
 import {
   addListenerAfter,
   clamp,
@@ -11,9 +11,9 @@ import {
   standardize,
 } from '../../utils/functions';
 
-import HandlerView from './handler/handlerView';
-import RangeView from './range/rangeView';
-import MarkupView from './markup/markupView';
+import HandlerView from './handler/handler-view';
+import RangeView from './range/range-view';
+import MarkupView from './markup/markup-view';
 import { DEFAULT_SLIDER_CLASS } from '../../constants';
 
 export default class SliderView implements Slider {

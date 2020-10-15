@@ -1,6 +1,6 @@
 import { standardize } from '../utils/functions';
-import { Presentable, Listenable, SliderModelParams } from '../utils/interfacesAndTypes';
-import HandlerModel, { ModelItemManager, SliderDataContainer } from './handlerModel';
+import { Presentable, Listenable, SliderModelParams } from '../utils/interfaces-types';
+import HandlerModel, { ModelItemManager, SliderDataContainer } from './handler-model';
 
 export default class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
@@ -99,11 +99,6 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     return null;
   }
 
-  /**
-   * Удаляет хэндлер под указанным индексом (handlerModel.index).
-   * Возвращает false, если хэндлер с таким индексом не найден.
-   * @param handlerIndex
-   */
   public removeHandler(handlerIndex: number): number {
     const handlerToRemoveIndex = this.handlers.findIndex(
       (handler) => handler.handlerIndex === handlerIndex,
@@ -112,7 +107,7 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
 
     this.releaseItem(this.handlers[handlerToRemoveIndex].itemIndex);
     this.handlers.splice(handlerToRemoveIndex, 1);
-    return handlerToRemoveIndex;
+    return handlerIndex;
   }
 
   public calculateValue(valueOrIndex: number): Presentable {
@@ -215,13 +210,6 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     };
   }
 
-  /**
-   * Обрабатывает изменение позиции хэндлера, устанавливая значение,
-   * соответствующее пришедшей позиции
-   * @param data
-   * @param data.index индекс хэндлера
-   * @param data.position новая позиция, полученная от контроллера
-   */
   public handleHandlerPositionChanged(data: { index: number; position: number }): void {
     const newStandardPosition = this.getItemIndexFromPosition(data.position);
 
@@ -277,12 +265,6 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     this.handlers = handlersItemIndexes.reduce(reducer, []);
   }
 
-  /**
-   * Создаёт и возвращает новый хэндлер.
-   * При занятости запрашиваемого значения ищёт свободное, если свободных нет - возвращает null
-   * @param itemIndex
-   * @param handlerIndex
-   */
   private createHandler(itemIndex: number, handlerIndex: number): HandlerModel {
     const freeItemIndex = this.getFirstFreeItemIndex(itemIndex);
     if (freeItemIndex === null) { return null; }
@@ -297,10 +279,6 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
       : standardize((this.min + position * this.getRange()), this.getStandardizeParams());
   }
 
-  /**
-   * находит первый свободный индекс значения
-   * @param startIndex необязательный аргумент, если нужно начать с конкретного индекса
-   */
   private getFirstFreeItemIndex(startIndex?: number): number {
     let result: number;
 

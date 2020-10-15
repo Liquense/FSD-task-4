@@ -1,12 +1,12 @@
-import HandlerView from './handlerView';
-import SliderView from '../sliderView';
-import TooltipView from './tooltip/tooltipView';
-import { KeyStringObj, Presentable } from '../../../utils/interfacesAndTypes';
+import HandlerView from './handler-view';
+import SliderView from '../slider-view';
+import TooltipView from './tooltip/tooltip-view';
+import { KeyStringObj, Presentable } from '../../../utils/interfaces-types';
 
 import Mock = jest.Mock;
 
-jest.mock('../sliderView');
-jest.mock('./tooltip/tooltipView');
+jest.mock('../slider-view');
+jest.mock('./tooltip/tooltip-view');
 
 const testSlider = new SliderView(null, null);
 testSlider.getOrientationClass = jest.fn(function () {

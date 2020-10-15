@@ -1,5 +1,5 @@
-import SliderView from './slider/sliderView';
-import { Presentable, Listenable, View } from '../utils/interfacesAndTypes';
+import SliderView from './slider/slider-view';
+import { Presentable, Listenable, View } from '../utils/interfaces-types';
 
 export default class PluginView implements Listenable, View {
   listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };

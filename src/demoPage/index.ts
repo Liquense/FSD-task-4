@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
-import '../liquidSlider';
-import '../view/slider/sliderView.scss';
-import SliderPanel from './sliderPanel';
+import '../liquid-slider';
+import '../view/slider/slider-view.scss';
+import SliderPanel from './slider-panel';
 import './index.scss';
 
 const sliderInitSelector = '.js-init-slider-here';

@@ -3,7 +3,7 @@ import * as $ from 'jquery';
 import { DEFAULT_SLIDER_PARAMS } from './constants';
 
 import Controller from './controller/controller';
-import { SliderPluginParams } from './utils/interfacesAndTypes';
+import { SliderPluginParams } from './utils/interfaces-types';
 
 /**
  * Расширение JQuery, добавляющее функцию для инициализации слайдера

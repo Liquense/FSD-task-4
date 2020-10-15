@@ -1,9 +1,9 @@
-import PluginView from '../view/pluginView';
-import SliderModel from '../model/sliderModel';
+import PluginView from '../view/plugin-view';
+import SliderModel from '../model/slider-model';
 import { addListenerAfter } from '../utils/functions';
 import {
   Presentable, Listenable, View, SliderPluginParams,
-} from '../utils/interfacesAndTypes';
+} from '../utils/interfaces-types';
 
 export default class Controller {
   private readonly views: (View & Listenable)[];

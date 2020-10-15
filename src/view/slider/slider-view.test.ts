@@ -1,18 +1,18 @@
 /* eslint-disable dot-notation,@typescript-eslint/ban-ts-ignore */
 
-import PluginView from '../pluginView';
+import PluginView from '../plugin-view';
 
-import SliderView from './sliderView';
+import SliderView from './slider-view';
 
-import MarkupView from './markup/markupView';
+import MarkupView from './markup/markup-view';
 
-import TooltipView from './handler/tooltip/tooltipView';
-import HandlerView from './handler/handlerView';
-import RangeView from './range/rangeView';
+import TooltipView from './handler/tooltip/tooltip-view';
+import HandlerView from './handler/handler-view';
+import RangeView from './range/range-view';
 
 import Mock = jest.Mock;
 
-jest.mock('../pluginView');
+jest.mock('../plugin-view');
 
 const testView = new PluginView(null, null);
 testView.getBody = jest.fn(

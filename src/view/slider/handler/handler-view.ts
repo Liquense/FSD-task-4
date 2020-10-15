@@ -5,9 +5,9 @@ import {
   KeyStringObj, Presentable,
   Listenable,
   SliderElement, Slider,
-} from '../../../utils/interfacesAndTypes';
+} from '../../../utils/interfaces-types';
 
-import TooltipView from './tooltip/tooltipView';
+import TooltipView from './tooltip/tooltip-view';
 
 export default class HandlerView implements Listenable, SliderElement {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
