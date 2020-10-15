@@ -4,7 +4,7 @@ import { calculateElementCenter } from '../../../utils/functions';
 import {
   KeyStringObj, Presentable,
   Listenable,
-  SliderElement, Slider,
+  SliderElement, Slider, HandlerViewParams,
 } from '../../../utils/interfaces-types';
 
 import TooltipView from './tooltip/tooltip-view';
@@ -31,24 +31,14 @@ export default class HandlerView implements Listenable, SliderElement {
 
   constructor(
     private ownerSlider: Slider,
-    params:
-      {
-        handlerIndex: number;
-        positionPart: number;
-        item: Presentable;
-        withTooltip?: boolean;
-        rangePair?: number | string;
-      },
+    params: HandlerViewParams,
   ) {
-    this.rangePair = params.rangePair;
-    this.index = params.handlerIndex;
-    this.positionPart = params.positionPart;
-
+    this.initProperties(params);
     this.createElement(ownerSlider.getHandlersContainer());
 
-    const withTooltip = params.withTooltip === undefined ? true : params.withTooltip;
+    this.index = params.handlerIndex;
     this.tooltip = new TooltipView(
-      this.element.wrap, this, { visibilityState: withTooltip, item: params.item },
+      this.element.wrap, this, { visibilityState: params.withTooltip ?? true, item: params.item },
     );
     this.setItem(params.item);
 
@@ -127,6 +117,11 @@ export default class HandlerView implements Listenable, SliderElement {
 
   public remove(): void {
     this.element.wrap.remove();
+  }
+
+  private initProperties({ rangePair, positionPart }: HandlerViewParams): void {
+    this.rangePair = rangePair ?? null;
+    this.positionPart = positionPart;
   }
 
   private createElement(parentElement: HTMLElement): void {

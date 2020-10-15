@@ -1,7 +1,9 @@
 import { clamp } from '../utils/functions';
-import { Presentable, Listenable } from '../utils/interfaces-types';
+import {
+  Presentable, Listenable, Handler, SliderDataContainer, ModelItemManager,
+} from '../utils/interfaces-types';
 
-export default class HandlerModel implements Listenable {
+class HandlerModel implements Listenable, Handler {
   public listenDictionary: {[key: string]: { func: Function; listeners: Function[] }};
 
   private position: number;
@@ -52,16 +54,5 @@ export default class HandlerModel implements Listenable {
   }
 }
 
-export interface SliderDataContainer {
- getMin(): number;
- getMax(): number;
- getRange(): number;
-}
-
-export interface ModelItemManager {
-  releaseItem(itemIndex: number): void;
-  occupyItem(itemIndex: number, handlerIndex: number): void;
-  checkItemOccupancy(itemIndex: number): boolean;
-  calculateValue(itemIndex: number): Presentable;
-  handlerValueChanged(handler: HandlerModel): void;
-}
+export default HandlerModel;
+export { SliderDataContainer, ModelItemManager };

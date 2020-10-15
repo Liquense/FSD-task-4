@@ -1,4 +1,4 @@
-import { DEFAULT_SLIDER_CLASS, HANDLER_PAIR_OPTIONS } from '../../../constants';
+import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_OPTIONS } from '../../../constants';
 
 import {
   addListenerAfter,
@@ -25,8 +25,8 @@ export default class RangeView {
   ) {
     this.initHandlers(firstHandler, secondHandler);
     this.createElement();
-    requestAnimationFrame(this.refreshPosition);
     this.addHandlersRefreshListener();
+    requestAnimationFrame(this.refreshPosition);
   }
 
   public getStartHandler(): HandlerView {
@@ -88,9 +88,9 @@ export default class RangeView {
     if (secondHandler) {
       this.arrangeHandlers(firstHandler, secondHandler);
     } else {
-      this.startHandler = HANDLER_PAIR_OPTIONS.get(firstHandler.getRangePair())
+      this.startHandler = RANGE_PAIR_OPTIONS.get(firstHandler.getRangePair())
         ? firstHandler : null;
-      this.endHandler = HANDLER_PAIR_OPTIONS.get(firstHandler.getRangePair())
+      this.endHandler = RANGE_PAIR_OPTIONS.get(firstHandler.getRangePair())
         ? null : firstHandler;
     }
   }

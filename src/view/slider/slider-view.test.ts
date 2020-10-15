@@ -549,12 +549,10 @@ describe('Функции', () => {
   test('Добавление нового хэндлера', () => {
     const prevHandlers = [...testSlider['handlers']];
     const prevRanges = [...testSlider['ranges']];
-    testSlider.addHandler(null);
-    expect(testSlider['handlers']).toStrictEqual(prevHandlers);
-
     const testParams = {
       positionPart: 0.2, item: 'hello', handlerIndex: 33, rangePair: null as number,
     };
+
     testSlider.addHandler(testParams);
     const newStartHandler = testSlider['handlers'][testSlider['handlers'].length - 1];
     expect(testSlider['handlers'].length === prevHandlers.length + 1).toBeTruthy();

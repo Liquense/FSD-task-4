@@ -1,7 +1,7 @@
 import { ResizeObserver } from 'resize-observer';
 
 import {
-  KeyStringObj, Presentable, Slider, View,
+  KeyStringObj, Presentable, Slider, SliderViewParams, SliderViewUpdateParams, View,
 } from '../../utils/interfaces-types';
 import {
   addListenerAfter,
@@ -37,10 +37,6 @@ export default class SliderView implements Slider {
       max: HTMLElement;
   };
 
-  private rangePairStartKey = 'start';
-
-  private rangePairEndKey = 'end';
-
   private activeHandler: HandlerView;
 
   private tooltipsAlwaysVisible: boolean;
@@ -61,27 +57,9 @@ export default class SliderView implements Slider {
 
   constructor(
       private parentView: View,
-      parameters?: {
-          isVertical?: boolean;
-          showTooltips?: boolean;
-          isReversed?: boolean;
-          isRange?: boolean;
-          withMarkup?: boolean;
-      },
+      params: SliderViewParams,
   ) {
-    if (parameters?.isVertical !== undefined) {
-      this.isVertical = parameters.isVertical;
-    }
-    if (parameters?.isReversed !== undefined) {
-      this.isRangesInverted = parameters.isReversed;
-    }
-    if (parameters?.showTooltips !== undefined) {
-      this.setTooltipsVisibility(parameters.showTooltips);
-    }
-    if (parameters?.withMarkup !== undefined) {
-      this.withMarkup = parameters.withMarkup;
-    }
-
+    this.initProperties(params);
     this.createElements();
     this.setMouseEvents();
     this.setResizeObserver();
@@ -146,6 +124,8 @@ export default class SliderView implements Slider {
   }
 
   public setOrientation(isVertical: boolean): void {
+    if (isVertical === undefined || isVertical === null) { return; }
+
     const oldOrientClass = this.getOrientationClass();
     this.isVertical = isVertical;
     const newOrientClass = this.getOrientationClass();
@@ -154,13 +134,12 @@ export default class SliderView implements Slider {
     this.elements.wrap.classList.add(newOrientClass);
   }
 
-  public setTooltipsVisibility(stateToSet?: boolean): void {
-    const stateToPass = (stateToSet === undefined) || (stateToSet === null)
-      ? (this.tooltipsAlwaysVisible) : (stateToSet);
+  public setTooltipsVisibility(isVisible?: boolean): void {
+    if (isVisible === undefined || isVisible === null) { return; }
 
-    this.tooltipsAlwaysVisible = stateToPass;
+    this.tooltipsAlwaysVisible = isVisible;
     this.handlers.forEach((handler) => {
-      handler.setTooltipVisibility(stateToPass);
+      handler.setTooltipVisibility(isVisible);
     });
   }
 
@@ -169,10 +148,6 @@ export default class SliderView implements Slider {
       ? `${DEFAULT_SLIDER_CLASS}_vertical` : `${DEFAULT_SLIDER_CLASS}_horizontal`;
   }
 
-  /**
- * Возвращает позицию мыши относительно начала шкалы в стандартизированном виде
- * @param mouseEvent
- */
   public calculateMouseRelativePos(mouseEvent: MouseEvent): number {
     const mouseCoordinate = this.isVertical ? mouseEvent.clientY : mouseEvent.clientX;
     const initialOffset = this.handlerSize / 2;
@@ -248,8 +223,6 @@ export default class SliderView implements Slider {
           rangePair: number | string;
       },
   ): void {
-    if (!handlerParams) return;
-
     const newHandler = new HandlerView(
       this,
       {
@@ -295,7 +268,7 @@ export default class SliderView implements Slider {
     return this.getWorkZoneLength() * relativePosition;
   }
 
-  public calcRelativeHandlerSize(): number {
+  public calculateRelativeHandlerSize(): number {
     return this.handlerSize / this.getWorkZoneLength();
   }
 
@@ -318,30 +291,22 @@ export default class SliderView implements Slider {
   }
 
   public update(
-    data?:
-      {
-          min?: number; max?: number; step?: number;
-          isVertical?: boolean; tooltipsVisible?: boolean; withMarkup?: boolean;
-      },
+    {
+      min, max, step, isVertical, tooltipsVisible, withMarkup,
+    }: SliderViewUpdateParams = {},
   ): void {
-    if (Number.isFinite(data?.step)) {
-      this.step = data.step;
+    if (Number.isFinite(step)) {
+      this.step = step;
     }
-    if (Number.isFinite(data?.min)) {
-      this.min = data.min;
+    if (Number.isFinite(min)) {
+      this.min = min;
     }
-    if (Number.isFinite(data?.max)) {
-      this.max = data.max;
+    if (Number.isFinite(max)) {
+      this.max = max;
     }
-    if (data?.tooltipsVisible !== undefined) {
-      this.setTooltipsVisibility(data.tooltipsVisible);
-    }
-    if (data?.isVertical !== undefined) {
-      this.setOrientation(data.isVertical);
-    }
-    if (data?.withMarkup !== undefined) {
-      this.withMarkup = data.withMarkup;
-    }
+    this.withMarkup = withMarkup ?? this.withMarkup;
+    this.setTooltipsVisibility(tooltipsVisible);
+    this.setOrientation(isVertical);
 
     this.refreshElements();
   }
@@ -352,6 +317,19 @@ export default class SliderView implements Slider {
     addListenerAfter(this.handleMouseDown.name, listener, this);
 
     this.elements.body.addEventListener('mousedown', this.handleMouseDown);
+  }
+
+  private initProperties({
+    isVertical, isReversed, showTooltips, withMarkup,
+  }: SliderViewParams = {}): void {
+    this.isVertical = isVertical ?? isVertical;
+    this.isRangesInverted = isReversed ?? this.isRangesInverted;
+    if (showTooltips !== undefined) {
+      this.setTooltipsVisibility(showTooltips);
+    }
+    if (withMarkup !== undefined) {
+      this.withMarkup = withMarkup;
+    }
   }
 
   private setHandlerSize(): void {
@@ -561,7 +539,7 @@ export default class SliderView implements Slider {
       for (let i = 0; i <= 1; i = roundToDecimal(i + this.step, 5)) {
         const standardPosition = standardize(i, { min: 0, max: 1, step: this.step });
         const shrinkPosition = standardPosition * this.calculateShrinkRatio();
-        this.markup.addMark(shrinkPosition, this.calcRelativeHandlerSize());
+        this.markup.addMark(shrinkPosition, this.calculateRelativeHandlerSize());
       }
     });
   }

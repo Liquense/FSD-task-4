@@ -71,6 +71,27 @@ interface Listenable {
   listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 }
 
+interface Handler {
+  handlerIndex: number;
+
+  getPosition(): number;
+  getItem(): Presentable;
+}
+
+interface SliderDataContainer {
+  getMin(): number;
+  getMax(): number;
+  getRange(): number;
+}
+
+interface ModelItemManager {
+  releaseItem(itemIndex: number): void;
+  occupyItem(itemIndex: number, handlerIndex: number): void;
+  checkItemOccupancy(itemIndex: number): boolean;
+  calculateValue(itemIndex: number): Presentable;
+  handlerValueChanged(handler: Handler): void;
+}
+
 type KeyStringObj = { [key: string]: any };
 
 type Presentable = { toString(): string } | string;
@@ -86,6 +107,18 @@ type SliderModelParams = {
     itemIndex: number;
   }[];
 };
+
+type SliderViewUpdateParams = {
+  min?: number; max?: number; step?: number;
+  isVertical?: boolean; tooltipsVisible?: boolean; withMarkup?: boolean;
+}
+
+type SliderViewParams = {
+  isVertical?: boolean;
+  showTooltips?: boolean;
+  isReversed?: boolean;
+  withMarkup?: boolean;
+}
 
 type SliderPluginParams = {
   items?: Presentable[];
@@ -108,7 +141,16 @@ type SliderPluginParams = {
   }[];
 };
 
+type HandlerViewParams = {
+  handlerIndex: number;
+  positionPart: number;
+  item: Presentable;
+  withTooltip?: boolean;
+  rangePair?: number | string;
+}
+
 export {
   View, Orientable, SliderContainer, ScaleOwner, HandlersOwner, SliderElement, Slider, Listenable,
-  KeyStringObj, Presentable, SliderModelParams, SliderPluginParams,
+  KeyStringObj, Presentable, SliderModelParams, SliderPluginParams, SliderViewUpdateParams,
+  SliderViewParams, HandlerViewParams, Handler, ModelItemManager, SliderDataContainer,
 };

@@ -14,28 +14,12 @@ export default class Controller {
     private element: HTMLElement,
     private parameters?: SliderPluginParams,
   ) {
-    const newView = new PluginView(element, parameters);
-    this.views = [newView];
+    this.views = [new PluginView(element, parameters)];
     this.model = new SliderModel(parameters);
 
-    addListenerAfter(
-      'handlerValueChanged',
-      this.passHandlerValueChange,
-      this.model,
-    );
-    addListenerAfter(
-      'removeHandler',
-      this.removeHandlerInViews,
-      this.model,
-    );
-    addListenerAfter(
-      'handleHandlerPositionChanged',
-      this.passHandlerPositionChange,
-      this.views[0],
-    );
-
+    this.addListeners();
     this.passSliderData();
-    this.passHandlersData(newView, parameters?.handlers);
+    this.passHandlersData(this.views[0], parameters?.handlers);
   }
 
   public addViews(newViews: (View & Listenable)[]): void {
@@ -122,6 +106,24 @@ export default class Controller {
     }
 
     this.addHandlerView({ ...handlerData, rangePair });
+  }
+
+  private addListeners(): void {
+    addListenerAfter(
+      'handlerValueChanged',
+      this.passHandlerValueChange,
+      this.model,
+    );
+    addListenerAfter(
+      'removeHandler',
+      this.removeHandlerInViews,
+      this.model,
+    );
+    addListenerAfter(
+      'handleHandlerPositionChanged',
+      this.passHandlerPositionChange,
+      this.views[0],
+    );
   }
 
   private removeHandlerInViews = (handlerIndex: number): void => {
