@@ -14,7 +14,7 @@ import {
 import HandlerView from './handler/handler-view';
 import RangeView from './range/range-view';
 import MarkupView from './markup/markup-view';
-import { DEFAULT_SLIDER_CLASS } from '../../constants';
+import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../../constants';
 
 export default class SliderView implements Slider {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
@@ -213,7 +213,6 @@ export default class SliderView implements Slider {
       },
   ): void {
     this.clearHandlers();
-
     this.handlers = handlersData.handlersArray.map((handler, index, handlers) => {
       const newHandler = new HandlerView(this, {
         ...handler,
@@ -223,17 +222,16 @@ export default class SliderView implements Slider {
       if (!handlersData.customHandlers) {
         if (handlers.length === 2) {
           if (index === 0) {
-            newHandler.setRangePair(this.isRangesInverted ? this.rangePairStartKey : 1);
+            newHandler.setRangePair(this.isRangesInverted ? RANGE_PAIR_START_KEY : 1);
           }
           if (index === 1) {
-            newHandler.setRangePair(this.isRangesInverted ? this.rangePairEndKey : 0);
+            newHandler.setRangePair(this.isRangesInverted ? RANGE_PAIR_END_KEY : 0);
           }
         } else {
           newHandler
-            .setRangePair(this.isRangesInverted ? this.rangePairEndKey : this.rangePairStartKey);
+            .setRangePair(this.isRangesInverted ? RANGE_PAIR_END_KEY : RANGE_PAIR_START_KEY);
         }
       }
-
       return newHandler;
     });
 
@@ -536,8 +534,8 @@ export default class SliderView implements Slider {
     const secondHandler = this.findSuitableHandler(handler);
 
     if (!secondHandler) {
-      if ((handler.getRangePair() !== this.rangePairStartKey)
-              && (handler.getRangePair() !== this.rangePairEndKey)) return null;
+      if ((handler.getRangePair() !== RANGE_PAIR_START_KEY)
+              && (handler.getRangePair() !== RANGE_PAIR_END_KEY)) return null;
     }
 
     return new RangeView(this, this.elements.scale, handler, secondHandler);
