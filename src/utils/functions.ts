@@ -132,8 +132,7 @@ function createLabel(
 function createInput(
   classes: string, wrap?: HTMLElement, isCheckbox?: boolean,
 ): HTMLInputElement {
-  const input = createElement('input',
-    classes, wrap);
+  const input = createElement('input', classes, wrap);
 
   if (isCheckbox) input.setAttribute('type', 'checkbox');
 

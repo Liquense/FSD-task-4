@@ -1,9 +1,8 @@
 /* eslint-disable class-methods-use-this,@typescript-eslint/no-empty-function */
-
 import {
   addListenerAfter,
   calculateElementCenter,
-  clamp,
+  clamp, createButton, createElement, createInput, createLabel,
   parseClassesString,
   removeListener,
   standardize,
@@ -221,5 +220,39 @@ describe('Вычисление середины HTML-элемента в нео�
     expect(calculateElementCenter(testElement)).toStrictEqual({ x: 125, y: 0 });
 
     Element.prototype.getBoundingClientRect = origGetBoundingClientRect;
+  });
+});
+
+describe('Создание элементов', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  test('Создание произвольного элемента', () => {
+    const testElement = createElement('div', 'testClass', document.body);
+    expect(document.body.innerHTML).toBe('<div class="testClass"></div>');
+    expect(document.querySelector('div.testClass')).toBe(testElement);
+  });
+
+  test('Создание лейбла', () => {
+    const testLabel = createLabel('test text', 'testClass', document.body);
+    expect(document.querySelector('label.testClass')).toBe(testLabel);
+    expect(testLabel.innerText).toBe('test text');
+  });
+
+  test('Создание поля ввода', () => {
+    let testInput = createInput('testClass', document.body);
+    expect(document.querySelector('input.testClass')).toBe(testInput);
+    expect(testInput.type).not.toBe('checkbox');
+
+    testInput = createInput('testClass2', document.body, true);
+    expect(document.querySelector('input.testClass2')).toBe(testInput);
+    expect(testInput.type).toBe('checkbox');
+  });
+
+  test('Создание кнопки', () => {
+    const testButton = createButton('test text', 'testClass', document.body);
+    expect(document.querySelector('button.testClass')).toBe(testButton);
+    expect(testButton.innerText).toBe('test text');
   });
 });
