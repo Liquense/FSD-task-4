@@ -57,7 +57,7 @@ export default class SliderView implements Slider {
 
   constructor(
       private parentView: View,
-      params: SliderViewParams,
+      params?: SliderViewParams,
   ) {
     this.initProperties(params);
     this.createElements();
