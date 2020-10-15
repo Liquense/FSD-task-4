@@ -17,12 +17,6 @@ export default class PluginView implements Listenable, View {
     return this.element;
   }
 
-  /**
-   * Вызывается из слайдера, контроллер должен слушать данную функцию
-   * и получать результат для передачи в Модель
-   * @param handlerIndex
-   * @param standardizedPosition
-   */
   public handleHandlerPositionChanged(
     handlerIndex: number,
     standardizedPosition: number,

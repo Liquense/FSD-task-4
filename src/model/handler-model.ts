@@ -6,12 +6,6 @@ export default class HandlerModel implements Listenable {
 
   private position: number;
 
-  /**
-   * @param item непосредственно данные
-   * @param itemIndex значение-индекс, нужно для вычисления положения
-   * @param parentModel
-   * @param handlerIndex
-   */
   constructor(
         private item: Presentable,
         public itemIndex: number,
