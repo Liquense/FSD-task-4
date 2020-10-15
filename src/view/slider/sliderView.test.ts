@@ -333,7 +333,7 @@ describe('Инициализация', () => {
 
       beforeEach(() => {
         // @ts-ignore
-        spyMouseMoveHandler = jest.spyOn(testSlider, 'handleMouseMoveBound');
+        spyMouseMoveHandler = jest.spyOn(testSlider, 'handleMouseMove');
       });
 
       describe('Проверка срабатывания только при зажатии кнопки мыши', () => {

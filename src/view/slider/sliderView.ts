@@ -57,10 +57,6 @@ export default class SliderView implements Slider {
 
   private ranges: RangeView[] = [];
 
-  private boundHandleWindowMouseOut = this.handleWindowMouseOut.bind(this);
-
-  private handleMouseMoveBound = this.handleMouseMove.bind(this);
-
   private resizeObserver: ResizeObserver;
 
   constructor(
@@ -418,10 +414,10 @@ export default class SliderView implements Slider {
     this.resizeObserver.observe(this.elements.body);
   }
 
-  private handleWindowMouseOut(event: MouseEvent): void {
+  private handleWindowMouseOut = (event: MouseEvent): void => {
     const from = event.target as HTMLElement;
     if (from.nodeName === 'HTML') {
-      document.body.removeEventListener('mousemove', this.handleMouseMoveBound);
+      document.body.removeEventListener('mousemove', this.handleMouseMove);
     }
   }
 
@@ -433,7 +429,7 @@ export default class SliderView implements Slider {
   }
 
   private handleMouseUp(): void {
-    document.body.removeEventListener('mousemove', this.handleMouseMoveBound);
+    document.body.removeEventListener('mousemove', this.handleMouseMove);
     document.body.removeEventListener('mouseout', this.handleWindowMouseOut);
   }
 
@@ -448,14 +444,14 @@ export default class SliderView implements Slider {
     this.activeHandler.getBody().focus();
 
     this.handleMouseMove(event);
-    document.body.addEventListener('mousemove', this.handleMouseMoveBound);
+    document.body.addEventListener('mousemove', this.handleMouseMove);
 
-    window.addEventListener('mouseout', this.boundHandleWindowMouseOut);
+    window.addEventListener('mouseout', this.handleWindowMouseOut);
 
     return event;
   }
 
-  private handleMouseMove(event: MouseEvent): void {
+  private handleMouseMove = (event: MouseEvent): void => {
     const closestHandler = this.getClosestToMouseHandler(event.clientX, event.clientY);
 
     if (closestHandler !== this.activeHandler) {

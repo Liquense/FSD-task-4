@@ -37,12 +37,12 @@ describe('Инициализация контроллера', () => {
 
     expect(mockAddListenerAfter).toBeCalledWith(
       'handlerValueChanged',
-      testController['boundPassHandlerValueChange'],
+      testController['passHandlerValueChange'],
       testController['model'],
     );
     expect(mockAddListenerAfter).toBeCalledWith(
       'handleHandlerPositionChanged',
-      testController['boundPassHandlerPositionChange'],
+      testController['passHandlerPositionChange'],
       testController['views'][0],
     );
   });

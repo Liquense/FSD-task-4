@@ -20,7 +20,7 @@ export default class Controller {
 
     addListenerAfter(
       'handlerValueChanged',
-      this.boundPassHandlerValueChange,
+      this.passHandlerValueChange,
       this.model,
     );
     addListenerAfter(
@@ -30,7 +30,7 @@ export default class Controller {
     );
     addListenerAfter(
       'handleHandlerPositionChanged',
-      this.boundPassHandlerPositionChange,
+      this.passHandlerPositionChange,
       this.views[0],
     );
 
@@ -47,7 +47,7 @@ export default class Controller {
   public addView(newView: View & Listenable): void {
     this.views.push(newView);
 
-    addListenerAfter('handleHandlerPositionChanged', this.boundPassHandlerPositionChange, newView);
+    addListenerAfter('handleHandlerPositionChanged', this.passHandlerPositionChange, newView);
     newView.passVisualProps(this.parameters);
 
     this.passSliderData();
@@ -139,17 +139,13 @@ export default class Controller {
     });
   }
 
-  private boundPassHandlerPositionChange = this.passHandlerPositionChange.bind(this);
-
   /**
    * Вызов обработки в модели, когда меняется позиция хэндлера в Виде
    * @param data
    */
-  private passHandlerPositionChange(data: { index: number; position: number }): void {
+  private passHandlerPositionChange = (data: { index: number; position: number }): void => {
     this.model.handleHandlerPositionChanged(data);
   }
-
-  private boundPassHandlerValueChange = this.passHandlerValueChange.bind(this);
 
   /**
    * Вызов обработчика в Виде, когда меняется значение хэндлера в Модели
@@ -160,9 +156,9 @@ export default class Controller {
    * @param data.item Данные на этой позиции
    * @private
    */
-  private passHandlerValueChange(
+  private passHandlerValueChange = (
     data: { index: number; relativeValue: number; item: Presentable },
-  ): void {
+  ): void => {
     this.views.forEach((view) => {
       view.handlersValuesChangedListener(data);
     });

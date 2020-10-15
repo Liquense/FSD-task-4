@@ -190,7 +190,7 @@ export default class SliderPanel implements Listenable, View {
     this.elements.wrap.prepend(this.elements.body);
 
     this.createPropertyElements('stepInput', 'step', 'Шаг');
-    this.elements.stepInput.addEventListener('change', this.boundHandleStepInputChange);
+    this.elements.stepInput.addEventListener('change', this.handleStepInputChange);
 
     this.createPropertyElements('minInput', 'min', 'Минимум');
     this.elements.minInput.addEventListener('change', this.handleMinInputChange);
@@ -199,13 +199,13 @@ export default class SliderPanel implements Listenable, View {
     this.elements.maxInput.addEventListener('change', this.handleMaxInputChange);
 
     this.createPropertyElements('orientationInput', 'orientation', 'Вертикальный?', true);
-    this.elements.orientationInput.addEventListener('change', this.boundHandleOrientationInputChange);
+    this.elements.orientationInput.addEventListener('change', this.handleOrientationInputChange);
 
     this.createPropertyElements('tooltipsVisibilityInput', 'tooltips-visibility', 'Тултипы видны?', true);
-    this.elements.tooltipsVisibilityInput.addEventListener('change', this.boundHandleTooltipVisibilityInputChange);
+    this.elements.tooltipsVisibilityInput.addEventListener('change', this.handleTooltipVisibilityInputChange);
 
     this.createPropertyElements('markupVisibilityInput', 'markup-visibility', 'Разметка видна?', true);
-    this.elements.markupVisibilityInput.addEventListener('change', this.boundMarkupInputChange);
+    this.elements.markupVisibilityInput.addEventListener('change', this.handleMarkupInputChange);
   }
 
   private newHandlerElementsClick = (): void => {
@@ -218,23 +218,17 @@ export default class SliderPanel implements Listenable, View {
     this.sliderController.addHandler(itemIndex, rangePair);
   }
 
-  private boundMarkupInputChange = this.handleMarkupInputChange.bind(this);
-
-  private handleMarkupInputChange(event: Event): void {
+  private handleMarkupInputChange = (event: Event): void => {
     this.withMarkup = (event.target as HTMLInputElement).checked;
 
     this.sliderController.setMarkupVisibility(this.withMarkup);
   }
 
-  private boundHandleOrientationInputChange = this.handleOrientationInputChange.bind(this);
-
-  private handleOrientationInputChange(event: Event): void {
+  private handleOrientationInputChange = (event: Event): void => {
     this.setOrientation((event.target as HTMLInputElement).checked);
   }
 
-  private boundHandleStepInputChange = this.handleStepInputChange.bind(this);
-
-  private handleStepInputChange(): void {
+  private handleStepInputChange = (): void => {
     const { stepInput } = this.elements;
     this.sliderController.setStep(Number.parseFloat(stepInput.value));
   }
@@ -244,10 +238,7 @@ export default class SliderPanel implements Listenable, View {
     this.sliderController.setMin(Number.parseFloat(minInput.value));
   }
 
-  private boundHandleTooltipVisibilityInputChange =
-      this.handleTooltipVisibilityInputChange.bind(this);
-
-  private handleTooltipVisibilityInputChange(): void {
+  private handleTooltipVisibilityInputChange = (): void => {
     const tooltipVisibilityInput = this.elements.tooltipsVisibilityInput;
     this.tooltipsAreVisible = tooltipVisibilityInput.checked;
     this.sliderController.setTooltipVisibility(tooltipVisibilityInput.checked);
