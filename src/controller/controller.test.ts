@@ -183,15 +183,9 @@ describe('Функции', () => {
 
     testController.removeHandler(1);
     expect(testController['model'].removeHandler).toBeCalledWith(1);
-    testController['views'].forEach((view) => {
-      expect(view.removeHandler).not.toBeCalled();
-    });
 
     testController.removeHandler(2);
     expect(testController['model'].removeHandler).toBeCalledWith(2);
-    testController['views'].forEach((view) => {
-      expect(view.removeHandler).toBeCalledWith(2);
-    });
   });
 
   test('Назначение минимума, максимума и шага', () => {

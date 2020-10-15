@@ -55,10 +55,7 @@ export default class Controller {
   }
 
   public removeHandler(handlerIndex: number): void {
-    const removeResult = this.model.removeHandler(handlerIndex);
-    if (!removeResult) { return; }
-
-    this.removeHandlerInViews(handlerIndex);
+    this.model.removeHandler(handlerIndex);
   }
 
   public setMin(newMin: number): void {
