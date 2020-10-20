@@ -1,5 +1,5 @@
-import SliderModel from './slider-model';
-import HandlerModel from './handler-model';
+import SliderModel from './sliderModel';
+import HandlerModel from './handlerModel';
 
 const testModel = new SliderModel();
 let testHandlerModel: HandlerModel;

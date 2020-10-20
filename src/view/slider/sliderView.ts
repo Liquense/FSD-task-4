@@ -11,9 +11,9 @@ import {
   standardize,
 } from '../../utils/functions';
 
-import HandlerView from './handler/handler-view';
-import RangeView from './range/range-view';
-import MarkupView from './markup/markup-view';
+import HandlerView from './handler/handlerView';
+import RangeView from './range/rangeView';
+import MarkupView from './markup/markupView';
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../../constants';
 
 export default class SliderView implements Slider {

@@ -7,7 +7,7 @@ import {
   SliderElement, Slider, HandlerViewParams,
 } from '../../../utils/interfaces-types';
 
-import TooltipView from './tooltip/tooltip-view';
+import TooltipView from './tooltip/tooltipView';
 
 export default class HandlerView implements Listenable, SliderElement {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };

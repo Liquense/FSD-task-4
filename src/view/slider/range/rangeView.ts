@@ -6,7 +6,7 @@ import {
 } from '../../../utils/functions';
 import { KeyStringObj, Orientable, ScaleOwner } from '../../../utils/interfaces-types';
 
-import HandlerView from '../handler/handler-view';
+import HandlerView from '../handler/handlerView';
 
 export default class RangeView {
   private startHandler: HandlerView;

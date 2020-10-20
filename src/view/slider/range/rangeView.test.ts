@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore,no-undef,dot-notation */
-import SliderView from '../slider-view';
-import HandlerView from '../handler/handler-view';
+import SliderView from '../sliderView';
+import HandlerView from '../handler/handlerView';
 
-import RangeView from './range-view';
+import RangeView from './rangeView';
 
-jest.mock('../handler/handler-view');
-jest.mock('../slider-view');
+jest.mock('../handler/handlerView');
+jest.mock('../sliderView');
 let testRange: RangeView;
 
 const testSlider = new SliderView(null, {});

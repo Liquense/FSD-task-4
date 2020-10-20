@@ -1,8 +1,8 @@
-import View from './plugin-view';
-import SliderView from './slider/slider-view';
+import View from './pluginView';
+import SliderView from './slider/sliderView';
 import { KeyStringObj } from '../utils/interfaces-types';
 
-jest.mock('./slider/slider-view');
+jest.mock('./slider/sliderView');
 const wrapperElement = document.createElement('div');
 document.body.appendChild(wrapperElement);
 

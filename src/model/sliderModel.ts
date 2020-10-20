@@ -1,6 +1,6 @@
 import { standardize } from '../utils/functions';
 import { Presentable, Listenable, SliderModelParams } from '../utils/interfaces-types';
-import HandlerModel, { ModelItemManager, SliderDataContainer } from './handler-model';
+import HandlerModel, { ModelItemManager, SliderDataContainer } from './handlerModel';
 
 export default class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };

@@ -1,14 +1,14 @@
 /* eslint-disable dot-notation,@typescript-eslint/ban-ts-ignore */
 import { KeyStringObj } from '../utils/interfaces-types';
-import SliderModel from '../model/slider-model';
-import View from '../view/plugin-view';
+import SliderModel from '../model/sliderModel';
+import View from '../view/pluginView';
 import { addListenerAfter } from '../utils/functions';
 
 import Controller from './controller';
 
 jest.mock('../utils/functions');
-jest.mock('../view/plugin-view');
-jest.mock('../model/slider-model');
+jest.mock('../view/pluginView');
+jest.mock('../model/sliderModel');
 
 let testController: Controller & KeyStringObj;
 const rootElement = document.createElement('div');
