@@ -36,7 +36,7 @@ module.exports = {
 		new CleanWebpackPlugin(),
 		//new BundleAnalyzerPlugin(),
 		new HtmlWebpackPlugin({
-			template: `./src/demoPage/index.html`,
+			template: `./src/demoPage/index.pug`,
 			filename: `index.html`,
 			chunks: [`index`, 'commons', 'vendors'],
 		}),
@@ -69,6 +69,10 @@ module.exports = {
 			{
 				test: /\.html$/,
 				loader: "html-loader",
+			},
+			{
+				test: /\.pug$/,
+				loader: "pug-loader"
 			},
 			{
 				test: /\.ts(x?)$/,
