@@ -59,7 +59,7 @@ export default class SliderPanel implements Listenable, View {
     return this.elements.body;
   }
 
-  public passVisualProps(
+  public updateVisuals(
     parameters?: {
       isVertical?: boolean;
       showTooltips?: boolean;
@@ -168,7 +168,7 @@ export default class SliderPanel implements Listenable, View {
     this.refreshElements();
   }
 
-  public passDataProps(props: { absoluteStep: number; min: number; max: number }): void {
+  public updateData(props: { absoluteStep: number; min: number; max: number }): void {
     const maxInput = (this.elements.maxInput as HTMLInputElement);
     if (!maxInput.value) {
       maxInput.value = props.max.toFixed(2);

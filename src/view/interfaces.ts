@@ -3,11 +3,11 @@ import { Presentable } from '../types';
 interface View {
   getBody(): HTMLElement;
 
-  passVisualProps(
+  updateVisuals(
     parameters?: { isVertical?: boolean; tooltipsVisible?: boolean; withMarkup?: boolean }
   ): void;
 
-  passDataProps(
+  updateData(
     sliderData: { step?: number; absoluteStep: number; min: number; max: number }
   ): void;
 

@@ -4,8 +4,8 @@ import { KeyStringObj, Presentable } from '../../../types';
 
 import { calculateElementCenter } from '../../../utils/functions';
 
-import { SliderElement } from '../../interfaces';
-import { HandlerViewParams, Slider } from '../../types';
+import { Slider, SliderElement } from '../../interfaces';
+import { HandlerViewParams } from '../../types';
 
 import TooltipView from './tooltip/tooltipView';
 

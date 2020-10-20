@@ -32,7 +32,7 @@ export default class Controller {
     this.views.push(newView);
 
     addListenerAfter('handleHandlerPositionChanged', this.passHandlerPositionChange, newView);
-    newView.passVisualProps(this.parameters);
+    newView.updateVisuals(this.parameters);
 
     this.passSliderData();
     this.passHandlersData(newView, this.parameters?.handlers);
@@ -43,67 +43,41 @@ export default class Controller {
   }
 
   public setMin(newMin: number): void {
-    if (newMin === null || newMin === undefined) {
-      return;
-    }
-
     this.model.setMin(newMin);
     this.passSliderData();
   }
 
   public setMax(newMax: number): void {
-    if (newMax === null || newMax === undefined) {
-      return;
-    }
-
     this.model.setMax(newMax);
     this.passSliderData();
   }
 
   public setStep(newStep: number): void {
-    if (newStep === null || newStep === undefined) {
-      return;
-    }
-
     this.model.setStep(newStep);
     this.passSliderData();
   }
 
-  public setTooltipVisibility(newState: boolean): void {
-    if (newState === null || newState === undefined) {
-      return;
-    }
-
+  public setTooltipVisibility(isVisible: boolean): void {
     this.views.forEach((view) => {
-      view.passVisualProps({ tooltipsVisible: newState });
+      view.updateVisuals({ tooltipsVisible: isVisible });
     });
   }
 
   public setVertical(isVertical: boolean): void {
-    if (isVertical === null || isVertical === undefined) {
-      return;
-    }
-
     this.views.forEach((view) => {
-      view.passVisualProps({ isVertical });
+      view.updateVisuals({ isVertical });
     });
   }
 
   public setMarkupVisibility(isVisible: boolean): void {
-    if (isVisible === null || isVisible === undefined) {
-      return;
-    }
-
     this.views.forEach((view) => {
-      view.passVisualProps({ withMarkup: isVisible });
+      view.updateVisuals({ withMarkup: isVisible });
     });
   }
 
   public addHandler(itemIndex: number, rangePair?: number | string): void {
     const handlerData = this.model.addHandler(itemIndex);
-    if (!handlerData) {
-      return;
-    }
+    if (!handlerData) { return; }
 
     this.addHandlerView({ ...handlerData, rangePair });
   }
@@ -134,27 +108,14 @@ export default class Controller {
 
   private passSliderData(): void {
     this.views.forEach((view) => {
-      view.passDataProps(this.model.getSliderData());
+      view.updateData(this.model.getSliderData());
     });
   }
 
-  /**
-   * Вызов обработки в модели, когда меняется позиция хэндлера в Виде
-   * @param data
-   */
   private passHandlerPositionChange = (data: { index: number; position: number }): void => {
     this.model.handleHandlerPositionChanged(data);
   }
 
-  /**
-   * Вызов обработчика в Виде, когда меняется значение хэндлера в Модели
-   * @param data
-   * @param data.index Индекс хэндлера
-   * @param data.relativeValue Относительное значение (от 0 до 1),
-   * которое Вид будет преобразовывать в смещение
-   * @param data.item Данные на этой позиции
-   * @private
-   */
   private passHandlerValueChange = (
     data: { index: number; relativeValue: number; item: Presentable },
   ): void => {

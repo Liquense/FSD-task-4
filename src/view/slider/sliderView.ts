@@ -11,8 +11,8 @@ import {
   standardize,
 } from '../../utils/functions';
 
-import { Slider, SliderViewParams, SliderViewUpdateParams } from '../types';
-import { View } from '../interfaces';
+import { SliderViewParams, SliderViewUpdateParams } from '../types';
+import { Slider, View } from '../interfaces';
 
 import HandlerView from './handler/handlerView';
 import RangeView from './range/rangeView';

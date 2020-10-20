@@ -46,13 +46,13 @@ export default class PluginView implements Listenable, View {
     this.slider.createRanges();
   }
 
-  public passVisualProps(parameters?: {
+  public updateVisuals(parameters?: {
       isVertical?: boolean; tooltipsVisible?: boolean; withMarkup?: boolean;
   }): void {
     this.slider.update(parameters);
   }
 
-  public passDataProps(sliderData: { min?: number; max?: number; step?: number }): void {
+  public updateData(sliderData: { min?: number; max?: number; step?: number }): void {
     this.slider.update(sliderData);
   }
 

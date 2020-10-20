@@ -57,7 +57,7 @@ describe('Инициализация контроллера', () => {
     testController = new Controller(rootElement);
 
     expect(testController['model'].getSliderData).toBeCalled();
-    expect(testController['views'][0].passDataProps).toBeCalledWith(testData);
+    expect(testController['views'][0].updateData).toBeCalledWith(testData);
   });
 
   describe('Передача данных о хэндлерах в вид', () => {
@@ -199,7 +199,7 @@ describe('Функции', () => {
     expect(testController['model'].setMax).not.toBeCalled();
     expect(testController['model'].setStep).not.toBeCalled();
     testController['views'].forEach((view) => {
-      expect(view.passDataProps).not.toBeCalled();
+      expect(view.updateData).not.toBeCalled();
     });
 
     const randomNumber = Math.random();
@@ -208,19 +208,19 @@ describe('Функции', () => {
     testController.setMin(1);
     expect(testController['model'].setMin).toBeCalledWith(1);
     testController['views'].forEach((view) => {
-      expect(view.passDataProps).toBeCalledWith(testController['model'].getSliderData());
+      expect(view.updateData).toBeCalledWith(testController['model'].getSliderData());
     });
 
     testController.setMax(2);
     expect(testController['model'].setMax).toBeCalledWith(2);
     testController['views'].forEach((view) => {
-      expect(view.passDataProps).toBeCalledWith(testController['model'].getSliderData());
+      expect(view.updateData).toBeCalledWith(testController['model'].getSliderData());
     });
 
     testController.setStep(3);
     expect(testController['model'].setStep).toBeCalledWith(3);
     testController['views'].forEach((view) => {
-      expect(view.passDataProps).toBeCalledWith(testController['model'].getSliderData());
+      expect(view.updateData).toBeCalledWith(testController['model'].getSliderData());
     });
   });
 
@@ -231,22 +231,22 @@ describe('Функции', () => {
     testController.setVertical(null);
     testController.setMarkupVisibility(null);
     testController['views'].forEach((view) => {
-      expect(view.passVisualProps).not.toBeCalled();
+      expect(view.updateVisuals).not.toBeCalled();
     });
 
     testController.setTooltipVisibility(true);
     testController['views'].forEach((view) => {
-      expect(view.passVisualProps).toBeCalledWith({ tooltipsVisible: true });
+      expect(view.updateVisuals).toBeCalledWith({ tooltipsVisible: true });
     });
 
     testController.setVertical(false);
     testController['views'].forEach((view) => {
-      expect(view.passVisualProps).toBeCalledWith({ isVertical: false });
+      expect(view.updateVisuals).toBeCalledWith({ isVertical: false });
     });
 
     testController.setMarkupVisibility(true);
     testController['views'].forEach((view) => {
-      expect(view.passVisualProps).toBeCalledWith({ withMarkup: true });
+      expect(view.updateVisuals).toBeCalledWith({ withMarkup: true });
     });
   });
 

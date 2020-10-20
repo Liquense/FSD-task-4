@@ -172,6 +172,7 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
   }
 
   public setMin(min: number): void {
+    if (min === null || min === undefined) { return; }
     if (min > this.max) { return; }
 
     this.min = min;
@@ -179,6 +180,7 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
   }
 
   public setMax(max: number): void {
+    if (max === null || max === undefined) { return; }
     if (max < this.min) { return; }
 
     this.max = max;
