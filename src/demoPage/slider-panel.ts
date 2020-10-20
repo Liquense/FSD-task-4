@@ -1,12 +1,12 @@
 import Controller from '../controller/controller';
 import {
-  Listenable, View, KeyStringObj, Presentable, SliderPluginParams,
-} from '../utils/interfaces-types';
-import {
   createButton, createElement, createInput, createLabel,
 } from '../utils/functions';
 
 import './slider-panel.scss';
+import { Listenable } from '../interfaces';
+import { View } from '../view/interfaces';
+import { KeyStringObj, Presentable, SliderPluginParams } from '../types';
 
 export default class SliderPanel implements Listenable, View {
   listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };

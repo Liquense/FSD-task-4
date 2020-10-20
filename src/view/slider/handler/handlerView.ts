@@ -1,11 +1,11 @@
 import { DEFAULT_SLIDER_CLASS } from '../../../constants';
+import { Listenable } from '../../../interfaces';
+import { KeyStringObj, Presentable } from '../../../types';
 
 import { calculateElementCenter } from '../../../utils/functions';
-import {
-  KeyStringObj, Presentable,
-  Listenable,
-  SliderElement, Slider, HandlerViewParams,
-} from '../../../utils/interfaces-types';
+
+import { SliderElement } from '../../interfaces';
+import { HandlerViewParams, Slider } from '../../types';
 
 import TooltipView from './tooltip/tooltipView';
 

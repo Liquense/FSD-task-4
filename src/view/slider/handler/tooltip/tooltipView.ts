@@ -1,10 +1,7 @@
 import { DEFAULT_SLIDER_CLASS } from '../../../../constants';
+import { KeyStringObj, Presentable } from '../../../../types';
 
-import {
-  KeyStringObj,
-  Presentable,
-  SliderElement,
-} from '../../../../utils/interfaces-types';
+import { SliderElement } from '../../../interfaces';
 
 type TooltipViewParams = {
   bodyHTML?: string;

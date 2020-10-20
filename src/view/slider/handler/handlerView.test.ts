@@ -1,7 +1,10 @@
-import HandlerView from './handlerView';
+import { KeyStringObj, Presentable } from '../../../types';
+
 import SliderView from '../sliderView';
+
+import HandlerView from './handlerView';
+
 import TooltipView from './tooltip/tooltipView';
-import { KeyStringObj, Presentable } from '../../../utils/interfaces-types';
 
 import Mock = jest.Mock;
 

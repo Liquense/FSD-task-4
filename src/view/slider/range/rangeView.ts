@@ -1,10 +1,12 @@
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_OPTIONS } from '../../../constants';
+import { KeyStringObj } from '../../../types';
 
 import {
   addListenerAfter,
   removeListener,
 } from '../../../utils/functions';
-import { KeyStringObj, Orientable, ScaleOwner } from '../../../utils/interfaces-types';
+
+import { Orientable, ScaleOwner } from '../../interfaces';
 
 import HandlerView from '../handler/handlerView';
 

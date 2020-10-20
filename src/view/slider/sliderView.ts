@@ -1,8 +1,8 @@
 import { ResizeObserver } from 'resize-observer';
 
-import {
-  KeyStringObj, Presentable, Slider, SliderViewParams, SliderViewUpdateParams, View,
-} from '../../utils/interfaces-types';
+import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../../constants';
+import { KeyStringObj, Presentable } from '../../types';
+
 import {
   addListenerAfter,
   clamp,
@@ -11,10 +11,12 @@ import {
   standardize,
 } from '../../utils/functions';
 
+import { Slider, SliderViewParams, SliderViewUpdateParams } from '../types';
+import { View } from '../interfaces';
+
 import HandlerView from './handler/handlerView';
 import RangeView from './range/rangeView';
 import MarkupView from './markup/markupView';
-import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../../constants';
 
 export default class SliderView implements Slider {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };

@@ -1,8 +1,8 @@
 /* eslint-disable dot-notation,no-undef,@typescript-eslint/ban-ts-ignore */
-import { KeyStringObj } from '../utils/interfaces-types';
+import { KeyStringObj } from '../types';
 
 import SliderModel from './sliderModel';
-import HandlerModel from './handlerModel';
+import HandlerModel from './handler/handlerModel';
 
 let testModel: SliderModel & KeyStringObj;
 

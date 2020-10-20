@@ -1,9 +1,10 @@
 /* eslint-disable dot-notation,@typescript-eslint/ban-ts-ignore */
-import { KeyStringObj } from '../utils/interfaces-types';
+import { KeyStringObj } from '../types';
+
 import SliderModel from '../model/sliderModel';
+
 import View from '../view/pluginView';
 import { addListenerAfter } from '../utils/functions';
-
 import Controller from './controller';
 
 jest.mock('../utils/functions');

@@ -1,7 +1,7 @@
-import { clamp } from '../utils/functions';
-import {
-  Presentable, Listenable, Handler, SliderDataContainer, ModelItemManager,
-} from '../utils/interfaces-types';
+import { clamp } from '../../utils/functions';
+import { Listenable } from '../../interfaces';
+import { Handler, SliderDataContainer, ModelItemManager } from '../interfaces';
+import { Presentable } from '../../types';
 
 class HandlerModel implements Listenable, Handler {
   public listenDictionary: {[key: string]: { func: Function; listeners: Function[] }};

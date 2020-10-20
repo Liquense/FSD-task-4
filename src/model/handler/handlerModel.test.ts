@@ -1,4 +1,4 @@
-import SliderModel from './sliderModel';
+import SliderModel from '../sliderModel';
 import HandlerModel from './handlerModel';
 
 const testModel = new SliderModel();

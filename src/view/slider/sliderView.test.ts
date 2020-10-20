@@ -1,5 +1,4 @@
 /* eslint-disable dot-notation,@typescript-eslint/ban-ts-ignore */
-
 import PluginView from '../pluginView';
 
 import SliderView from './sliderView';

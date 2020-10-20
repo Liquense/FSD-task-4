@@ -1,5 +1,5 @@
 /* eslint-disable dot-notation */
-import { KeyStringObj, Presentable } from '../../../../utils/interfaces-types';
+import { KeyStringObj, Presentable } from '../../../../types';
 
 import SliderView from '../../sliderView';
 

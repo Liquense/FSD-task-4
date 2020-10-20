@@ -1,6 +1,8 @@
+import { KeyStringObj } from '../types';
+
 import View from './pluginView';
+
 import SliderView from './slider/sliderView';
-import { KeyStringObj } from '../utils/interfaces-types';
 
 jest.mock('./slider/sliderView');
 const wrapperElement = document.createElement('div');

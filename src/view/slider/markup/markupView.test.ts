@@ -1,10 +1,9 @@
 /* eslint-disable dot-notation,no-undef */
-import { KeyStringObj } from '../../../utils/interfaces-types';
+import { KeyStringObj } from '../../../types';
 
 import View from '../../pluginView';
 
 import SliderView from '../sliderView';
-
 import MarkupView from './markupView';
 
 document.body.innerHTML = '<div class="liquidSlider liquidSlider_horizontal"></div>';
