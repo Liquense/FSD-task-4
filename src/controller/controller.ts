@@ -67,7 +67,7 @@ export default class Controller {
     this.view.updateVisuals({ withMarkup: isVisible });
   }
 
-  public getViewParameters(): SliderViewParams {
+  public getVisualParameters(): SliderViewParams {
     return this.view.getViewData();
   }
 

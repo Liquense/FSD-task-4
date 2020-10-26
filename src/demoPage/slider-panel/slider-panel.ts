@@ -55,7 +55,7 @@ class SliderPanel {
     const handlersData = this.slider.getHandlersData();
     this.initHandlers(handlersData);
 
-    const viewData = this.slider.getViewParameters();
+    const viewData = this.slider.getVisualParameters();
     this.updateVisuals(viewData);
     this.updateSliderData(this.slider.getSliderParameters());
   }

@@ -232,7 +232,7 @@ describe('Функции', () => {
     expect(testController['model'].getStep).toBeCalled();
 
     mockView.mockClear();
-    testController.getViewParameters();
+    testController.getVisualParameters();
     expect(testController['view'].getViewData).toBeCalledTimes(1);
   });
 });
