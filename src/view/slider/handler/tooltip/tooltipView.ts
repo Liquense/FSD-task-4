@@ -6,7 +6,7 @@ import { SliderElement } from '../../../interfaces';
 type TooltipViewParams = {
   bodyHTML?: string;
   item: Presentable;
-  visibilityState?: boolean;
+  isVisible?: boolean;
 };
 
 export default class TooltipView {
@@ -70,7 +70,7 @@ export default class TooltipView {
     const mergedParameters = { ...TooltipView.DEFAULT_PARAMETERS, ...parameters };
     this.setItem(mergedParameters.item);
 
-    this.setVisibility(mergedParameters.visibilityState ?? true);
+    this.setVisibility(mergedParameters.isVisible ?? true);
   }
 
   private show(): void {

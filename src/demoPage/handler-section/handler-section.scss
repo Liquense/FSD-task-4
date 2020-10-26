@@ -1,0 +1,59 @@
+.handler-section {
+  display: grid;
+  align-items: center;
+  column-gap: 10px;
+  grid-template-columns: 1fr 1fr 15px;
+  border-top: dashed 1px black;
+  padding-top: 10px;
+
+  &__position {
+    height: fit-content;
+  }
+
+  &__item {
+    display: grid;
+    align-items: center;
+    grid-template-columns: max-content 1fr;
+    column-gap: 10px;
+    row-gap: 10px;
+  }
+
+  &__item-text,
+  &__item-caption {
+    text-align: center;
+    margin: 0;
+  }
+
+  &__item-text {
+    border-radius: 5px;
+    padding: 5px;
+    border: solid 1px #eeeeee;
+    color: #999999;
+    word-break: break-all;
+    text-align: center;
+    overflow-y: scroll;
+    max-height: 17px;
+  }
+
+  &__remove-button {
+    width: 15px;
+    height: 15px;
+    line-height: 11px;
+    text-align: center;
+    font-size: 11px;
+    padding: 0;
+    border-radius: 50%;
+    color: indianred;
+    border: 2px solid indianred;
+    background-color: white;
+    font-weight: bold;
+    align-self: center;
+    outline: none;
+
+    &:hover {
+      background-color: indianred;
+      color: white;
+      cursor: pointer;
+    }
+  }
+}

@@ -2,25 +2,24 @@ type KeyStringObj = { [key: string]: any };
 
 type Presentable = { toString(): string } | string;
 
+type HandlerParams = { handlerIndex: number; positionPart: number; item: Presentable }
+
+type HandlerPluginParams = { itemIndex: number; rangePair?: number | 'start' | 'end' }
+
 type SliderPluginParams = {
+  min?: number;
+  max?: number;
+  step?: number;
   items?: Presentable[];
   values?: number[];
   isRange?: boolean;
   isVertical?: boolean;
-  isReversed?: boolean;
-  min?: number;
-  max?: number;
-  step?: number;
-  showTooltips?: boolean;
+  isInverted?: boolean;
+  isTooltipsVisible?: boolean;
   withMarkup?: boolean;
-  handlers?: {
-    itemIndex: number;
-    additionalClasses?: string;
-    rangePair?: number | 'start' | 'end';
-    tooltip?: {
-      additionalClasses?: string;
-    };
-  }[];
+  handlers?: HandlerPluginParams[];
 };
 
-export { Presentable, SliderPluginParams, KeyStringObj };
+export {
+  Presentable, SliderPluginParams, KeyStringObj, HandlerPluginParams, HandlerParams,
+};

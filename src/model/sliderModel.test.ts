@@ -93,12 +93,12 @@ describe('Инициализация', () => {
       test('создание хэндлеров без пользовательского набора значений', () => {
         testModel['createHandlers'](testHandlers);
         expect(testModel['handlers'][0].handlerIndex).toBe(0);
-        expect(testModel['handlers'][0].itemIndex).toBe(0);
+        expect(testModel['handlers'][0].getItemIndex()).toBe(0);
         expect(testModel['handlers'][0].getItem()).toBe(0);
         expect(testModel['handlers'][0].getPosition()).toBe(0);
 
         expect(testModel['handlers'][1].handlerIndex).toBe(1);
-        expect(testModel['handlers'][1].itemIndex).toBe(4);
+        expect(testModel['handlers'][1].getItemIndex()).toBe(4);
         expect(testModel['handlers'][1].getItem()).toBe(4);
         expect(testModel['handlers'][1].getPosition()).toBe(0.4);
       });
@@ -116,12 +116,12 @@ describe('Инициализация', () => {
         testModel.setItems([1, 'test', 3]);
         testModel['createHandlers'](testHandlers);
         expect(testModel['handlers'][0].handlerIndex).toBe(0);
-        expect(testModel['handlers'][0].itemIndex).toBe(1);
+        expect(testModel['handlers'][0].getItemIndex()).toBe(1);
         expect(testModel['handlers'][0].getItem()).toBe('test');
         expect(testModel['handlers'][0].getPosition()).toBe(0.5);
 
         expect(testModel['handlers'][1].handlerIndex).toBe(1);
-        expect(testModel['handlers'][1].itemIndex).toBe(2);
+        expect(testModel['handlers'][1].getItemIndex()).toBe(2);
         expect(testModel['handlers'][1].getItem()).toBe(3);
         expect(testModel['handlers'][1].getPosition()).toBe(1);
       });
@@ -228,9 +228,8 @@ describe('Инициализация', () => {
     });
 
     test('Получение из модели данных для слайдера', () => {
-      expect(testModel.getSliderData()).toStrictEqual({
+      expect(testModel.getPositioningData()).toStrictEqual({
         step: testModel['step'] / testModel.getRange(),
-        absoluteStep: testModel['step'],
         min: testModel['min'],
         max: testModel['max'],
       });
@@ -265,7 +264,7 @@ describe('Инициализация', () => {
       const testedHandler = testModel['handlers'][0];
 
       expect(testModel.handlerValueChanged(testedHandler)).toStrictEqual({
-        index: 0, relativeValue: testedHandler.getPosition(), item: testedHandler.getItem(),
+        handlerIndex: 0, positionPart: 0.5, item: 5, itemIndex: 5,
       });
     });
   });
@@ -308,7 +307,7 @@ describe('Функции', () => {
         newMin = 5;
         testModel.setMin(newMin);
         expect(testModel.getMin()).toBe(newMin);
-        expect(testModel['handlers'][0].itemIndex).toBeGreaterThanOrEqual(newMin);
+        expect(testModel['handlers'][0].getItemIndex()).toBeGreaterThanOrEqual(newMin);
       });
     });
 
@@ -368,7 +367,7 @@ describe('Функции', () => {
 
     test('Штатная ситуация', () => {
       testModel.addHandler(7);
-      expect(testModel['handlers'].pop().itemIndex).toBe(7);
+      expect(testModel['handlers'].pop().getItemIndex()).toBe(7);
       expect(testModel['handlers']).toStrictEqual(oldHandlers);
     });
 

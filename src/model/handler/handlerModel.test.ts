@@ -14,7 +14,7 @@ test('Инициализация', () => {
 
   testHandlerModel = new HandlerModel('testVal', 5, testModel, 0);
   expect(testHandlerModel.getItem()).toBe('testVal');
-  expect(testHandlerModel.itemIndex).toBe(5);
+  expect(testHandlerModel.getItemIndex()).toBe(5);
   expect(testHandlerModel.handlerIndex).toBe(0);
   expect(testHandlerModel.setItemIndex).toBeCalledWith(5);
 
@@ -29,11 +29,11 @@ test('Установка нового значения', () => {
   const spyHandlerValueChanged = jest.spyOn(testModel, 'handlerValueChanged');
 
   const newItemIndex = 9; const
-    oldItemIndex = testHandlerModel.itemIndex;
+    oldItemIndex = testHandlerModel.getItemIndex();
   testHandlerModel.setItemIndex(newItemIndex);
   expect(spyCheckItemOccupancy).toBeCalledWith(newItemIndex);
-  expect(testHandlerModel.itemIndex).toBe(newItemIndex);
-  expect(spyCalculateValue).toBeCalledWith(testHandlerModel.itemIndex);
+  expect(testHandlerModel.getItemIndex()).toBe(newItemIndex);
+  expect(spyCalculateValue).toBeCalledWith(testHandlerModel.getItemIndex());
   expect(spyReleaseItem).toBeCalledWith(oldItemIndex);
   expect(spyOccupyItem).toBeCalledWith(newItemIndex, testHandlerModel.handlerIndex);
   expect(testHandlerModel.getPosition()).toBe(0.9);

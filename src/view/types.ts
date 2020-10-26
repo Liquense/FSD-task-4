@@ -1,24 +1,15 @@
-import { Presentable } from '../types';
+import { HandlerParams } from '../types';
 
-type SliderViewUpdateParams = {
-  min?: number; max?: number; step?: number;
-  isVertical?: boolean; tooltipsVisible?: boolean; withMarkup?: boolean;
-}
+type SliderViewUpdateParams = { min?: number; max?: number; step?: number } & SliderViewParams;
 
 type SliderViewParams = {
   isVertical?: boolean;
-  showTooltips?: boolean;
-  isReversed?: boolean;
+  isTooltipsVisible?: boolean;
+  isInverted?: boolean;
   withMarkup?: boolean;
 }
 
-type HandlerViewParams = {
-  handlerIndex: number;
-  positionPart: number;
-  item: Presentable;
-  withTooltip?: boolean;
-  rangePair?: number | string;
-}
+type HandlerViewParams = HandlerParams & { isTooltipVisible?: boolean; rangePair?: number | string }
 
 export {
   SliderViewUpdateParams, SliderViewParams, HandlerViewParams,

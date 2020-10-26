@@ -29,16 +29,15 @@ export default class HandlerView implements Listenable, SliderElement {
 
   private additionalClasses: string[] = [];
 
-  constructor(
-    private ownerSlider: Slider,
-    params: HandlerViewParams,
-  ) {
+  constructor(private ownerSlider: Slider, params: HandlerViewParams) {
     this.initProperties(params);
     this.createElement(ownerSlider.getHandlersContainer());
 
     this.index = params.handlerIndex;
     this.tooltip = new TooltipView(
-      this.element.wrap, this, { visibilityState: params.withTooltip ?? true, item: params.item },
+      this.element.wrap,
+      this,
+      { isVisible: params.isTooltipVisible ?? true, item: params.item },
     );
     this.setItem(params.item);
 

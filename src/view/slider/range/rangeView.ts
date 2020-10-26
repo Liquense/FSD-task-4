@@ -75,14 +75,10 @@ export default class RangeView {
 
   private addHandlersRefreshListener(): void {
     if (this.startHandler) {
-      addListenerAfter(
-        'refreshPosition', this.refreshPosition, this.startHandler,
-      );
+      addListenerAfter('refreshPosition', this.refreshPosition, this.startHandler);
     }
     if (this.endHandler) {
-      addListenerAfter(
-        'refreshPosition', this.refreshPosition, this.endHandler,
-      );
+      addListenerAfter('refreshPosition', this.refreshPosition, this.endHandler);
     }
   }
 

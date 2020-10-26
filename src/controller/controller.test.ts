@@ -52,11 +52,11 @@ describe('Инициализация контроллера', () => {
     const testData = {
       step: 0, absoluteStep: 0, min: 0, max: 0,
     };
-    SliderModel.prototype.getSliderData = jest.fn(() => testData);
+    SliderModel.prototype.getPositioningData = jest.fn(() => testData);
 
     testController = new Controller(rootElement);
 
-    expect(testController['model'].getSliderData).toBeCalled();
+    expect(testController['model'].getPositioningData).toBeCalled();
     expect(testController['views'][0].updateData).toBeCalledWith(testData);
   });
 
@@ -124,42 +124,6 @@ describe('Функции', () => {
     testController = new Controller(rootElement);
   });
 
-  describe('Добавление новых видов', () => {
-    test('Один', () => {
-      const handlersDataModel = testController['model'].getHandlersData();
-
-      const views = [...testController['views']];
-      const testView = new View(null);
-      testController.addView(testView);
-      views.push(testView);
-      expect(testController['views']).toStrictEqual(views);
-      expect(testView.initHandlers).toBeCalledWith(handlersDataModel);
-
-      const testHandlers = [{ itemIndex: 2 }, { itemIndex: 3, somethingElse: 'test1' }];
-      testController = new Controller(rootElement, { handlers: testHandlers });
-      testController.addView(testView);
-      handlersDataModel.handlersArray[0] = {
-        ...handlersDataModel.handlersArray[0],
-        ...testHandlers[0],
-      };
-      expect(testView.initHandlers).toBeCalledWith(handlersDataModel);
-    });
-
-    test('Несколько', () => {
-      const mockAddView = jest.spyOn(testController, 'addView');
-
-      const oldViews = [...testController['views']];
-      const testViews = [
-        new View(null, null),
-        new View(null, null),
-      ];
-      testController.addViews(testViews);
-      const newViews = [...oldViews, ...testViews];
-      expect(testController['views']).toStrictEqual(newViews);
-      expect(mockAddView).toBeCalledTimes(testViews.length);
-    });
-  });
-
   test('Добавление хэндлера', () => {
     const testHandlerData = { test1: 'test', test2: 'another data' };
 
@@ -203,24 +167,24 @@ describe('Функции', () => {
     });
 
     const randomNumber = Math.random();
-    (testController['model'].getSliderData as jest.Mock).mockImplementation(() => randomNumber);
+    (testController['model'].getPositioningData as jest.Mock).mockImplementation(() => randomNumber);
 
     testController.setMin(1);
     expect(testController['model'].setMin).toBeCalledWith(1);
     testController['views'].forEach((view) => {
-      expect(view.updateData).toBeCalledWith(testController['model'].getSliderData());
+      expect(view.updateData).toBeCalledWith(testController['model'].getPositioningData());
     });
 
     testController.setMax(2);
     expect(testController['model'].setMax).toBeCalledWith(2);
     testController['views'].forEach((view) => {
-      expect(view.updateData).toBeCalledWith(testController['model'].getSliderData());
+      expect(view.updateData).toBeCalledWith(testController['model'].getPositioningData());
     });
 
     testController.setStep(3);
     expect(testController['model'].setStep).toBeCalledWith(3);
     testController['views'].forEach((view) => {
-      expect(view.updateData).toBeCalledWith(testController['model'].getSliderData());
+      expect(view.updateData).toBeCalledWith(testController['model'].getPositioningData());
     });
   });
 
@@ -262,10 +226,12 @@ describe('Функции', () => {
   test('Передача изменения значения хэндлера в вид', () => {
     mockView.mockClear();
 
-    const testData = { index: 0, relativeValue: 0.5, item: 'test!' };
+    const testData = {
+      handlerIndex: 0, positionPart: 0.5, item: 'test!', itemIndex: 0,
+    };
     testController['passHandlerValueChange'](testData);
 
-    expect(testController['views'][0].handlersValuesChangedListener)
+    expect(testController['views'][0].handlerValueChangedListener)
       .toBeCalledWith(testData);
   });
 });

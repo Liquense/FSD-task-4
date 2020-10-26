@@ -1,38 +1,28 @@
-import { Presentable } from '../types';
+import { HandlerModelParams, PositioningParams } from '../model/types';
+
+import { SliderViewParams } from './types';
 
 interface View {
   getBody(): HTMLElement;
 
-  updateVisuals(
-    parameters?: { isVertical?: boolean; tooltipsVisible?: boolean; withMarkup?: boolean }
-  ): void;
+  getViewData(): SliderViewParams;
 
-  updateData(
-    sliderData: { step?: number; absoluteStep: number; min: number; max: number }
-  ): void;
+  updateVisuals(parameters?: SliderViewParams): void;
+
+  updateData(sliderData: PositioningParams): void;
 
   handleHandlerPositionChanged(
     handlerIndex: number,
     standardizedPosition: number,
   ): { view: View; index: number; position: number };
 
-  handlersValuesChangedListener(
-    data: { index: number; relativeValue: number; item: Presentable }
+  handlerValueChangedListener(data: HandlerModelParams): void;
+
+  initHandlers(
+    handlersData: { customHandlers: boolean; handlersArray: HandlerModelParams[] }
   ): void;
 
-  initHandlers(handlersData: {
-    customHandlers: boolean;
-    handlersArray: {
-      handlerIndex: number;
-      positionPart: number;
-      item: Presentable;
-      itemIndex: number;
-    }[];
-  }): void;
-
-  addHandler(
-    handlerParams: { positionPart: number; item: Presentable; handlerIndex: number }
-  ): void;
+  addHandler(handlerData: HandlerModelParams): void;
 
   removeHandler(handlerIndex: number): void;
 }

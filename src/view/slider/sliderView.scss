@@ -27,7 +27,7 @@ $minmaxMargin: 5px;
 $minMaxFontSize: 10px;
 
 .liquid-slider {
-  $sliderBlock: &;
+  $block: &;
 
   outline: none;
   display: flex;
@@ -40,23 +40,23 @@ $minMaxFontSize: 10px;
     padding-top: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipPadding*2;
     padding-bottom: $handlerAddition/2 + $handlerBorderWidth;
 
-    #{$sliderBlock}__body {
+    #{$block}__body {
       width: inherit;
       min-width: inherit;
     }
 
-    #{$sliderBlock}__scale {
+    #{$block}__scale {
       width: inherit;
       min-width: inherit;
       height: $scaleThickness;
     }
 
-    #{$sliderBlock}__range {
+    #{$block}__range {
       height: $scaleThickness - $scaleBorderWidth*2;
       top: $scaleBorderWidth;
     }
 
-    #{$sliderBlock}__markup-wrap {
+    #{$block}__markup-wrap {
       position: absolute;
       top: 0;
       left: 0;
@@ -64,7 +64,7 @@ $minMaxFontSize: 10px;
       height: $scaleThickness;
     }
 
-    #{$sliderBlock}__markup {
+    #{$block}__markup {
       position: absolute;
       background-color: rgba(0, 0, 0, 0.3);
       bottom: - abs($markupLength - $scaleThickness);
@@ -72,21 +72,21 @@ $minMaxFontSize: 10px;
       height: $markupLength;
     }
 
-    #{$sliderBlock}__min {
+    #{$block}__min {
       margin-right: $minmaxMargin;
     }
 
-    #{$sliderBlock}__max {
+    #{$block}__max {
       margin-left: $minmaxMargin;
     }
 
-    #{$sliderBlock}__handlers {
+    #{$block}__handlers {
       height: $scaleThickness;
       width: inherit;
       min-width: inherit;
     }
 
-    #{$sliderBlock}__handler-container {
+    #{$block}__handler-container {
       flex-direction: column-reverse;
       bottom: - abs($scaleThickness - $handlerSize) / 2;
     }
@@ -100,48 +100,48 @@ $minMaxFontSize: 10px;
     padding-right: $handlerAddition/2 + $handlerBorderWidth + $tooltipHeight + $tooltipPadding*2;
     margin-right: $minmaxMargin;
 
-    #{$sliderBlock}__body {
+    #{$block}__body {
       height: inherit;
       min-height: inherit;
     }
 
-    #{$sliderBlock}__scale {
+    #{$block}__scale {
       height: inherit;
       min-height: inherit;
       width: $scaleThickness;
     }
 
-    #{$sliderBlock}__range {
+    #{$block}__range {
       width: $scaleThickness - $scaleBorderWidth*2;
       left: $scaleBorderWidth;
     }
 
-    &#{$sliderBlock}__markup-wrap {
+    &#{$block}__markup-wrap {
       height: inherit;
       width: $scaleThickness;
     }
 
-    #{$sliderBlock}__markup {
+    #{$block}__markup {
       left: - abs($markupLength - $scaleThickness);
       height: $markupThickness;
       width: $markupLength;
     }
 
-    #{$sliderBlock}__min {
+    #{$block}__min {
       margin-bottom: $minmaxMargin;
     }
 
-    #{$sliderBlock}__max {
+    #{$block}__max {
       margin-top: $minmaxMargin;
     }
 
-    #{$sliderBlock}__handlers {
+    #{$block}__handlers {
       width: $scaleThickness;
       height: inherit;
       min-height: inherit;
     }
 
-    #{$sliderBlock}__handler-container {
+    #{$block}__handler-container {
       flex-direction: row;
       left: - abs($scaleThickness - $handlerSize) / 2;
     }
@@ -208,7 +208,7 @@ $minMaxFontSize: 10px;
     &:hover, &:focus {
       border-color: #593832;
 
-      + #{$sliderBlock}__handler-tooltip {
+      + #{$block}__handler-tooltip {
         visibility: visible;
       }
     }

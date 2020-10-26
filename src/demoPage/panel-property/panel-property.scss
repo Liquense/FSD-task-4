@@ -1,0 +1,79 @@
+$inputTextWidth: 100px;
+$checkboxSize: 15px;
+
+.panel-property {
+  $block: &;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 10px;
+  row-gap: 10px;
+
+  :first-child, :nth-child(3) {
+    justify-self: end;
+  }
+
+  :nth-child(2) {
+    justify-self: start;
+  }
+
+  &_type_checkbox {
+    #{$block}__input {
+      -webkit-appearance: none;
+      cursor: pointer;
+      padding: 0;
+      border-radius: 4px;
+      width: $checkboxSize;
+      height: $checkboxSize;
+      margin: 0 0 0 ($inputTextWidth - $checkboxSize)/2;
+      outline: none;
+
+      &:checked::after {
+        content: "";
+        transform: rotate(45deg);
+        display: block;
+        width: 4px;
+        height: 7px;
+        background-color: transparent;
+        border-color: black;
+        border-style: solid;
+        border-width: 0 1px 1px 0;
+        margin: 1px 0 0 4px;
+      }
+    }
+  }
+
+  &_type_select {
+    #{$block}__input {
+      width: $inputTextWidth;
+      border-radius: 5px;
+      padding: 2px 10px;
+
+      &:focus {
+        outline: none;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+  }
+
+  &__caption {
+    align-self: center;
+    margin: 0;
+  }
+
+  &__input {
+    width: $inputTextWidth;
+    border-radius: 10px;
+    padding: 3px 10px;
+    border: solid 1px #999999;
+    font-weight: bold;
+    align-self: center;
+    text-align: center;
+    vertical-align: baseline;
+
+    &:hover {
+      border: solid 1px #111111;
+    }
+  }
+}

@@ -1,16 +1,13 @@
 import { clamp } from '../../utils/functions';
-import { Listenable } from '../../interfaces';
 import { Handler, SliderDataContainer, ModelItemManager } from '../interfaces';
 import { Presentable } from '../../types';
 
-class HandlerModel implements Listenable, Handler {
-  public listenDictionary: {[key: string]: { func: Function; listeners: Function[] }};
-
+class HandlerModel implements Handler {
   private position: number;
 
   constructor(
         private item: Presentable,
-        public itemIndex: number,
+        private itemIndex: number,
         private readonly parentModel: SliderDataContainer & ModelItemManager,
         public handlerIndex: number,
   ) {
@@ -19,6 +16,10 @@ class HandlerModel implements Listenable, Handler {
 
   public getItem(): Presentable {
     return this.item;
+  }
+
+  public getItemIndex(): number {
+    return this.itemIndex;
   }
 
   public getPosition(): number {

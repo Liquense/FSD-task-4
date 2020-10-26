@@ -1,0 +1,22 @@
+include ../panel-property/panel-property
+include ../create-handler-section/create-handler-section
+
+mixin slider-panel()
+  article.slider-panel
+    section.js-slider-panel__body.slider-panel__body
+      div.js-slider-panel__step.slider-panel__step
+        +panel-property({caption: 'Шаг'})
+      div.js-slider-panel__min.slider-panel__min
+        +panel-property({caption: 'Минимум'})
+      div.js-slider-panel__max.slider-panel__max
+        +panel-property({caption: 'Максимум'})
+      div.js-slider-panel__orientation.slider-panel__orientation
+        +panel-property({type: 'checkbox', caption: 'Вертикальный?'})
+      div.js-slider-panel__tooltips-visibility.slider-panel__tooltips-visibility
+        +panel-property({type: 'checkbox', caption: 'Тултипы видны?'})
+      div.js-slider-panel__markup-visibility.slider-panel__markup-visibility
+        +panel-property({type: 'checkbox', caption: 'Разметка видна?'})
+      div.js-slider-panel__handlers.slider-panel__handlers
+      div.js-slider-panel__create-handler.slider-panel__create-handler
+        +create-handler-section()
+    section.js-slider-panel__slider.slider-panel__slider

@@ -53,7 +53,7 @@ describe('Создание экземпляра', () => {
     mockSetVisibility.mock.calls = [];
     const testTooltip = new TooltipView(handler.getBody(), handler,
       {
-        visibilityState: false,
+        isVisible: false,
         item: 'testValue',
         bodyHTML: '<div></div>',
       });

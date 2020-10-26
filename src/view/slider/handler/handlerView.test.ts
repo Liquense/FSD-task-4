@@ -44,22 +44,22 @@ describe('Инициализация', () => {
       expect(testHandler.getRangePair()).toBe(null);
       expect(mockTooltip).toBeCalledWith(
         testHandler.getElement().wrap,
-        testHandler, { visibilityState: true, item },
+        testHandler, { isVisible: true, item },
       );
     });
 
     test('с необязательными параметрами', () => {
       mockTooltip.mockClear();
-      const withTooltip = false;
+      const isTooltipVisible = false;
       const rangePair: string = null;
       testHandler = new HandlerView(testSlider, {
-        handlerIndex: index, positionPart, item, withTooltip, rangePair,
+        handlerIndex: index, positionPart, item, isTooltipVisible, rangePair,
       });
 
       expect(testHandler.getRangePair()).toBe(rangePair);
       expect(mockTooltip).toBeCalledWith(
         testHandler.getElement().wrap,
-        testHandler, { visibilityState: withTooltip, item },
+        testHandler, { isVisible: isTooltipVisible, item },
       );
     });
   });

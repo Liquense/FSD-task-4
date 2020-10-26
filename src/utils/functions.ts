@@ -1,5 +1,6 @@
 import { Listenable } from '../interfaces';
 import { KeyStringObj } from '../types';
+import { PositioningParams } from '../model/types';
 
 function parseClassesString(classesString: string): string[] {
   if (!classesString?.trim()) {
@@ -78,22 +79,22 @@ function roundToDecimal(numToRound: number, decimalsCount: number): number {
 }
 
 function standardize(
-  value: number, parameters: { min: number; max: number; step: number },
+  value: number, { min, max, step }: PositioningParams,
 ): number {
-  const min = Math.min(parameters.max, parameters.min);
-  const max = Math.max(parameters.max, parameters.min);
-  if (value > max) return max;
-  if (value < min) return min;
+  const realMin = Math.min(max, min);
+  const realMax = Math.max(max, min);
+  if (value > realMax) return realMax;
+  if (value < realMin) return realMin;
 
-  const remainder = (value - min) % parameters.step;
+  const remainder = (value - realMin) % step;
   if (remainder === 0) return value;
 
   let resultValue = value - remainder;
-  if ((parameters.step / 2) < remainder) {
-    resultValue += parameters.step;
+  if ((step / 2) < remainder) {
+    resultValue += step;
   }
 
-  resultValue = clamp(resultValue, min, max);
+  resultValue = clamp(resultValue, realMin, realMax);
   return roundToDecimal(resultValue, 4);
 }
 

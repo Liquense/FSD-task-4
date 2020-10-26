@@ -1,15 +1,18 @@
 /* eslint-disable no-undef */
 import '../liquidSlider';
 import '../view/slider/sliderView.scss';
-import SliderPanel from './slider-panel';
+import SliderPanel from './slider-panel/slider-panel';
 import './index.scss';
 
-const sliderInitSelector = '.js-init-slider-here';
-const panelSelector = '.panel';
+function importContext(r: __WebpackModuleApi.RequireContext): void { r.keys().forEach(r); }
+importContext(require.context('./', true, /\.(scss)$/));
+
+const sliderInitSelector = '.js-slider-panel__slider';
+const panelSelector = '.slider-panel';
 const panels: SliderPanel[] = [];
 
-$(panelSelector).get().forEach((panelWrap) => {
-  panels.push(new SliderPanel(panelWrap));
+$(panelSelector).get().forEach((panel) => {
+  panels.push(new SliderPanel(panel));
 });
 
 panels[0].initSlider($(sliderInitSelector), {
@@ -19,7 +22,7 @@ panels[0].initSlider($(sliderInitSelector), {
   isVertical: true,
 });
 
-panels[1].initSlider($(sliderInitSelector), { isReversed: true });
+panels[1].initSlider($(sliderInitSelector), { isInverted: true });
 
 panels[2].initSlider($(sliderInitSelector), {
   items: [
@@ -31,7 +34,7 @@ panels[2].initSlider($(sliderInitSelector), {
   min: 0,
   max: 22,
   isRange: true,
-  isReversed: false,
+  isInverted: false,
   isVertical: true,
   withMarkup: true,
 });
@@ -45,7 +48,7 @@ panels[3].initSlider($(sliderInitSelector),
       { itemIndex: 7 },
     ],
     step: 2,
-    showTooltips: false,
+    isTooltipsVisible: false,
     withMarkup: true,
     isVertical: false,
   });

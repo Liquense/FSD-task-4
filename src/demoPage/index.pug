@@ -1,13 +1,11 @@
+include ./slider-panel/slider-panel
+
 head
   meta(charset="utf-8")
   meta(name="viewport" content="initial-scale=1.0, width=device-width")
   title Демонстрационная страница
 div(class="panels")
-  article(class="panel")
-    div(class="js-init-slider-here")
-  article(class="panel")
-    div(class="js-init-slider-here")
-  article(class="panel")
-    div(class="js-init-slider-here")
-  article(class="panel")
-    div(class="js-init-slider-here")
+  +slider-panel()
+  +slider-panel()
+  +slider-panel()
+  +slider-panel()

@@ -1,4 +1,4 @@
-import { Presentable } from '../types';
+import { HandlerParams, Presentable } from '../types';
 
 type SliderModelParams = {
   isRange?: boolean;
@@ -12,4 +12,10 @@ type SliderModelParams = {
   }[];
 };
 
-export { SliderModelParams };
+type HandlerModelParams = HandlerParams & { itemIndex: number };
+
+type PositioningParams = { min: number; max: number; step: number };
+
+export {
+  SliderModelParams, HandlerModelParams, PositioningParams,
+};

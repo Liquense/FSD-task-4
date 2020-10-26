@@ -1,0 +1,9 @@
+include ../panel-property/panel-property
+
+mixin create-handler-section()
+  section.js-create-handler-section.create-handler-section
+    div.js-create-handler-section__value.create-handler-section__value
+      +panel-property({caption: 'Значение'})
+    div.js-create-handler-section__pair.create-handler-section__pair
+      +panel-property({type: 'select', caption: 'Соединить с...'})
+    button.js-create-handler-section__create-button.create-handler-section__create-button Создать </br> новый хэндлер

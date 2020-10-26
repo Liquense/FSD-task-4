@@ -1,9 +1,10 @@
 import { Listenable } from '../interfaces';
-import { Presentable } from '../types';
+
+import { HandlerModelParams, PositioningParams } from '../model/types';
 
 import { View } from './interfaces';
-
 import SliderView from './slider/sliderView';
+import { SliderViewParams } from './types';
 
 export default class PluginView implements Listenable, View {
   listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
@@ -21,6 +22,15 @@ export default class PluginView implements Listenable, View {
     return this.element;
   }
 
+  public getViewData(): SliderViewParams {
+    return {
+      isVertical: this.slider.getIsVertical(),
+      isTooltipsVisible: this.slider.getTooltipsVisibility(),
+      isInverted: this.slider.getIsInverted(),
+      withMarkup: this.slider.getWithMarkup(),
+    };
+  }
+
   public handleHandlerPositionChanged(
     handlerIndex: number,
     standardizedPosition: number,
@@ -28,41 +38,27 @@ export default class PluginView implements Listenable, View {
     return { view: this, index: handlerIndex, position: standardizedPosition };
   }
 
-  public handlersValuesChangedListener(
-    data: { index: number; relativeValue: number; item: Presentable },
-  ): void {
+  public handlerValueChangedListener(data: HandlerModelParams): void {
     this.slider.setHandlersData([data]);
   }
 
   public initHandlers(handlersData: {
       customHandlers: boolean;
-      handlersArray: {
-          handlerIndex: number;
-          positionPart: number;
-          item: Presentable;
-      }[];
+      handlersArray: HandlerModelParams[];
   }): void {
     this.slider.initHandlers(handlersData);
     this.slider.createRanges();
   }
 
-  public updateVisuals(parameters?: {
-      isVertical?: boolean; tooltipsVisible?: boolean; withMarkup?: boolean;
-  }): void {
+  public updateVisuals(parameters?: SliderViewParams): void {
     this.slider.update(parameters);
   }
 
-  public updateData(sliderData: { min?: number; max?: number; step?: number }): void {
-    this.slider.update(sliderData);
+  public updateData(positioningData: PositioningParams): void {
+    this.slider.update(positioningData);
   }
 
-  public addHandler(handlerParams: {
-      positionPart: number;
-      item: Presentable;
-      handlerIndex: number;
-      itemIndex: number;
-      rangePair: number | string;
-  }): void {
+  public addHandler(handlerParams: HandlerModelParams & { rangePair: number | string }): void {
     this.slider.addHandler(handlerParams);
   }
 

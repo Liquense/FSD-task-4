@@ -2,7 +2,9 @@ import { standardize } from '../utils/functions';
 import HandlerModel, { ModelItemManager, SliderDataContainer } from './handler/handlerModel';
 import { Listenable } from '../interfaces';
 import { Presentable } from '../types';
-import { SliderModelParams } from './types';
+import {
+  HandlerModelParams, PositioningParams, SliderModelParams,
+} from './types';
 
 export default class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
@@ -51,11 +53,13 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     return this.max - this.min;
   }
 
+  public getStep(): number {
+    return this.step;
+  }
+
   public getHandlersData(): {
     customHandlers: boolean;
-    handlersArray: {
-      handlerIndex: number; item: Presentable; positionPart: number; itemIndex: number;
-    }[];
+    handlersArray: HandlerModelParams[];
     } {
     return {
       customHandlers: this.isHandlersCustom,
@@ -64,24 +68,21 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
           handlerIndex: handler.handlerIndex,
           item: handler.getItem(),
           positionPart: handler.getPosition(),
-          itemIndex: handler.itemIndex,
+          itemIndex: handler.getItemIndex(),
         }),
       ),
     };
   }
 
-  public getSliderData(): { step: number; absoluteStep: number; min: number; max: number } {
+  public getPositioningData(): PositioningParams {
     return {
       step: this.step / this.getRange(),
-      absoluteStep: this.step,
       min: this.min,
       max: this.max,
     };
   }
 
-  public addHandler(
-    itemIndex: number,
-  ): { positionPart: number; item: Presentable; handlerIndex: number; itemIndex: number } {
+  public addHandler(itemIndex: number): HandlerModelParams {
     const indexes = this.handlers.map((handler) => handler.handlerIndex);
     const newHandlerIndex = Math.max(-1, ...indexes) + 1;
 
@@ -95,9 +96,10 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
         positionPart: newHandler.getPosition(),
         item: newHandler.getItem(),
         handlerIndex: newHandler.handlerIndex,
-        itemIndex: newHandler.itemIndex,
+        itemIndex: newHandler.getItemIndex(),
       };
     }
+
     return null;
   }
 
@@ -107,7 +109,7 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     );
     if (handlerToRemoveIndex < 0) { return null; }
 
-    this.releaseItem(this.handlers[handlerToRemoveIndex].itemIndex);
+    this.releaseItem(this.handlers[handlerToRemoveIndex].getItemIndex());
     this.handlers.splice(handlerToRemoveIndex, 1);
     return handlerIndex;
   }
@@ -118,13 +120,13 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
 
   private updateHandlersPosition(): void {
     this.handlers.forEach((handler) => {
-      const standardItemIndex = standardize(handler.itemIndex, this.getStandardizeParams());
-      if (standardItemIndex === handler.itemIndex) {
+      const standardItemIndex = standardize(handler.getItemIndex(), this.getStandardizeParams());
+      if (standardItemIndex === handler.getItemIndex()) {
         handler.setItemIndex(standardize(standardItemIndex, this.getStandardizeParams()));
         return;
       }
 
-      const newItemIndex = this.getFirstFreeItemIndex(handler.itemIndex);
+      const newItemIndex = this.getFirstFreeItemIndex(handler.getItemIndex());
       if (newItemIndex === null) { this.removeHandler(handler.handlerIndex); }
 
       handler.setItemIndex(standardize(newItemIndex, this.getStandardizeParams()));
@@ -190,7 +192,6 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
   public setMinMax(min = this.min, max = this.max): void {
     if (Number.isFinite(min) && Number.isFinite(max)) {
       if (min > max) { return; }
-
       this.min = min;
       this.max = max;
     } else {
@@ -199,8 +200,9 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     }
   }
 
-  public handlerValueChanged(changedHandler: HandlerModel):
-    { index: number; relativeValue: number; item: Presentable } {
+  public handlerValueChanged(
+    changedHandler: HandlerModel,
+  ): HandlerModelParams {
     const changedHandlerIndex = this.handlers.findIndex(
       (handler) => handler.handlerIndex === changedHandler.handlerIndex,
     );
@@ -208,9 +210,10 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     if (changedHandlerIndex === -1) { return null; }
 
     return {
-      index: changedHandler.handlerIndex,
-      relativeValue: changedHandler.getPosition(),
+      handlerIndex: changedHandler.handlerIndex,
+      positionPart: changedHandler.getPosition(),
       item: changedHandler.getItem(),
+      itemIndex: changedHandler.getItemIndex(),
     };
   }
 
@@ -235,7 +238,7 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     delete this.occupiedItems[itemIndex];
   }
 
-  private getStandardizeParams(): { min: number; max: number; step: number } {
+  private getStandardizeParams(): PositioningParams {
     return {
       min: this.min,
       max: this.max,
@@ -274,6 +277,7 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     if (freeItemIndex === null) { return null; }
 
     const handlerValue = this.items?.length > 0 ? (this.items[freeItemIndex]) : (freeItemIndex);
+
     return new HandlerModel(handlerValue, freeItemIndex, this, handlerIndex);
   }
 
@@ -286,7 +290,7 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
   private getFirstFreeItemIndex(startIndex?: number): number {
     let result: number;
 
-    const start = startIndex ?? this.min;
+    const start = standardize(startIndex, this.getStandardizeParams()) ?? this.min;
     result = this.findFirstFreeItemIndex(start, this.max);
 
     if (result === null) {

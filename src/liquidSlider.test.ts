@@ -14,7 +14,7 @@ test('Инициализация слайдера', () => {
 
   $testDiv.liquidSlider();
   expect(Controller).toBeCalledWith(
-    $testDiv.get()[0], { isVertical: false, showTooltips: true, withMarkup: false },
+    $testDiv.get()[0], { isVertical: false, isTooltipsVisible: true, withMarkup: false },
   );
 
   $testDiv.liquidSlider(testParameters);

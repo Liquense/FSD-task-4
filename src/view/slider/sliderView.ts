@@ -1,17 +1,15 @@
 import { ResizeObserver } from 'resize-observer';
 
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../../constants';
-import { KeyStringObj, Presentable } from '../../types';
+import { HandlerParams, KeyStringObj, Presentable } from '../../types';
 
 import {
-  addListenerAfter,
   clamp,
   preventDefault,
   roundToDecimal,
   standardize,
 } from '../../utils/functions';
-
-import { SliderViewParams, SliderViewUpdateParams } from '../types';
+import { HandlerViewParams, SliderViewParams, SliderViewUpdateParams } from '../types';
 import { Slider, View } from '../interfaces';
 
 import HandlerView from './handler/handlerView';
@@ -41,7 +39,7 @@ export default class SliderView implements Slider {
 
   private activeHandler: HandlerView;
 
-  private tooltipsAlwaysVisible: boolean;
+  private isTooltipsAlwaysVisible: boolean;
 
   private withMarkup: boolean;
 
@@ -105,6 +103,14 @@ export default class SliderView implements Slider {
     return this.isVertical;
   }
 
+  public getIsInverted(): boolean {
+    return this.isRangesInverted;
+  }
+
+  public getWithMarkup(): boolean {
+    return this.withMarkup;
+  }
+
   public getOffsetDirection(): string {
     if (this.isVertical) {
       return 'top';
@@ -136,10 +142,14 @@ export default class SliderView implements Slider {
     this.elements.wrap.classList.add(newOrientClass);
   }
 
+  public getTooltipsVisibility(): boolean {
+    return this.isTooltipsAlwaysVisible;
+  }
+
   public setTooltipsVisibility(isVisible?: boolean): void {
     if (isVisible === undefined || isVisible === null) { return; }
 
-    this.tooltipsAlwaysVisible = isVisible;
+    this.isTooltipsAlwaysVisible = isVisible;
     this.handlers.forEach((handler) => {
       handler.setTooltipVisibility(isVisible);
     });
@@ -193,7 +203,7 @@ export default class SliderView implements Slider {
     this.handlers = handlersData.handlersArray.map((handler, index, handlers) => {
       const newHandler = new HandlerView(this, {
         ...handler,
-        withTooltip: this.tooltipsAlwaysVisible,
+        isTooltipVisible: this.isTooltipsAlwaysVisible,
       });
 
       if (!handlersData.customHandlers) {
@@ -217,23 +227,10 @@ export default class SliderView implements Slider {
     this.createRanges();
   }
 
-  public addHandler(
-    handlerParams: {
-          positionPart: number;
-          item: Presentable;
-          handlerIndex: number;
-          rangePair: number | string;
-      },
-  ): void {
+  public addHandler(handlerParams: HandlerParams & { rangePair: number | string }): void {
     const newHandler = new HandlerView(
       this,
-      {
-        handlerIndex: handlerParams.handlerIndex,
-        item: handlerParams.item,
-        positionPart: handlerParams.positionPart,
-        rangePair: handlerParams.rangePair,
-        withTooltip: this.tooltipsAlwaysVisible,
-      },
+      { ...handlerParams, isTooltipVisible: this.isTooltipsAlwaysVisible },
     );
 
     this.handlers.push(newHandler);
@@ -274,27 +271,25 @@ export default class SliderView implements Slider {
     return this.handlerSize / this.getWorkZoneLength();
   }
 
-  public setHandlersData(
-    handlers: { index: number; item: Presentable; relativeValue: number }[],
-  ): void {
+  public setHandlersData(handlers: HandlerViewParams[]): void {
     if (handlers.some((handler) => handler === null)) return;
 
-    handlers.forEach(({ index, item, relativeValue }) => {
+    handlers.forEach(({ handlerIndex, item, positionPart }) => {
       const realIndex = this.handlers.findIndex(
-        (handler) => handler.getIndex() === index,
+        (handler) => handler.getIndex() === handlerIndex,
       );
       if (realIndex === -1) {
         return;
       }
 
       this.handlers[realIndex].setItem(item);
-      this.handlers[realIndex].setPosition(relativeValue);
+      this.handlers[realIndex].setPosition(positionPart);
     });
   }
 
   public update(
     {
-      min, max, step, isVertical, tooltipsVisible, withMarkup,
+      min, max, step, isVertical, isTooltipsVisible, withMarkup,
     }: SliderViewUpdateParams = {},
   ): void {
     if (Number.isFinite(step)) {
@@ -307,27 +302,19 @@ export default class SliderView implements Slider {
       this.max = max;
     }
     this.withMarkup = withMarkup ?? this.withMarkup;
-    this.setTooltipsVisibility(tooltipsVisible);
+    this.setTooltipsVisibility(isTooltipsVisible);
     this.setOrientation(isVertical);
 
     this.refreshElements();
   }
 
-  public addOnMouseDownListener(listener: Function): void {
-    this.elements.body.removeEventListener('mousedown', this.handleMouseDown);
-
-    addListenerAfter(this.handleMouseDown.name, listener, this);
-
-    this.elements.body.addEventListener('mousedown', this.handleMouseDown);
-  }
-
   private initProperties({
-    isVertical, isReversed, showTooltips, withMarkup,
+    isVertical, isInverted, isTooltipsVisible, withMarkup,
   }: SliderViewParams = {}): void {
     this.isVertical = isVertical ?? isVertical;
-    this.isRangesInverted = isReversed ?? this.isRangesInverted;
-    if (showTooltips !== undefined) {
-      this.setTooltipsVisibility(showTooltips);
+    this.isRangesInverted = isInverted ?? this.isRangesInverted;
+    if (isTooltipsVisible !== undefined) {
+      this.setTooltipsVisibility(isTooltipsVisible);
     }
     if (withMarkup !== undefined) {
       this.withMarkup = withMarkup;
@@ -470,7 +457,7 @@ export default class SliderView implements Slider {
 
   private activateHandler(handlerToActivate: HandlerView): void {
     if (this.activeHandler) {
-      this.activeHandler.setTooltipVisibility(this.tooltipsAlwaysVisible);
+      this.activeHandler.setTooltipVisibility(this.isTooltipsAlwaysVisible);
     }
 
     this.activeHandler = handlerToActivate;
@@ -507,18 +494,16 @@ export default class SliderView implements Slider {
   }
 
   private createRange(handler: HandlerView): RangeView {
-    if (handler.getRangePair() === null) {
-      return null;
-    }
+    if (handler.getRangePair() === null) { return null; }
 
-    const secondHandler = this.findSuitableHandler(handler);
+    const pairedHandler = this.findSuitableHandler(handler);
 
-    if (!secondHandler) {
-      if ((handler.getRangePair() !== RANGE_PAIR_START_KEY)
-              && (handler.getRangePair() !== RANGE_PAIR_END_KEY)) return null;
-    }
+    const isPairedWithStart = handler.getRangePair() === RANGE_PAIR_START_KEY;
+    const isPairedWithEnd = (handler.getRangePair() === RANGE_PAIR_END_KEY);
+    const isPairedWithHandler = !isPairedWithStart && !isPairedWithEnd;
+    if (isPairedWithHandler && !pairedHandler) { return null; }
 
-    return new RangeView(this, this.elements.scale, handler, secondHandler);
+    return new RangeView(this, this.elements.scale, handler, pairedHandler);
   }
 
   private initMarkup():

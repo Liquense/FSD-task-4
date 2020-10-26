@@ -39,13 +39,13 @@ describe('Инициализация', () => {
     test('С передачей необязательных параметров', () => {
       testSlider = new SliderView(
         testView, {
-          isVertical: true, isReversed: false, showTooltips: false, withMarkup: true,
+          isVertical: true, isInverted: false, isTooltipsVisible: false, withMarkup: true,
         },
       );
 
       expect(testSlider.getIsVertical()).toBe(true);
       expect(testSlider['isRangesInverted']).toBe(false);
-      expect(testSlider['tooltipsAlwaysVisible']).toBe(false);
+      expect(testSlider['isTooltipsAlwaysVisible']).toBe(false);
       expect(testSlider['withMarkup']).toBe(true);
     });
   });
@@ -268,10 +268,10 @@ describe('Инициализация', () => {
               );
             }
 
-            if (testSlider['tooltipsAlwaysVisible']) {
+            if (testSlider['isTooltipsAlwaysVisible']) {
               expect(testSlider['activeHandler'].getTooltipElement().classList)
                 .toContain(`${TooltipView.DEFAULT_CLASS}_visible`);
-            } else if (testSlider['tooltipsAlwaysVisible'] !== undefined) {
+            } else if (testSlider['isTooltipsAlwaysVisible'] !== undefined) {
               testSlider['handlers'].forEach(checkDisabledTooltipsVisibility);
             }
           });
@@ -394,8 +394,8 @@ describe('Функции', () => {
 
     function testTooltipsVisibilityVarSetting(stateToSet: boolean): void {
       testSlider.setTooltipsVisibility(stateToSet);
-      const stateToCheck = stateToSet ?? testSlider['tooltipsAlwaysVisible'];
-      expect(testSlider['tooltipsAlwaysVisible']).toBe(stateToCheck);
+      const stateToCheck = stateToSet ?? testSlider['isTooltipsAlwaysVisible'];
+      expect(testSlider['isTooltipsAlwaysVisible']).toBe(stateToCheck);
 
       spyHandlersSetVisibility.forEach((spyFunc) => {
         expect(spyFunc).toBeCalledWith(stateToCheck);
@@ -459,8 +459,8 @@ describe('Функции', () => {
     const
       newPosition2 = 0.8;
     testSlider.setHandlersData([
-      { index: 0, item: newValue1, relativeValue: newPosition1 },
-      { index: 22, item: newValue2, relativeValue: newPosition2 },
+      { handlerIndex: 0, item: newValue1, positionPart: newPosition1 },
+      { handlerIndex: 22, item: newValue2, positionPart: newPosition2 },
     ]);
 
     expect(spySetValue1).toBeCalledWith(newValue1);
@@ -494,7 +494,7 @@ describe('Функции', () => {
     let prevMin = testSlider['min'];
     let prevMax = testSlider['max'];
     let prevVerticality = testSlider.getIsVertical();
-    let prevTooltipVisibility = testSlider['tooltipsAlwaysVisible'];
+    let prevTooltipVisibility = testSlider['isTooltipsAlwaysVisible'];
     let prevMarkupVisibility = testSlider['withMarkup'];
 
     function checkOldValues(): void {
@@ -502,7 +502,7 @@ describe('Функции', () => {
       expect(testSlider['min']).toBe(prevMin);
       expect(testSlider['max']).toBe(prevMax);
       expect(testSlider.getIsVertical()).toBe(prevVerticality);
-      expect(testSlider['tooltipsAlwaysVisible']).toBe(prevTooltipVisibility);
+      expect(testSlider['isTooltipsAlwaysVisible']).toBe(prevTooltipVisibility);
       expect(testSlider['withMarkup']).toBe(prevMarkupVisibility);
     }
 
@@ -513,36 +513,27 @@ describe('Функции', () => {
 
     mockClearSpies(spies);
     testSlider.update({
-      step: 2, min: -2, max: 22, isVertical: false, tooltipsVisible: false, withMarkup: true,
+      step: 2, min: -2, max: 22, isVertical: false, isTooltipsVisible: false, withMarkup: true,
     });
     checkSpiesToBeCalledOnce(spies);
     expect(testSlider['step']).toBe(2);
     expect(testSlider['min']).toBe(-2);
     expect(testSlider['max']).toBe(22);
     expect(testSlider.getIsVertical()).toBe(false);
-    expect(testSlider['tooltipsAlwaysVisible']).toBe(false);
+    expect(testSlider['isTooltipsAlwaysVisible']).toBe(false);
     expect(testSlider['withMarkup']).toBe(true);
 
     prevStep = testSlider['step'];
     prevMin = testSlider['min'];
     prevMax = testSlider['max'];
     prevVerticality = testSlider.getIsVertical();
-    prevTooltipVisibility = testSlider['tooltipsAlwaysVisible'];
+    prevTooltipVisibility = testSlider['isTooltipsAlwaysVisible'];
     prevMarkupVisibility = testSlider['withMarkup'];
 
     mockClearSpies(spies);
     testSlider.update({ step: null });
     checkSpiesToBeCalledOnce(spies);
     checkOldValues();
-  });
-
-  test('Добавление пользовательского слушателя на стандартный обработчик нажатия кнопки мыши', () => {
-    const mockListener = jest.fn();
-    const testEvent = new Event('mousedown');
-
-    testSlider.addOnMouseDownListener(mockListener);
-    testSlider['elements'].body.dispatchEvent(testEvent);
-    expect(mockListener).toBeCalledWith(testEvent);
   });
 
   test('Добавление нового хэндлера', () => {

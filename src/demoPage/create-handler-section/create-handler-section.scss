@@ -1,0 +1,39 @@
+$slider-panel-padding: 25px;
+
+.create-handler-section {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  grid-template-rows: 1fr 1fr;
+  padding: 12.5px 50px;
+  column-gap: 10px;
+  row-gap: 10px;
+  border: dashed 1px black;
+  border-radius: 5px;
+  padding: $slider-panel-padding/2 $slider-panel-padding*2;
+  order: 1;
+  text-align: center;
+  align-items: center;
+
+  &__create-button {
+    cursor: pointer;
+    grid-column-start: 2;
+    grid-row-start: 1;
+    grid-row-end: 3;
+    width: auto;
+    justify-self: center;
+    border-radius: 10px;
+    border: solid 1px black;
+    background-color: #ffffff;
+    font-weight: bold;
+
+    &:hover {
+      background-color: #eeeeee;
+    }
+
+    &:active {
+      border: solid 1px black;
+      color: white;
+      background-color: black;
+    }
+  }
+}

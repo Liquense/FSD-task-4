@@ -1,0 +1,22 @@
+mixin panel-property({type='', caption='test', shape=''} = {})
+  -let inputElement = 'input'
+  -let inputType
+  -let typeModifier = ''
+  -let shapeModifier = ''
+  case type.toLowerCase()
+    when 'checkbox'
+      -typeModifier = 'panel-property_type_checkbox'
+      -inputType = 'checkbox'
+      break
+    when 'select'
+      -inputElement = 'select'
+      -typeModifier = 'panel-property_type_select'
+      break
+  case shape.toLowerCase()
+    when 'square'
+      -shapeModifier = 'panel-property_shape_square'
+      break
+
+  div(class=`js-panel-property panel-property ${typeModifier} ${shapeModifier}`)
+    p(class=`js-panel-property__caption panel-property__caption`) #{caption}
+    #{inputElement}(class=`js-panel-property__input panel-property__input` type=inputType)

@@ -10,6 +10,7 @@ interface Handler {
 interface SliderDataContainer {
   getMin(): number;
   getMax(): number;
+  getStep(): number;
   getRange(): number;
 }
 
