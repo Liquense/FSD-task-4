@@ -142,7 +142,7 @@ export default class SliderView implements Slider {
     this.elements.wrap.classList.add(newOrientClass);
   }
 
-  public getTooltipsVisibility(): boolean {
+  public getIsTooltipsAlwaysVisible(): boolean {
     return this.isTooltipsAlwaysVisible;
   }
 
@@ -398,12 +398,10 @@ export default class SliderView implements Slider {
     document.body.removeEventListener('mouseout', this.handleWindowMouseOut);
   }
 
-  private handleMouseDown(event: MouseEvent): MouseEvent {
+  private handleMouseDown(event: MouseEvent): void {
     const closestHandler = this.getClosestToMouseHandler(event.clientX, event.clientY);
 
-    if (!closestHandler) {
-      return event;
-    }
+    if (!closestHandler) { return; }
 
     this.activateHandler(closestHandler);
     this.activeHandler.getBody().focus();
@@ -412,8 +410,6 @@ export default class SliderView implements Slider {
     document.body.addEventListener('mousemove', this.handleMouseMove);
 
     window.addEventListener('mouseout', this.handleWindowMouseOut);
-
-    return event;
   }
 
   private handleMouseMove = (event: MouseEvent): void => {

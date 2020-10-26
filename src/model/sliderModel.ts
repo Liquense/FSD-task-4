@@ -189,7 +189,7 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     this.updateHandlersPosition();
   }
 
-  public setMinMax(min = this.min, max = this.max): void {
+  public setMinMax(min: number, max: number): void {
     if (Number.isFinite(min) && Number.isFinite(max)) {
       if (min > max) { return; }
       this.min = min;

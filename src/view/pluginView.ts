@@ -25,7 +25,7 @@ export default class PluginView implements Listenable, View {
   public getViewData(): SliderViewParams {
     return {
       isVertical: this.slider.getIsVertical(),
-      isTooltipsVisible: this.slider.getTooltipsVisibility(),
+      isTooltipsVisible: this.slider.getIsTooltipsAlwaysVisible(),
       isInverted: this.slider.getIsInverted(),
       withMarkup: this.slider.getWithMarkup(),
     };

@@ -8,22 +8,23 @@ import MarkupView from './markup/markupView';
 import TooltipView from './handler/tooltip/tooltipView';
 import HandlerView from './handler/handlerView';
 import RangeView from './range/rangeView';
+import { KeyStringObj } from '../../types';
 
 import Mock = jest.Mock;
 
 jest.mock('../pluginView');
 
-const testView = new PluginView(null, null);
-testView.getBody = jest.fn(
+const mockView = new PluginView(null, null);
+mockView.getBody = jest.fn(
   () => document.body.appendChild(document.createElement('div')),
 );
 
-testView.handleHandlerPositionChanged = jest.fn(() => undefined);
+mockView.handleHandlerPositionChanged = jest.fn(() => undefined);
 let testSlider: SliderView;
 
 function resetHTML(): void {
   document.body.innerHTML = '';
-  testView.getBody = jest.fn(
+  mockView.getBody = jest.fn(
     () => document.body.appendChild(document.createElement('div')),
   );
 }
@@ -31,14 +32,14 @@ function resetHTML(): void {
 describe('Инициализация', () => {
   describe('Установка значений полей', () => {
     test('Без передачи необязательных параметров', () => {
-      testSlider = new SliderView(testView);
+      testSlider = new SliderView(mockView);
 
       expect(testSlider.getIsVertical()).toBe(undefined);
     });
 
     test('С передачей необязательных параметров', () => {
       testSlider = new SliderView(
-        testView, {
+        mockView, {
           isVertical: true, isInverted: false, isTooltipsVisible: false, withMarkup: true,
         },
       );
@@ -52,7 +53,7 @@ describe('Инициализация', () => {
 
   test('Создание HTML-элементов', () => {
     resetHTML();
-    testSlider = new SliderView(testView);
+    testSlider = new SliderView(mockView);
 
     const wrap = document.body.querySelector('.liquid-slider');
     const body = document.body.querySelector('.liquid-slider__body');
@@ -197,7 +198,7 @@ describe('Инициализация', () => {
   describe('Проверка слушателей событий', () => {
     beforeEach(() => {
       resetHTML();
-      testSlider = new SliderView(testView);
+      testSlider = new SliderView(mockView);
 
       testSlider.getBodyElement().style.width = '100px';
       testSlider.getScaleLength = jest.fn(() => 100);
@@ -253,7 +254,7 @@ describe('Инициализация', () => {
           new Array(100).fill(0).forEach((handler, i) => {
             // несмотря на клик, позиции хэндлеров остаются неизменными,
             // потому что вью мокнут и нет обмена данными с моделью
-            (testView.handleHandlerPositionChanged as jest.Mock).mockClear();
+            (mockView.handleHandlerPositionChanged as jest.Mock).mockClear();
             simulateMouseDown(i);
 
             if (i <= 65) expect(testSlider['activeHandler']).toBe(testSlider['handlers'][0]);
@@ -263,7 +264,7 @@ describe('Инициализация', () => {
 
             if ((testSlider.calculateMouseRelativePos(testMouseDownEvent) !== 0.4)
                 && (testSlider.calculateMouseRelativePos(testMouseDownEvent) !== 0.9)) {
-              expect(testView.handleHandlerPositionChanged).toBeCalledWith(
+              expect(mockView.handleHandlerPositionChanged).toBeCalledWith(
                 testSlider['activeHandler'].getIndex(), i / 100,
               );
             }
@@ -378,7 +379,7 @@ describe('Инициализация', () => {
 describe('Функции', () => {
   beforeAll(() => {
     resetHTML();
-    testSlider = new SliderView(testView);
+    testSlider = new SliderView(mockView);
 
     testSlider.initHandlers({
       customHandlers: false,
@@ -636,5 +637,27 @@ describe('Функции', () => {
     expect(testSlider.getScaleEnd()).toBe(3);
 
     testSlider['elements'].scale.getBoundingClientRect = oldGetBoundingClientRect;
+  });
+
+  function testGetter(getterName: string, getterProp: string): void {
+    let slider: SliderView & KeyStringObj;
+
+    slider = new SliderView(mockView, { [getterProp]: true });
+    expect(slider[getterName]()).toBeTruthy();
+
+    slider = new SliderView(mockView, { [getterProp]: false });
+    expect(slider[getterName]()).toBeFalsy();
+  }
+
+  test('Получение инвертированности стандартных диапазонов', () => {
+    testGetter('getIsInverted', 'isInverted');
+  });
+
+  test('Получение видимости разметки', () => {
+    testGetter('getWithMarkup', 'withMarkup');
+  });
+
+  test('Получение видимости тултипов', () => {
+    testGetter('getIsTooltipsAlwaysVisible', 'isTooltipsVisible');
   });
 });

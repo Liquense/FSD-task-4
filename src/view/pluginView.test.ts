@@ -9,7 +9,7 @@ const wrapperElement = document.createElement('div');
 document.body.appendChild(wrapperElement);
 
 let testView: View & KeyStringObj;
-const mockSlider = (SliderView as unknown as jest.Mock);
+const mockSlider = (SliderView as jest.Mock);
 
 test('Создание экземпляра класса', () => {
   mockSlider.mockClear();
@@ -92,5 +92,19 @@ describe('Функции', () => {
 
   test('Удаление хэндлера', () => {
     testFunctionCall('removeHandler', 'removeHandler');
+  });
+
+  test('Получение данных из вью', () => {
+    mockSliderInstance.getIsVertical.mockImplementationOnce(() => true);
+    mockSliderInstance.getIsTooltipsAlwaysVisible.mockImplementationOnce(() => false);
+    mockSliderInstance.getIsInverted.mockImplementationOnce(() => true);
+    mockSliderInstance.getWithMarkup.mockImplementationOnce(() => false);
+
+    expect(testView.getViewData()).toStrictEqual({
+      isVertical: true,
+      isTooltipsVisible: false,
+      isInverted: true,
+      withMarkup: false,
+    });
   });
 });

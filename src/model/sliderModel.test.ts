@@ -229,7 +229,7 @@ describe('Инициализация', () => {
 
     test('Получение из модели данных для слайдера', () => {
       expect(testModel.getPositioningData()).toStrictEqual({
-        step: testModel['step'] / testModel.getRange(),
+        step: testModel.getStep() / testModel.getRange(),
         min: testModel['min'],
         max: testModel['max'],
       });
@@ -330,7 +330,7 @@ describe('Функции', () => {
         oldMax = testModel.getMax();
         newMin = 10;
         newMax = 0;
-        testModel.setMinMax(newMax, newMin);
+        testModel.setMinMax(newMin, newMax);
         expect(testModel.getMax()).toBe(oldMax);
         expect(testModel.getMin()).toBe(oldMin);
       });
@@ -348,13 +348,13 @@ describe('Функции', () => {
     test('Если переданы пользовательские значения, то шаг округляется', () => {
       testModel.setItems(['']);
       testModel.setStep(2.6);
-      expect(testModel['step']).toBe(3);
+      expect(testModel.getStep()).toBe(3);
     });
 
     test('Если пользовательские значения не переданы, шаг может быть и дробным', () => {
       testModel.setItems(null);
       testModel.setStep(2.6);
-      expect(testModel['step']).toBe(2.6);
+      expect(testModel.getStep()).toBe(2.6);
     });
   });
 
