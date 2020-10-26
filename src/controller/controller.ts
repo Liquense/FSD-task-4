@@ -8,7 +8,7 @@ import { SliderViewParams } from '../view/types';
 import { HandlerModelParams } from '../model/types';
 
 export default class Controller {
-  private readonly views: (View & Listenable)[];
+  private readonly view: View & Listenable;
 
   private readonly model: SliderModel;
 
@@ -16,19 +16,19 @@ export default class Controller {
     private element: HTMLElement,
     private parameters?: SliderPluginParams,
   ) {
-    this.views = [new PluginView(element, parameters)];
+    this.view = new PluginView(element, parameters);
     this.model = new SliderModel(parameters);
 
     this.addDefaultListeners();
     this.passSliderData();
-    this.passHandlersData(this.views[0], parameters?.handlers);
+    this.passHandlersData(this.view, parameters?.handlers);
   }
 
-  public addHandlerValueChangedListener(listener: Function): void {
+  public addAfterHandlerValueChangedListener(listener: Function): void {
     addListenerAfter('handlerValueChanged', listener, this.model);
   }
 
-  public addRemoveHandlerListener(listener: Function): void {
+  public addAfterRemoveHandlerListener(listener: Function): void {
     addListenerAfter('removeHandler', listener, this.model);
   }
 
@@ -37,7 +37,7 @@ export default class Controller {
   }
 
   public moveHandler(handlerIndex: number, positionPart: number): void {
-    this.passHandlerPositionChange({ index: handlerIndex, position: positionPart });
+    this.passHandlerPositionChange({ handlerIndex, positionPart });
   }
 
   public setMin(newMin: number): void {
@@ -56,25 +56,19 @@ export default class Controller {
   }
 
   public setTooltipVisibility(isVisible: boolean): void {
-    this.views.forEach((view) => {
-      view.updateVisuals({ isTooltipsVisible: isVisible });
-    });
+    this.view.updateVisuals({ isTooltipsVisible: isVisible });
   }
 
   public setVertical(isVertical: boolean): void {
-    this.views.forEach((view) => {
-      view.updateVisuals({ isVertical });
-    });
+    this.view.updateVisuals({ isVertical });
   }
 
   public setMarkupVisibility(isVisible: boolean): void {
-    this.views.forEach((view) => {
-      view.updateVisuals({ withMarkup: isVisible });
-    });
+    this.view.updateVisuals({ withMarkup: isVisible });
   }
 
   public getViewParameters(): SliderViewParams {
-    return this.views[0].getViewData();
+    return this.view.getViewData();
   }
 
   public getSliderParameters(): { min: number; max: number; step: number} {
@@ -113,44 +107,28 @@ export default class Controller {
     return handlerData;
   }
 
-  private addListeners(): void {
-    addListenerAfter(
-      'handlerValueChanged',
-      this.passHandlerValueChange,
-      this.model,
-    );
-    addListenerAfter(
-      'removeHandler',
-      this.removeHandlerInViews,
-      this.model,
-    );
-    addListenerAfter(
-      'handleHandlerPositionChanged',
-      this.passHandlerPositionChange,
-      this.views[0],
-    );
+  private addDefaultListeners(): void {
+    addListenerAfter('handlerValueChanged', this.passHandlerValueChange, this.model);
+    addListenerAfter('removeHandler', this.removeHandlerInView, this.model);
+    addListenerAfter('handleHandlerPositionChanged', this.passHandlerPositionChange, this.view);
   }
 
-  private removeHandlerInViews = (handlerIndex: number): void => {
-    this.views.forEach((view) => {
-      view.removeHandler(handlerIndex);
-    });
+  private removeHandlerInView = (handlerIndex: number): void => {
+    this.view.removeHandler(handlerIndex);
   }
 
   private passSliderData(): void {
-    this.views.forEach((view) => {
-      view.updateData(this.model.getPositioningData());
-    });
+    this.view.updateData(this.model.getPositioningData());
   }
 
-  private passHandlerPositionChange = (data: { index: number; position: number }): void => {
+  private passHandlerPositionChange = (
+    data: { handlerIndex: number; positionPart: number },
+  ): void => {
     this.model.handleHandlerPositionChanged(data);
   }
 
   private passHandlerValueChange = (data: HandlerModelParams): void => {
-    this.views.forEach((view) => {
-      view.handlerValueChangedListener(data);
-    });
+    this.view.handlerValueChangedListener(data);
   }
 
   private passHandlersData(targetView: View, initHandlersData?: object[]): void {
@@ -159,11 +137,7 @@ export default class Controller {
     targetView.initHandlers(handlersData);
   }
 
-  private addHandlerView(
-    handlerParams: HandlerModelParams & { rangePair: number | string },
-  ): void {
-    this.views.forEach((view) => {
-      view.addHandler(handlerParams);
-    });
+  private addHandlerView(handlerParams: HandlerModelParams & { rangePair: number | string }): void {
+    this.view.addHandler(handlerParams);
   }
 }

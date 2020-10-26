@@ -49,8 +49,8 @@ class SliderPanel {
 
   public initSlider(element: HTMLElement | JQuery, sliderParams?: SliderPluginParams): void {
     this.slider = $(element).liquidSlider(sliderParams);
-    this.slider.addHandlerValueChangedListener(this.handleHandlerValueChange);
-    this.slider.addRemoveHandlerListener(this.handleRemoveHandler);
+    this.slider.addAfterHandlerValueChangedListener(this.handleHandlerValueChange);
+    this.slider.addAfterRemoveHandlerListener(this.handleRemoveHandler);
 
     const handlersData = this.slider.getHandlersData();
     this.initHandlers(handlersData);

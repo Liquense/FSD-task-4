@@ -237,23 +237,23 @@ describe('Инициализация', () => {
 
     describe('Обработка изменения позиции хэндлера', () => {
       let spyGetItemIndexFromPosition: jest.SpyInstance;
-      const testData = { index: 0, position: 0.6 };
+      const testData = { handlerIndex: 0, positionPart: 0.6 };
       let spySetItemIndex: jest.SpyInstance;
 
       beforeEach(() => {
         spyGetItemIndexFromPosition = jest.spyOn(testModel, 'getItemIndexFromPosition');
-        spySetItemIndex = jest.spyOn(testModel['handlers'][testData.index], 'setItemIndex');
+        spySetItemIndex = jest.spyOn(testModel['handlers'][testData.handlerIndex], 'setItemIndex');
       });
 
       test('Обычная ситуация', () => {
         testModel.handleHandlerPositionChanged(testData);
-        expect(spyGetItemIndexFromPosition).toBeCalledWith(testData.position);
+        expect(spyGetItemIndexFromPosition).toBeCalledWith(testData.positionPart);
         expect(spySetItemIndex).toBeCalledWith(spyGetItemIndexFromPosition.mock.results[0].value);
       });
 
       test('Если последнее значение не делится ровно на шаг', () => {
         testModel.setStep(3);
-        testData.position = 1;
+        testData.positionPart = 1;
 
         testModel.handleHandlerPositionChanged(testData);
         expect(spySetItemIndex).toBeCalledWith(10);

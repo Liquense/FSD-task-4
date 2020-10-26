@@ -217,11 +217,11 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     };
   }
 
-  public handleHandlerPositionChanged(data: { index: number; position: number }): void {
-    const newStandardPosition = this.getItemIndexFromPosition(data.position);
+  public handleHandlerPositionChanged(data: { handlerIndex: number; positionPart: number }): void {
+    const newStandardPosition = this.getItemIndexFromPosition(data.positionPart);
 
     const movingHandlerIndex = this.handlers.findIndex(
-      (handler) => handler.handlerIndex === data.index,
+      (handler) => handler.handlerIndex === data.handlerIndex,
     );
     this.handlers[movingHandlerIndex].setItemIndex(newStandardPosition);
   }
