@@ -14,7 +14,7 @@ interface View {
   handleHandlerPositionChanged(
     handlerIndex: number,
     standardizedPosition: number,
-  ): { view: View; index: number; position: number };
+  ): { view: View; handlerIndex: number; positionPart: number };
 
   handlerValueChangedListener(data: HandlerModelParams): void;
 

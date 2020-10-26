@@ -34,8 +34,8 @@ export default class PluginView implements Listenable, View {
   public handleHandlerPositionChanged(
     handlerIndex: number,
     standardizedPosition: number,
-  ): { view: View; index: number; position: number } {
-    return { view: this, index: handlerIndex, position: standardizedPosition };
+  ): { view: View; handlerIndex: number; positionPart: number } {
+    return { view: this, handlerIndex, positionPart: standardizedPosition };
   }
 
   public handlerValueChangedListener(data: HandlerModelParams): void {
