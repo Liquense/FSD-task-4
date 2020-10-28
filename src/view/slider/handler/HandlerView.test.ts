@@ -1,10 +1,10 @@
 import { KeyStringObj, Presentable } from '../../../types';
 
-import SliderView from '../sliderView';
+import SliderView from '../SliderView';
 
-import HandlerView from './handlerView';
+import HandlerView from './HandlerView';
 
-import TooltipView from './tooltip/tooltipView';
+import TooltipView from './tooltip/TooltipView';
 
 import Mock = jest.Mock;
 
@@ -20,7 +20,9 @@ testSlider.calculateHandlerOffset = jest.fn((positionPart) => positionPart * 100
 testSlider.getHandlersContainer = jest.fn(() => document.body);
 
 let testHandler: HandlerView;
-function createTestHandler(index = 0, positionPart = 0.5, item: Presentable = 'test') {
+function createTestHandler(
+  index = 0, positionPart = 0.5, item: Presentable = 'test',
+): HandlerView {
   return new HandlerView(testSlider, { handlerIndex: index, positionPart, item });
 }
 
@@ -82,7 +84,7 @@ test('Установка позиции', () => {
 
   mockTooltip.prototype.getSize.mockImplementation(() => 10);
 
-  function checkSettingPosition(isVertical: boolean, value: number) {
+  function checkSettingPosition(isVertical: boolean, value: number): void {
     testSlider.getOffsetDirection = jest.fn(() => (isVertical ? 'top' : 'left'));
     testSlider.getExpandDimension = jest.fn(() => (isVertical ? 'height' : 'width'));
 

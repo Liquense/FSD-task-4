@@ -1,5 +1,5 @@
-import PluginView from '../view/pluginView';
-import SliderModel from '../model/sliderModel';
+import PluginView from '../view/PluginView';
+import SliderModel from '../model/SliderModel';
 import { addListenerAfter } from '../utils/functions';
 import { View } from '../view/interfaces';
 import { Listenable } from '../interfaces';

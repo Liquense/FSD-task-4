@@ -3,7 +3,7 @@ import * as $ from 'jquery';
 import { DEFAULT_SLIDER_PARAMS } from './constants';
 import './liquidSlider';
 
-import Controller from './controller/controller';
+import Controller from './controller/Controller';
 
 jest.mock('./controller/controller');
 

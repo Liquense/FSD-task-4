@@ -12,9 +12,9 @@ import {
 import { HandlerViewParams, SliderViewParams, SliderViewUpdateParams } from '../types';
 import { Slider, View } from '../interfaces';
 
-import HandlerView from './handler/handlerView';
-import RangeView from './range/rangeView';
-import MarkupView from './markup/markupView';
+import HandlerView from './handler/HandlerView';
+import RangeView from './range/RangeView';
+import MarkupView from './markup/MarkupView';
 
 export default class SliderView implements Slider {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };

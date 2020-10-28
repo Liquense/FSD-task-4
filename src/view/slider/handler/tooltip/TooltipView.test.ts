@@ -1,11 +1,11 @@
 /* eslint-disable dot-notation */
 import { KeyStringObj, Presentable } from '../../../../types';
 
-import SliderView from '../../sliderView';
+import SliderView from '../../SliderView';
 
-import HandlerView from '../handlerView';
+import HandlerView from '../HandlerView';
 
-import TooltipView from './tooltipView';
+import TooltipView from './TooltipView';
 
 jest.mock('../../sliderView');
 
@@ -69,10 +69,10 @@ describe('Создание экземпляра', () => {
   });
 
   afterAll(() => {
-    TooltipView.prototype['createElement'] = function (parentElement) {
+    TooltipView.prototype['createElement'] = function (parentElement): void {
       createElementFunc.apply(this, [parentElement]);
     };
-    TooltipView.prototype.setVisibility = function (visibilityState) {
+    TooltipView.prototype.setVisibility = function (visibilityState): void {
       setVisibilityFunc.apply(this, [visibilityState]);
     };
   });

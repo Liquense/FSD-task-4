@@ -1,10 +1,10 @@
 /* eslint-disable dot-notation,no-undef */
 import { KeyStringObj } from '../../../types';
 
-import View from '../../pluginView';
+import View from '../../PluginView';
 
-import SliderView from '../sliderView';
-import MarkupView from './markupView';
+import SliderView from '../SliderView';
+import MarkupView from './MarkupView';
 
 document.body.innerHTML = '<div class="liquidSlider liquidSlider_horizontal"></div>';
 const testSliderContainer = document.querySelector('.liquidSlider') as HTMLElement;

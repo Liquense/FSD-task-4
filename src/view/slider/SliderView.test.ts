@@ -1,13 +1,13 @@
 /* eslint-disable dot-notation,@typescript-eslint/ban-ts-ignore */
-import PluginView from '../pluginView';
+import PluginView from '../PluginView';
 
-import SliderView from './sliderView';
+import SliderView from './SliderView';
 
-import MarkupView from './markup/markupView';
+import MarkupView from './markup/MarkupView';
 
-import TooltipView from './handler/tooltip/tooltipView';
-import HandlerView from './handler/handlerView';
-import RangeView from './range/rangeView';
+import TooltipView from './handler/tooltip/TooltipView';
+import HandlerView from './handler/HandlerView';
+import RangeView from './range/RangeView';
 import { KeyStringObj } from '../../types';
 
 import Mock = jest.Mock;

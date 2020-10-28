@@ -1,11 +1,11 @@
 /* eslint-disable dot-notation,@typescript-eslint/ban-ts-ignore */
 import { KeyStringObj } from '../types';
 
-import SliderModel from '../model/sliderModel';
+import SliderModel from '../model/SliderModel';
 
-import View from '../view/pluginView';
+import View from '../view/PluginView';
 import { addListenerAfter } from '../utils/functions';
-import Controller from './controller';
+import Controller from './Controller';
 
 jest.mock('../utils/functions');
 jest.mock('../view/pluginView');

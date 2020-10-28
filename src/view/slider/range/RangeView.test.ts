@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore,no-undef,dot-notation */
-import SliderView from '../sliderView';
-import HandlerView from '../handler/handlerView';
+import SliderView from '../SliderView';
+import HandlerView from '../handler/HandlerView';
 
-import RangeView from './rangeView';
+import RangeView from './RangeView';
 
 jest.mock('../handler/handlerView');
 jest.mock('../sliderView');
@@ -87,7 +87,9 @@ describe('Инициализация', () => {
       });
 
       test('Один хэндлер', async () => {
-        function initTest(handlerSide: string, offsetDirection: string, expandDimension: string) {
+        function initTest(
+          handlerSide: string, offsetDirection: string, expandDimension: string,
+        ): Promise<unknown> {
           return new Promise((resolve) => {
             firstHandler.getRangePair = jest.fn(() => handlerSide);
             testSlider.getOffsetDirection = jest.fn(() => offsetDirection);

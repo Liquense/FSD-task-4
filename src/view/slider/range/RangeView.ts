@@ -8,7 +8,7 @@ import {
 
 import { Orientable, ScaleOwner } from '../../interfaces';
 
-import HandlerView from '../handler/handlerView';
+import HandlerView from '../handler/HandlerView';
 
 export default class RangeView {
   private startHandler: HandlerView;

@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import '../liquidSlider';
-import '../view/slider/sliderView.scss';
+import '../view/slider/SliderView.scss';
 import SliderPanel from './slider-panel/slider-panel';
 import './index.scss';
 

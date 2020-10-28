@@ -1,5 +1,5 @@
 import { standardize } from '../utils/functions';
-import HandlerModel, { ModelItemManager, SliderDataContainer } from './handler/handlerModel';
+import HandlerModel, { ModelItemManager, SliderDataContainer } from './handler/HandlerModel';
 import { Listenable } from '../interfaces';
 import { Presentable } from '../types';
 import {

@@ -3,7 +3,7 @@ import { Listenable } from '../interfaces';
 import { HandlerModelParams, PositioningParams } from '../model/types';
 
 import { View } from './interfaces';
-import SliderView from './slider/sliderView';
+import SliderView from './slider/SliderView';
 import { SliderViewParams } from './types';
 
 export default class PluginView implements Listenable, View {

@@ -7,7 +7,7 @@ import { calculateElementCenter } from '../../../utils/functions';
 import { Slider, SliderElement } from '../../interfaces';
 import { HandlerViewParams } from '../../types';
 
-import TooltipView from './tooltip/tooltipView';
+import TooltipView from './tooltip/TooltipView';
 
 export default class HandlerView implements Listenable, SliderElement {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
