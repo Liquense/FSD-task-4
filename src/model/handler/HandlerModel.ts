@@ -26,27 +26,26 @@ class HandlerModel implements Handler {
     return this.position;
   }
 
-  public setItemIndex(newItemIndex: number): void {
+  public setItemIndex(itemIndex: number): void {
     const oldItemIndex = this.itemIndex;
-    if (this.parentModel.checkItemOccupancy(newItemIndex)) {
+    if (this.parentModel.checkItemOccupancy(itemIndex)) {
       this.updatePosition();
       return;
     }
 
-    this.itemIndex = newItemIndex;
-    this.item = this.parentModel.calculateValue(this.itemIndex);
+    this.itemIndex = itemIndex;
+    this.item = this.parentModel.getItem(this.itemIndex);
     this.updatePosition();
 
     this.parentModel.releaseItem(oldItemIndex);
-    this.parentModel.occupyItem(newItemIndex, this.handlerIndex);
+    this.parentModel.occupyItem(itemIndex, this.handlerIndex);
   }
 
   private calculatePosition(): number {
-    return clamp(
-      ((this.itemIndex - this.parentModel.getMin()) / this.parentModel.getRange()),
-      0,
-      1,
-    );
+    const sliderData = this.parentModel.getSliderData();
+    const positionPart = ((this.itemIndex - sliderData.min) / sliderData.range);
+
+    return clamp(positionPart, 0, 1);
   }
 
   private updatePosition(): void {

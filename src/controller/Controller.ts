@@ -4,8 +4,13 @@ import { addListenerAfter } from '../utils/functions';
 import { View } from '../view/interfaces';
 import { Listenable } from '../interfaces';
 import { SliderPluginParams } from '../types';
-import { SliderViewParams } from '../view/types';
-import { HandlerModelParams } from '../model/types';
+import { SliderViewData, SliderViewParams } from '../view/types';
+import {
+  HandlerModelParams,
+  HandlersModelData,
+  SliderModelData,
+  SliderModelParams,
+} from '../model/types';
 
 class Controller {
   private readonly view: View & Listenable;
@@ -40,53 +45,18 @@ class Controller {
     this.passHandlerPositionChange({ handlerIndex, positionPart });
   }
 
-  public setMin(newMin: number): void {
-    this.model.setMin(newMin);
-    this.passSliderData();
+  public update(params: SliderModelParams & SliderViewParams): void {
+    this.model.setSliderParams(params);
+    const modelData = this.model.getPositioningData();
+
+    this.view.updateVisuals({ ...params, ...modelData });
   }
 
-  public setMax(newMax: number): void {
-    this.model.setMax(newMax);
-    this.passSliderData();
+  public getSliderData(): SliderModelData & SliderViewData {
+    return { ...this.view.getViewData(), ...this.model.getSliderData() };
   }
 
-  public setStep(newStep: number): void {
-    this.model.setStep(newStep);
-    this.passSliderData();
-  }
-
-  public setTooltipVisibility(isVisible: boolean): void {
-    this.view.updateVisuals({ isTooltipsVisible: isVisible });
-  }
-
-  public setVertical(isVertical: boolean): void {
-    this.view.updateVisuals({ isVertical });
-  }
-
-  public setMarkupVisibility(isVisible: boolean): void {
-    this.view.updateVisuals({ withMarkup: isVisible });
-  }
-
-  public getVisualParameters(): SliderViewParams {
-    return this.view.getViewData();
-  }
-
-  public getSliderParameters(): { min: number; max: number; step: number} {
-    return { min: this.model.getMin(), max: this.model.getMax(), step: this.model.getStep() };
-  }
-
-  public getMax(): number {
-    return this.model.getMax();
-  }
-
-  public getMin(): number {
-    return this.model.getMin();
-  }
-
-  public getHandlersData(initHandlersData?: object[]): {
-    customHandlers: boolean;
-    handlersArray: HandlerModelParams[];
-  } {
+  public getHandlersData(initHandlersData?: object[]): HandlersModelData {
     const handlersData = this.model.getHandlersData();
 
     if (initHandlersData?.length > 0) {

@@ -3,67 +3,60 @@ import { KeyStringObj } from '../types';
 
 import SliderModel from './SliderModel';
 import HandlerModel from './handler/HandlerModel';
+import { HandlersModelData } from './types';
 
 let testModel: SliderModel & KeyStringObj;
 
 describe('Инициализация', () => {
   describe('Конструктор', () => {
-    const origSetStep = SliderModel.prototype.setStep;
-    SliderModel.prototype.setStep = jest.fn();
-    const mockSetStep = SliderModel.prototype.setStep;
-
-    const origSetItems = SliderModel.prototype.setItems;
-    SliderModel.prototype.setItems = jest.fn();
-    const mockSetItems = SliderModel.prototype.setItems;
-
-    const origCreateCustomHandlers = SliderModel.prototype['createHandlers'];
-    SliderModel.prototype['createHandlers'] = jest.fn();
-    const mockCreateCustomHandlers = SliderModel.prototype['createHandlers'];
-
-    const origGenerateDefaultHandlers = SliderModel.prototype['generateDefaultHandlersItemIndexes'];
-    SliderModel.prototype['generateDefaultHandlersItemIndexes'] = jest.fn();
-    const mockGenerateDefaultHandlers = SliderModel.prototype['generateDefaultHandlersItemIndexes'];
+    const defaultSliderParams = {
+      min: 0, max: 10, range: 10, step: 1,
+    };
 
     test('Создание без передачи параметров', () => {
       testModel = new SliderModel();
-      expect(testModel.getMin()).toBe(0);
-      expect(testModel.getMax()).toBe(10);
-      expect(mockSetStep).toBeCalledWith(undefined);
-      expect(mockSetItems).toBeCalledWith(undefined);
-      expect(mockGenerateDefaultHandlers).toBeCalledWith(1, undefined);
+      expect(testModel.getSliderData()).toStrictEqual(defaultSliderParams);
+      expect(testModel.getHandlersData()).toStrictEqual(
+        {
+          isCustomHandlers: false,
+          handlersArray: [{
+            handlerIndex: 0, positionPart: 0.5, item: 5, itemIndex: 5,
+          }],
+        },
+      );
     });
 
-    test('Создание с передачей данных (items) и установкой диапазона', () => {
-      const testParameters = { isRange: true, max: 100, items: [2, 6, 12] };
-      testModel = new SliderModel(testParameters);
-      expect(testModel.getMin()).toBe(0);
-      expect(testModel.getMax()).toBe(100);
-      expect(mockSetStep).toBeCalledWith(undefined);
-      expect(mockSetItems).toBeCalledWith(testParameters.items);
-      expect(mockGenerateDefaultHandlers).toBeCalledWith(2, undefined);
-
-      const testParameters2 = { isRange: true, max: 100, values: [2, 6, 10] };
-      testModel = new SliderModel(testParameters2);
-      expect(testModel.getMin()).toBe(0);
-      expect(testModel.getMax()).toBe(100);
-      expect(mockSetStep).toBeCalledWith(undefined);
-      expect(mockSetItems).toBeCalledWith(undefined);
-      expect(mockGenerateDefaultHandlers).toBeCalledWith(2, testParameters2.values);
+    test('Создание с передачей items', () => {
+      testModel = new SliderModel({ isRange: true, max: 3, items: [2, 6, 12, 15] });
+      expect(testModel.getSliderData())
+        .toStrictEqual({ ...defaultSliderParams, ...{ max: 3, range: 3 } });
+      expect(testModel.getHandlersData()).toStrictEqual({
+        isCustomHandlers: false,
+        handlersArray: [
+          {
+            handlerIndex: 0, positionPart: (1 / 3), item: 6, itemIndex: 1,
+          },
+          {
+            handlerIndex: 1, positionPart: (2 / 3), item: 12, itemIndex: 2,
+          },
+        ],
+      });
     });
 
     test('С передачей своих значений хэндлеров', () => {
-      const testParameters3 = { handlers: [{ itemIndex: 1 }, { itemIndex: 3 }] };
-      testModel = new SliderModel(testParameters3);
-      expect(testModel.getMin()).toBe(0);
-      expect(testModel.getMax()).toBe(10);
-      expect(mockSetStep).toBeCalledWith(undefined);
-      expect(mockSetItems).toBeCalledWith(undefined);
-      expect(mockCreateCustomHandlers).toBeCalledWith(testParameters3.handlers);
-
-      SliderModel.prototype.setStep = origSetStep;
-      SliderModel.prototype.setItems = origSetItems;
-      SliderModel.prototype['createHandlers'] = origCreateCustomHandlers;
-      SliderModel.prototype['generateDefaultHandlersItemIndexes'] = origGenerateDefaultHandlers;
+      testModel = new SliderModel({ handlers: [{ itemIndex: 1 }, { itemIndex: 3 }] });
+      expect(testModel.getSliderData()).toStrictEqual(defaultSliderParams);
+      expect(testModel.getHandlersData()).toStrictEqual({
+        isCustomHandlers: true,
+        handlersArray: [
+          {
+            handlerIndex: 0, positionPart: 0.1, item: 1, itemIndex: 1,
+          },
+          {
+            handlerIndex: 1, positionPart: 0.3, item: 3, itemIndex: 3,
+          },
+        ],
+      });
     });
   });
 
@@ -127,31 +120,6 @@ describe('Инициализация', () => {
       });
     });
 
-    describe('Создание стандартных хэндлеров', () => {
-      let spyCreateHandlers: jest.SpyInstance;
-
-      beforeEach(() => {
-        spyCreateHandlers = jest.spyOn(testModel, 'createHandlers');
-        testModel['min'] = 0;
-        testModel['max'] = 100;
-        jest.spyOn(testModel, 'getRange').mockReturnValue(100);
-      });
-
-      test('Без пользовательских значений', () => {
-        testModel['generateDefaultHandlersItemIndexes'](3);
-        expect(spyCreateHandlers).toBeCalledWith(
-          [{ itemIndex: 25 }, { itemIndex: 50 }, { itemIndex: 75 }],
-        );
-      });
-
-      test('С пользовательскими значениями', () => {
-        testModel['generateDefaultHandlersItemIndexes'](4, [-1, 66, 208, 22]);
-        expect(spyCreateHandlers).toBeCalledWith(
-          [{ itemIndex: 0 }, { itemIndex: 66 }, { itemIndex: 100 }, { itemIndex: 22 }],
-        );
-      });
-    });
-
     describe('Занятие и освобождение значений', () => {
       beforeEach(() => {
         testModel = new SliderModel();
@@ -195,7 +163,7 @@ describe('Инициализация', () => {
 
       test(('Пользовательские хэндлеры'), () => {
         expect(testModel.getHandlersData()).toStrictEqual({
-          customHandlers: true,
+          isCustomHandlers: true,
           handlersArray: [
             {
               handlerIndex: 0, item: 1, positionPart: 0.1, itemIndex: 1,
@@ -212,7 +180,7 @@ describe('Инициализация', () => {
       test('Стандартные хэндлеры', () => {
         testModel = new SliderModel({ isRange: true });
         expect(testModel.getHandlersData()).toStrictEqual({
-          customHandlers: false,
+          isCustomHandlers: false,
           handlersArray: [
             {
               handlerIndex: 0, item: 3, positionPart: 0.3, itemIndex: 3,
@@ -228,11 +196,9 @@ describe('Инициализация', () => {
     });
 
     test('Получение из модели данных для слайдера', () => {
-      expect(testModel.getPositioningData()).toStrictEqual({
-        step: testModel.getStep() / testModel.getRange(),
-        min: testModel['min'],
-        max: testModel['max'],
-      });
+      testModel = new SliderModel({ min: -44, max: 44, step: 10 });
+      expect(testModel.getPositioningData())
+        .toStrictEqual({ stepPart: (10 / 88), min: -44, max: 44 });
     });
 
     describe('Обработка изменения позиции хэндлера', () => {
@@ -252,7 +218,7 @@ describe('Инициализация', () => {
       });
 
       test('Если последнее значение не делится ровно на шаг', () => {
-        testModel.setStep(3);
+        testModel.setSliderParams({ step: 3 });
         testData.positionPart = 1;
 
         testModel.handleHandlerPositionChanged(testData);
@@ -292,54 +258,56 @@ describe('Функции', () => {
     let newMax: number;
 
     beforeEach(() => {
-      oldMax = testModel.getMax();
-      oldMin = testModel.getMin();
+      oldMax = testModel.getSliderData().max;
+      oldMin = testModel.getSliderData().min;
     });
 
     describe('Установка минимума', () => {
       test('Если минимум больше максимума - ничего не происходит', () => {
         newMin = 20;
-        testModel.setMin(newMin);
-        expect(testModel.getMin()).toBe(oldMin);
+        testModel.setSliderParams({ min: newMin });
+        expect(testModel.getSliderData().min).toBe(oldMin);
       });
 
-      test('Штатная ситуация', () => {
+      test('Нормальная ситуация', () => {
         newMin = 5;
-        testModel.setMin(newMin);
-        expect(testModel.getMin()).toBe(newMin);
-        expect(testModel['handlers'][0].getItemIndex()).toBeGreaterThanOrEqual(newMin);
+        testModel.setSliderParams({ min: newMin });
+        expect(testModel.getSliderData().min).toBe(newMin);
+        expect(testModel.getHandlersData().handlersArray[0].itemIndex)
+          .toBeGreaterThanOrEqual(newMin);
       });
     });
 
     describe('Установка максимума', () => {
       test('Если максимум меньше минимума - ничего не произойдёт', () => {
         newMax = -1;
-        testModel.setMax(newMax);
-        expect(testModel.getMax()).toBe(oldMax);
+        testModel.setSliderParams({ max: newMax });
+        expect(testModel.getSliderData().max).toBe(oldMax);
       });
 
       test('Штатная ситуация', () => {
         newMax = 30;
-        testModel.setMax(newMax);
-        expect(testModel.getMax()).toBe(newMax);
+        testModel.setSliderParams({ max: newMax });
+        expect(testModel.getSliderData().max).toBe(newMax);
       });
     });
 
     describe('Установка минимума и максимума', () => {
       test('Если минимум больше максимума - ничего не происходит', () => {
-        oldMax = testModel.getMax();
+        oldMax = testModel.getSliderData().max;
         newMin = 10;
         newMax = 0;
-        testModel.setMinMax(newMin, newMax);
-        expect(testModel.getMax()).toBe(oldMax);
-        expect(testModel.getMin()).toBe(oldMin);
+        testModel.setSliderParams({ min: newMin, max: newMax });
+        expect(testModel.getSliderData().min).toBe(oldMin);
+        expect(testModel.getSliderData().max).toBe(oldMax);
       });
 
       test('Штатная ситуация', () => {
+        newMin = -100;
         newMax = 100;
-        testModel.setMinMax(newMin, newMax);
-        expect(testModel.getMin()).toBe(newMin);
-        expect(testModel.getMax()).toBe(newMax);
+        testModel.setSliderParams({ min: newMin, max: newMax });
+        expect(testModel.getSliderData().min).toBe(newMin);
+        expect(testModel.getSliderData().max).toBe(newMax);
       });
     });
   });
@@ -347,37 +315,35 @@ describe('Функции', () => {
   describe('Установка шага значений', () => {
     test('Если переданы пользовательские значения, то шаг округляется', () => {
       testModel.setItems(['']);
-      testModel.setStep(2.6);
-      expect(testModel.getStep()).toBe(3);
+      testModel.setSliderParams({ step: 2.6 });
+      expect(testModel.getSliderData().step).toBe(3);
     });
 
     test('Если пользовательские значения не переданы, шаг может быть и дробным', () => {
       testModel.setItems(null);
-      testModel.setStep(2.6);
-      expect(testModel.getStep()).toBe(2.6);
+      testModel.setSliderParams({ step: 2.6 });
+      expect(testModel.getSliderData().step).toBe(2.6);
     });
   });
 
   describe('Добавление хэндлера', () => {
-    let oldHandlers: HandlerModel[];
+    let oldHandlersData: HandlersModelData;
 
-    beforeEach(() => {
-      oldHandlers = [...testModel['handlers']];
-    });
+    test('Нормальная ситуация', () => {
+      oldHandlersData = testModel.getHandlersData();
 
-    test('Штатная ситуация', () => {
       testModel.addHandler(7);
-      expect(testModel['handlers'].pop().getItemIndex()).toBe(7);
-      expect(testModel['handlers']).toStrictEqual(oldHandlers);
+      const newHandlersData = testModel.getHandlersData();
+      expect(newHandlersData.handlersArray.pop().itemIndex).toBe(7);
+      expect(newHandlersData.handlersArray).toStrictEqual(oldHandlersData.handlersArray);
     });
 
     test('Если все значения заняты, ничего не произойдёт', () => {
-      testModel.setMinMax(0, 1);
-      testModel.setStep(1);
-      testModel.addHandler(1);
-      oldHandlers = [...testModel['handlers']];
+      testModel.setSliderParams({ min: 0, max: 0, step: 1 });
+      oldHandlersData = testModel.getHandlersData();
+
       const functionResult = testModel.addHandler(1);
-      expect(testModel['handlers']).toStrictEqual(oldHandlers);
+      expect(testModel.getHandlersData()).toStrictEqual(oldHandlersData);
       expect(functionResult).toBe(null);
     });
   });

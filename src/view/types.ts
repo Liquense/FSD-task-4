@@ -1,6 +1,6 @@
-import { HandlerParams } from '../types';
+import { HandlerData } from '../types';
 
-type SliderViewUpdateParams = { min?: number; max?: number; step?: number } & SliderViewParams;
+type SliderViewUpdateParams = { min?: number; max?: number; stepPart?: number } & SliderViewParams;
 
 type SliderViewParams = {
   isVertical?: boolean;
@@ -9,8 +9,17 @@ type SliderViewParams = {
   withMarkup?: boolean;
 }
 
-type HandlerViewParams = HandlerParams & { isTooltipVisible?: boolean; rangePair?: number | string }
+type SliderViewData = {
+  isVertical: boolean;
+  isTooltipsVisible: boolean;
+  isInverted: boolean;
+  withMarkup: boolean;
+}
+
+type HandlerViewParams = HandlerData & { isTooltipVisible?: boolean; rangePair?: number | string }
+
+type HandlersViewData = { isCustomHandlers: boolean; handlersArray: HandlerViewParams[] };
 
 export {
-  SliderViewUpdateParams, SliderViewParams, HandlerViewParams,
+  SliderViewUpdateParams, SliderViewParams, HandlerViewParams, SliderViewData, HandlersViewData,
 };

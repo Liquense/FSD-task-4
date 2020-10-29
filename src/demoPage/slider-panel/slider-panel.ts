@@ -5,7 +5,7 @@ import './slider-panel.scss';
 import { SliderPluginParams } from '../../types';
 import CreateHandlerSection from '../create-handler-section/create-handler-section';
 import { SliderViewParams } from '../../view/types';
-import { HandlerModelParams, PositioningParams } from '../../model/types';
+import { HandlerModelParams, SliderModelParams } from '../../model/types';
 import HandlerSection from '../handler-section/handler-section';
 import PanelProperty from '../panel-property/panel-property';
 
@@ -55,9 +55,9 @@ class SliderPanel {
     const handlersData = this.slider.getHandlersData();
     this.initHandlers(handlersData);
 
-    const viewData = this.slider.getVisualParameters();
+    const viewData = this.slider.getSliderData();
     this.updateVisuals(viewData);
-    this.updateSliderData(this.slider.getSliderParameters());
+    this.updateSliderData(this.slider.getSliderData());
   }
 
   private addHandler({ handlerIndex, positionPart, item }: HandlerModelParams): void {
@@ -94,7 +94,7 @@ class SliderPanel {
     handlersData.handlersArray.forEach((handler) => { this.addHandler(handler); });
   }
 
-  private updateSliderData({ step, min, max }: PositioningParams): void {
+  private updateSliderData({ step, min, max }: SliderModelParams): void {
     this.properties.max.setValue(max);
     this.properties.min.setValue(min);
     this.properties.step.setValue(step);
@@ -161,40 +161,48 @@ class SliderPanel {
   }
 
   private handleMarkupInputChange = (event: Event): void => {
-    this.withMarkup = (event.target as HTMLInputElement).checked;
+    const withMarkup = (event.target as HTMLInputElement).checked;
+    this.withMarkup = withMarkup;
 
-    this.slider.setMarkupVisibility(this.withMarkup);
+    this.slider.update({ withMarkup });
   }
 
   private handleOrientationInputChange = (event: Event): void => {
     const isVertical = (event.target as HTMLInputElement).checked;
-
     this.isVertical = isVertical;
-    this.slider.setVertical(isVertical);
+
+    this.slider.update({ isVertical });
     this.updateOrientation();
   }
 
-  private handleStepInputChange = (): void => {
-    const { step } = this.properties;
-    this.slider.setStep(Number.parseFloat(step.getValue() as string));
-  }
-
   private handleMinInputChange = (): void => {
-    const { min } = this.properties;
-    this.slider.setMin(Number.parseFloat(min.getValue() as string));
-    min.setValue(this.slider.getMin());
+    const minProp = this.properties.min;
+    const min = Number.parseFloat(minProp.getValue() as string);
+
+    this.slider.update({ min });
+    minProp.setValue(this.slider.getSliderData().min);
   }
 
   private handleMaxInputChange = (): void => {
-    const { max } = this.properties;
-    this.slider.setMax(Number.parseFloat(max.getValue() as string));
-    max.setValue(this.slider.getMax());
+    const maxProp = this.properties.max;
+    const max = Number.parseFloat(maxProp.getValue() as string);
+
+    this.slider.update({ max });
+    maxProp.setValue(this.slider.getSliderData().max);
+  }
+
+  private handleStepInputChange = (): void => {
+    const stepProp = this.properties.step;
+    const step = Number.parseFloat(stepProp.getValue() as string);
+
+    this.slider.update({ step });
+    stepProp.setValue(this.slider.getSliderData().step);
   }
 
   private handleTooltipVisibilityInputChange = (): void => {
     const isVisible = this.properties.tooltipsVisibility.getValue() as boolean;
     this.isTooltipsVisible = isVisible;
-    this.slider.setTooltipVisibility(isVisible);
+    this.slider.update({ isTooltipsVisible: isVisible });
   }
 
   private handleHandlerValueChange = (handlerData: HandlerModelParams): void => {

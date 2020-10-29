@@ -1,7 +1,7 @@
 import { ResizeObserver } from 'resize-observer';
 
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../../constants';
-import { HandlerParams, KeyStringObj, Presentable } from '../../types';
+import { KeyStringObj } from '../../types';
 
 import {
   clamp,
@@ -9,7 +9,12 @@ import {
   roundToDecimal,
   standardize,
 } from '../../utils/functions';
-import { HandlerViewParams, SliderViewParams, SliderViewUpdateParams } from '../types';
+import {
+  HandlersViewData,
+  HandlerViewParams,
+  SliderViewParams,
+  SliderViewUpdateParams,
+} from '../types';
 import { Slider, View } from '../interfaces';
 
 import HandlerView from './handler/HandlerView';
@@ -45,7 +50,7 @@ class SliderView implements Slider {
 
   private markup: MarkupView;
 
-  private step = 0.01;
+  private stepPart = 0.01;
 
   private min: number;
 
@@ -187,18 +192,7 @@ class SliderView implements Slider {
     });
   }
 
-  public initHandlers(
-    handlersData: {
-          customHandlers: boolean;
-          handlersArray: {
-              handlerIndex: number;
-              positionPart: number;
-              item: Presentable;
-              withTooltip?: boolean;
-              rangePair?: string;
-          }[];
-      },
-  ): void {
+  public initHandlers(handlersData: HandlersViewData): void {
     this.clearHandlers();
     this.handlers = handlersData.handlersArray.map((handler, index, handlers) => {
       const newHandler = new HandlerView(this, {
@@ -206,18 +200,18 @@ class SliderView implements Slider {
         isTooltipVisible: this.isTooltipsAlwaysVisible,
       });
 
-      if (!handlersData.customHandlers) {
-        if (handlers.length === 2) {
-          if (index === 0) {
-            newHandler.setRangePair(this.isRangesInverted ? RANGE_PAIR_START_KEY : 1);
-          }
-          if (index === 1) {
-            newHandler.setRangePair(this.isRangesInverted ? RANGE_PAIR_END_KEY : 0);
-          }
-        } else {
-          newHandler
-            .setRangePair(this.isRangesInverted ? RANGE_PAIR_END_KEY : RANGE_PAIR_START_KEY);
+      if (handlersData.isCustomHandlers) { return newHandler; }
+
+      if (handlers.length === 2) {
+        if (index === 0) {
+          newHandler.setRangePair(this.isRangesInverted ? RANGE_PAIR_START_KEY : 1);
         }
+        if (index === 1) {
+          newHandler.setRangePair(this.isRangesInverted ? RANGE_PAIR_END_KEY : 0);
+        }
+      } else {
+        newHandler
+          .setRangePair(this.isRangesInverted ? RANGE_PAIR_END_KEY : RANGE_PAIR_START_KEY);
       }
       return newHandler;
     });
@@ -227,7 +221,7 @@ class SliderView implements Slider {
     this.createRanges();
   }
 
-  public addHandler(handlerParams: HandlerParams & { rangePair: number | string }): void {
+  public addHandler(handlerParams: HandlerViewParams): void {
     const newHandler = new HandlerView(
       this,
       { ...handlerParams, isTooltipVisible: this.isTooltipsAlwaysVisible },
@@ -289,11 +283,11 @@ class SliderView implements Slider {
 
   public update(
     {
-      min, max, step, isVertical, isTooltipsVisible, withMarkup,
+      min, max, stepPart, isVertical, isTooltipsVisible, withMarkup,
     }: SliderViewUpdateParams = {},
   ): void {
-    if (Number.isFinite(step)) {
-      this.step = step;
+    if (Number.isFinite(stepPart)) {
+      this.stepPart = stepPart;
     }
     if (Number.isFinite(min)) {
       this.min = min;
@@ -424,19 +418,19 @@ class SliderView implements Slider {
     const mousePosition = this.calculateMouseRelativePos(event);
     let standardMousePosition: number;
 
-    const stepsRemainder = 1 % this.step;
+    const stepsRemainder = 1 % this.stepPart;
     const penultimatePosition = 1 - stepsRemainder;
     if (mousePosition > penultimatePosition && stepsRemainder !== 0) {
       standardMousePosition = standardize(mousePosition, {
         min: penultimatePosition,
         max: 1,
-        step: stepsRemainder,
+        stepPart: stepsRemainder,
       });
     } else {
       standardMousePosition = standardize(mousePosition, {
         min: 0,
         max: penultimatePosition,
-        step: this.step,
+        stepPart: this.stepPart,
       });
     }
 
@@ -519,8 +513,8 @@ class SliderView implements Slider {
     if (!this.withMarkup) { return; }
 
     requestAnimationFrame(() => {
-      for (let i = 0; i <= 1; i = roundToDecimal(i + this.step, 5)) {
-        const standardPosition = standardize(i, { min: 0, max: 1, step: this.step });
+      for (let i = 0; i <= 1; i = roundToDecimal(i + this.stepPart, 5)) {
+        const standardPosition = standardize(i, { min: 0, max: 1, stepPart: this.stepPart });
         const shrinkPosition = standardPosition * this.calculateShrinkRatio();
         this.markup.addMark(shrinkPosition, this.calculateRelativeHandlerSize());
       }

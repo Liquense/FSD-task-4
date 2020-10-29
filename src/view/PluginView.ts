@@ -4,7 +4,9 @@ import { HandlerModelParams, PositioningParams } from '../model/types';
 
 import { View } from './interfaces';
 import SliderView from './slider/SliderView';
-import { SliderViewParams } from './types';
+import {
+  HandlersViewData, SliderViewData, SliderViewUpdateParams,
+} from './types';
 
 class PluginView implements Listenable, View {
   listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
@@ -22,7 +24,7 @@ class PluginView implements Listenable, View {
     return this.element;
   }
 
-  public getViewData(): SliderViewParams {
+  public getViewData(): SliderViewData {
     return {
       isVertical: this.slider.getIsVertical(),
       isTooltipsVisible: this.slider.getIsTooltipsAlwaysVisible(),
@@ -42,15 +44,12 @@ class PluginView implements Listenable, View {
     this.slider.setHandlersData([data]);
   }
 
-  public initHandlers(handlersData: {
-      customHandlers: boolean;
-      handlersArray: HandlerModelParams[];
-  }): void {
+  public initHandlers(handlersData: HandlersViewData): void {
     this.slider.initHandlers(handlersData);
     this.slider.createRanges();
   }
 
-  public updateVisuals(parameters?: SliderViewParams): void {
+  public updateVisuals(parameters?: SliderViewUpdateParams): void {
     this.slider.update(parameters);
   }
 

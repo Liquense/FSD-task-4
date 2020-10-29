@@ -1,4 +1,5 @@
 import { Presentable } from '../types';
+import { SliderModelData, SliderModelParams } from './types';
 
 interface Handler {
   handlerIndex: number;
@@ -8,17 +9,15 @@ interface Handler {
 }
 
 interface SliderDataContainer {
-  getMin(): number;
-  getMax(): number;
-  getStep(): number;
-  getRange(): number;
+  setSliderParams(params: SliderModelParams): void;
+  getSliderData(): SliderModelData;
 }
 
 interface ModelItemManager {
   releaseItem(itemIndex: number): void;
   occupyItem(itemIndex: number, handlerIndex: number): void;
   checkItemOccupancy(itemIndex: number): boolean;
-  calculateValue(itemIndex: number): Presentable;
+  getItem(itemIndex: number): Presentable;
   handlerValueChanged(handler: Handler): void;
 }
 

@@ -2,7 +2,7 @@ type KeyStringObj = { [key: string]: any };
 
 type Presentable = { toString(): string } | string;
 
-type HandlerParams = { handlerIndex: number; positionPart: number; item: Presentable }
+type HandlerData = { handlerIndex: number; positionPart: number; item: Presentable }
 
 type HandlerPluginParams = { itemIndex: number; rangePair?: number | 'start' | 'end' }
 
@@ -21,5 +21,5 @@ type SliderPluginParams = {
 };
 
 export {
-  Presentable, SliderPluginParams, KeyStringObj, HandlerPluginParams, HandlerParams,
+  Presentable, SliderPluginParams, KeyStringObj, HandlerPluginParams, HandlerData,
 };

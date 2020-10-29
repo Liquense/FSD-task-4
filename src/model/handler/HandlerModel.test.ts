@@ -23,7 +23,7 @@ test('Инициализация', () => {
 
 test('Установка нового значения', () => {
   const spyCheckItemOccupancy = jest.spyOn(testModel, 'checkItemOccupancy');
-  const spyCalculateValue = jest.spyOn(testModel, 'calculateValue');
+  const spyCalculateValue = jest.spyOn(testModel, 'getItem');
   const spyReleaseItem = jest.spyOn(testModel, 'releaseItem');
   const spyOccupyItem = jest.spyOn(testModel, 'occupyItem');
   const spyHandlerValueChanged = jest.spyOn(testModel, 'handlerValueChanged');

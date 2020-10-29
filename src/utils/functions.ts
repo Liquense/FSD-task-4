@@ -79,19 +79,19 @@ function roundToDecimal(numToRound: number, decimalsCount: number): number {
 }
 
 function standardize(
-  value: number, { min, max, step }: PositioningParams,
+  value: number, { min, max, stepPart }: PositioningParams,
 ): number {
   const realMin = Math.min(max, min);
   const realMax = Math.max(max, min);
   if (value > realMax) return realMax;
   if (value < realMin) return realMin;
 
-  const remainder = (value - realMin) % step;
+  const remainder = (value - realMin) % stepPart;
   if (remainder === 0) return value;
 
   let resultValue = value - remainder;
-  if ((step / 2) < remainder) {
-    resultValue += step;
+  if ((stepPart / 2) < remainder) {
+    resultValue += stepPart;
   }
 
   resultValue = clamp(resultValue, realMin, realMax);

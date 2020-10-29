@@ -1,11 +1,11 @@
 import { HandlerModelParams, PositioningParams } from '../model/types';
 
-import { SliderViewParams } from './types';
+import { SliderViewData, SliderViewParams } from './types';
 
 interface View {
   getBody(): HTMLElement;
 
-  getViewData(): SliderViewParams;
+  getViewData(): SliderViewData;
 
   updateVisuals(parameters?: SliderViewParams): void;
 
@@ -19,7 +19,7 @@ interface View {
   handlerValueChangedListener(data: HandlerModelParams): void;
 
   initHandlers(
-    handlersData: { customHandlers: boolean; handlersArray: HandlerModelParams[] }
+    handlersData: { isCustomHandlers: boolean; handlersArray: HandlerModelParams[] }
   ): void;
 
   addHandler(handlerData: HandlerModelParams): void;

@@ -70,10 +70,14 @@ describe('Инициализация', () => {
     testSlider.setRangesInversion(false);
     testSlider.initHandlers(
       {
-        customHandlers: false,
+        isCustomHandlers: false,
         handlersArray: [
-          { handlerIndex: 0, item: 'test', positionPart: 0.4 },
-          { handlerIndex: 1, item: 'test2', positionPart: 0.9 },
+          {
+            handlerIndex: 0, item: 'test', positionPart: 0.4,
+          },
+          {
+            handlerIndex: 1, item: 'test2', positionPart: 0.9,
+          },
         ],
       },
     );
@@ -83,9 +87,11 @@ describe('Инициализация', () => {
     testSlider.setRangesInversion(true);
     testSlider.initHandlers(
       {
-        customHandlers: false,
+        isCustomHandlers: false,
         handlersArray: [
-          { handlerIndex: 0, item: 'test', positionPart: 0.4 },
+          {
+            handlerIndex: 0, item: 'test', positionPart: 0.4,
+          },
         ],
       },
     );
@@ -94,9 +100,11 @@ describe('Инициализация', () => {
     testSlider.setRangesInversion(false);
     testSlider.initHandlers(
       {
-        customHandlers: false,
+        isCustomHandlers: false,
         handlersArray: [
-          { handlerIndex: 0, item: 'test', positionPart: 0.4 },
+          {
+            handlerIndex: 0, item: 'test', positionPart: 0.4,
+          },
         ],
       },
     );
@@ -104,7 +112,7 @@ describe('Инициализация', () => {
 
     testSlider.initHandlers(
       {
-        customHandlers: true,
+        isCustomHandlers: true,
         handlersArray: [
           {
             handlerIndex: 0, item: 'test', positionPart: 0.4, rangePair: 'start',
@@ -128,7 +136,7 @@ describe('Инициализация', () => {
       test('Без инверсии диапазонов', () => {
         testSlider.setRangesInversion(false);
         testSlider.initHandlers({
-          customHandlers: false,
+          isCustomHandlers: false,
           handlersArray: [
             { handlerIndex: 0, item: 'test', positionPart: 0.4 },
             { handlerIndex: 1, item: 'test2', positionPart: 0.9 },
@@ -142,7 +150,7 @@ describe('Инициализация', () => {
       test('С инверсией диапазонов', () => {
         testSlider.setRangesInversion(true);
         testSlider.initHandlers({
-          customHandlers: false,
+          isCustomHandlers: false,
           handlersArray: [
             { handlerIndex: 0, item: 'test', positionPart: 0.4 },
             { handlerIndex: 1, item: 'test2', positionPart: 0.9 },
@@ -158,7 +166,7 @@ describe('Инициализация', () => {
 
       test('Один хэндлер', () => {
         testSlider.initHandlers({
-          customHandlers: false,
+          isCustomHandlers: false,
           handlersArray: [
             { handlerIndex: 0, item: 'test', positionPart: 0.4 },
           ],
@@ -172,7 +180,7 @@ describe('Инициализация', () => {
 
     test('Пользовательские', () => {
       testSlider.initHandlers({
-        customHandlers: true,
+        isCustomHandlers: true,
         handlersArray: [
           {
             handlerIndex: 0, item: 'test', positionPart: 0.4, rangePair: 'start',
@@ -206,7 +214,7 @@ describe('Инициализация', () => {
 
       testSlider.initHandlers(
         {
-          customHandlers: false,
+          isCustomHandlers: false,
           handlersArray: [
             { handlerIndex: 0, item: 'test', positionPart: 0.4 },
             { handlerIndex: 1, item: 'test2', positionPart: 0.9 },
@@ -382,7 +390,7 @@ describe('Функции', () => {
     testSlider = new SliderView(mockView);
 
     testSlider.initHandlers({
-      customHandlers: false,
+      isCustomHandlers: false,
       handlersArray: [
         { handlerIndex: 0, item: 'test', positionPart: 0.4 },
         { handlerIndex: 1, item: 'test2', positionPart: 0.9 },
@@ -421,7 +429,7 @@ describe('Функции', () => {
     testSlider.clearRanges();
     testSlider['withMarkup'] = true;
     testSlider.initHandlers({
-      customHandlers: false,
+      isCustomHandlers: false,
       handlersArray: [{ handlerIndex: 0, item: 'test', positionPart: 0.5 }],
     });
     testSlider.getScaleLength = (): number => 100;
@@ -431,10 +439,10 @@ describe('Функции', () => {
       resolve();
     }));
 
-    const marksCount = 1 / testSlider['step'] + 1;
+    const marksCount = 1 / testSlider['stepPart'] + 1;
     expect(mockAddMark.mock.calls.length).toBe(marksCount);
     for (let i = 1; i < marksCount; i += 1) {
-      expect(mockAddMark).toBeCalledWith(Number.parseFloat((testSlider['step'] * i).toFixed(4)), 0);
+      expect(mockAddMark).toBeCalledWith(Number.parseFloat((testSlider['stepPart'] * i).toFixed(4)), 0);
     }
 
     testSlider.getScaleLength = origGetScaleLength;
@@ -442,7 +450,7 @@ describe('Функции', () => {
 
   test('Установка данных хэндлеров', () => {
     testSlider.initHandlers({
-      customHandlers: false,
+      isCustomHandlers: false,
       handlersArray: [{ handlerIndex: 0, item: 'test', positionPart: 0.5 }, {
         handlerIndex: 2,
         item: 'test2',
@@ -491,18 +499,18 @@ describe('Функции', () => {
       });
     }
 
-    let prevStep = testSlider['step'];
+    let prevStep = testSlider['stepPart'];
     let prevMin = testSlider['min'];
     let prevMax = testSlider['max'];
-    let prevVerticality = testSlider.getIsVertical();
+    let prevIsVertical = testSlider.getIsVertical();
     let prevTooltipVisibility = testSlider['isTooltipsAlwaysVisible'];
     let prevMarkupVisibility = testSlider['withMarkup'];
 
     function checkOldValues(): void {
-      expect(testSlider['step']).toBe(prevStep);
+      expect(testSlider['stepPart']).toBe(prevStep);
       expect(testSlider['min']).toBe(prevMin);
       expect(testSlider['max']).toBe(prevMax);
-      expect(testSlider.getIsVertical()).toBe(prevVerticality);
+      expect(testSlider.getIsVertical()).toBe(prevIsVertical);
       expect(testSlider['isTooltipsAlwaysVisible']).toBe(prevTooltipVisibility);
       expect(testSlider['withMarkup']).toBe(prevMarkupVisibility);
     }
@@ -514,25 +522,25 @@ describe('Функции', () => {
 
     mockClearSpies(spies);
     testSlider.update({
-      step: 2, min: -2, max: 22, isVertical: false, isTooltipsVisible: false, withMarkup: true,
+      stepPart: 2, min: -2, max: 22, isVertical: false, isTooltipsVisible: false, withMarkup: true,
     });
     checkSpiesToBeCalledOnce(spies);
-    expect(testSlider['step']).toBe(2);
+    expect(testSlider['stepPart']).toBe(2);
     expect(testSlider['min']).toBe(-2);
     expect(testSlider['max']).toBe(22);
     expect(testSlider.getIsVertical()).toBe(false);
     expect(testSlider['isTooltipsAlwaysVisible']).toBe(false);
     expect(testSlider['withMarkup']).toBe(true);
 
-    prevStep = testSlider['step'];
+    prevStep = testSlider['stepPart'];
     prevMin = testSlider['min'];
     prevMax = testSlider['max'];
-    prevVerticality = testSlider.getIsVertical();
+    prevIsVertical = testSlider.getIsVertical();
     prevTooltipVisibility = testSlider['isTooltipsAlwaysVisible'];
     prevMarkupVisibility = testSlider['withMarkup'];
 
     mockClearSpies(spies);
-    testSlider.update({ step: null });
+    testSlider.update({ stepPart: null });
     checkSpiesToBeCalledOnce(spies);
     checkOldValues();
   });

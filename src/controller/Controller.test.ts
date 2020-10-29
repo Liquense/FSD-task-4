@@ -49,9 +49,7 @@ describe('Инициализация контроллера', () => {
   });
 
   test('Передача данных о слайдере от модели к виду', () => {
-    const testData = {
-      step: 0, absoluteStep: 0, min: 0, max: 0,
-    };
+    const testData = { stepPart: 0, min: 0, max: 0 };
     SliderModel.prototype.getPositioningData = jest.fn(() => testData);
 
     testController = new Controller(rootElement);
@@ -79,7 +77,7 @@ describe('Инициализация контроллера', () => {
 
     test('C опциональными параметрами (стандартные хэндлеры)', () => {
       const testParameters = {};
-      const testHandlersData = { customHandlers: false, handlersArray: testHandlersArray };
+      const testHandlersData = { isCustomHandlers: false, handlersArray: testHandlersArray };
 
       SliderModel.prototype.getHandlersData = jest.fn(() => testHandlersData);
 
@@ -103,7 +101,7 @@ describe('Инициализация контроллера', () => {
       testController = new Controller(rootElement, testParameters);
       expect(testController['model'].getHandlersData).toBeCalled();
       expect(testController['view'].initHandlers).toBeCalledWith({
-        customHandlers: false,
+        isCustomHandlers: false,
         handlersArray: testHandlersArray.map(
           (handler, index) => (
             { ...testHandlersData2[index], ...handler }),
@@ -116,6 +114,12 @@ describe('Инициализация контроллера', () => {
 describe('Функции', () => {
   beforeAll(() => {
     testController = new Controller(rootElement);
+  });
+
+  beforeEach(() => {
+    mockAddListenerAfter.mockClear();
+    mockModel.mockClear();
+    mockView.mockClear();
   });
 
   test('Добавление хэндлера', () => {
@@ -145,43 +149,18 @@ describe('Функции', () => {
     expect(testController['model'].removeHandler).toBeCalledWith(2);
   });
 
-  test('Назначение минимума, максимума и шага', () => {
-    (testController['view']['updateData'] as jest.Mock).mockClear();
-    const randomNumber = Math.random();
-    (testController['model'].getPositioningData as jest.Mock).mockImplementation(() => randomNumber);
+  test('Назначение параметров слайдера', () => {
+    const testParams = { step: 1, min: 2, isVertical: true };
+    const testPositioningData = { stepPart: 0.125, min: 2, max: 10 };
+    testController['model'].getPositioningData = jest.fn(() => testPositioningData);
 
-    testController.setMin(1);
-    expect(testController['model'].setMin).toBeCalledWith(1);
-    expect(testController['view'].updateData)
-      .toBeCalledWith(testController['model'].getPositioningData());
-
-    testController.setMax(2);
-    expect(testController['model'].setMax).toBeCalledWith(2);
-    expect(testController['view'].updateData)
-      .toBeCalledWith(testController['model'].getPositioningData());
-
-    testController.setStep(3);
-    expect(testController['model'].setStep).toBeCalledWith(3);
-    expect(testController['view'].updateData)
-      .toBeCalledWith(testController['model'].getPositioningData());
-  });
-
-  test('Назначение видимости подсказок и разметки и вертикального отображения слайдера', () => {
-    (testController['view']['updateVisuals'] as jest.Mock).mockClear();
-
-    testController.setTooltipVisibility(true);
-    expect(testController['view'].updateVisuals).toBeCalledWith({ isTooltipsVisible: true });
-
-    testController.setVertical(false);
-    expect(testController['view'].updateVisuals).toBeCalledWith({ isVertical: false });
-
-    testController.setMarkupVisibility(true);
-    expect(testController['view'].updateVisuals).toBeCalledWith({ withMarkup: true });
+    testController.update(testParams);
+    expect(testController['model'].setSliderParams).toBeCalledWith(testParams);
+    expect(testController['view'].updateVisuals)
+      .toBeCalledWith({ ...testParams, ...testPositioningData });
   });
 
   test('Передача изменения значения хэндлера в вид', () => {
-    mockView.mockClear();
-
     const testData = {
       handlerIndex: 0, positionPart: 0.5, item: 'test!', itemIndex: 0,
     };
@@ -206,8 +185,6 @@ describe('Функции', () => {
   });
 
   test('Функция перемещения хэндлера', () => {
-    mockModel.mockClear();
-
     const testIndex = 0;
     const testPositionPart = 0.5;
     testController.moveHandler(testIndex, testPositionPart);
@@ -217,22 +194,17 @@ describe('Функции', () => {
       .toBeCalledWith({ handlerIndex: testIndex, positionPart: testPositionPart });
   });
 
-  test('Получение данных из модели/вида', () => {
-    mockModel.mockClear();
+  test('Получение данных о слайдере', () => {
+    const testModelData = { min: -1, max: 5, step: 3 };
+    testController['model'].getSliderData = jest.fn(() => testModelData);
 
-    testController.getMin();
-    expect(testController['model'].getMin).toBeCalledTimes(1);
+    const testViewData = {
+      isVertical: true, withMarkup: false, isTooltipsVisible: false, isInverted: false,
+    };
+    testController['view'].getViewData = jest.fn(() => testViewData);
 
-    testController.getMax();
-    expect(testController['model'].getMax).toBeCalledTimes(1);
+    const testData = { ...testModelData, ...testViewData };
 
-    testController.getSliderParameters();
-    expect(testController['model'].getMin).toBeCalledTimes(2);
-    expect(testController['model'].getMax).toBeCalledTimes(2);
-    expect(testController['model'].getStep).toBeCalled();
-
-    mockView.mockClear();
-    testController.getVisualParameters();
-    expect(testController['view'].getViewData).toBeCalledTimes(1);
+    expect(testController.getSliderData()).toStrictEqual(testData);
   });
 });
