@@ -7,7 +7,7 @@ import { SliderPluginParams } from '../types';
 import { SliderViewParams } from '../view/types';
 import { HandlerModelParams } from '../model/types';
 
-export default class Controller {
+class Controller {
   private readonly view: View & Listenable;
 
   private readonly model: SliderModel;
@@ -141,3 +141,5 @@ export default class Controller {
     this.view.addHandler(handlerParams);
   }
 }
+
+export default Controller;

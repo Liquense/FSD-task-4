@@ -3,7 +3,7 @@ import { KeyStringObj } from '../../../types';
 
 import { Orientable, ScaleOwner, SliderContainer } from '../../interfaces';
 
-export default class MarkupView {
+class MarkupView {
   private wrap: HTMLElement;
 
   private marks: HTMLElement[] = [];
@@ -73,3 +73,5 @@ export default class MarkupView {
     );
   }
 }
+
+export default MarkupView;

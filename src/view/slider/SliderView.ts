@@ -16,7 +16,7 @@ import HandlerView from './handler/HandlerView';
 import RangeView from './range/RangeView';
 import MarkupView from './markup/MarkupView';
 
-export default class SliderView implements Slider {
+class SliderView implements Slider {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 
   private isRangesInverted = false;
@@ -548,3 +548,5 @@ export default class SliderView implements Slider {
     this.elements.max.innerText = this.max?.toFixed(2);
   }
 }
+
+export default SliderView;

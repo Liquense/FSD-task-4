@@ -9,7 +9,7 @@ import { HandlerViewParams } from '../../types';
 
 import TooltipView from './tooltip/TooltipView';
 
-export default class HandlerView implements Listenable, SliderElement {
+class HandlerView implements Listenable, SliderElement {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 
   private readonly tooltip: TooltipView;
@@ -148,3 +148,5 @@ export default class HandlerView implements Listenable, SliderElement {
     return shift - 0.5 * tooltipExcess;
   }
 }
+
+export default HandlerView;

@@ -6,7 +6,7 @@ import { View } from './interfaces';
 import SliderView from './slider/SliderView';
 import { SliderViewParams } from './types';
 
-export default class PluginView implements Listenable, View {
+class PluginView implements Listenable, View {
   listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 
   private readonly element: HTMLElement;
@@ -66,3 +66,5 @@ export default class PluginView implements Listenable, View {
     this.slider.removeHandler(handlerIndex);
   }
 }
+
+export default PluginView;

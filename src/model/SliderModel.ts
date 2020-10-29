@@ -1,12 +1,15 @@
-import { standardize } from '../utils/functions';
-import HandlerModel, { ModelItemManager, SliderDataContainer } from './handler/HandlerModel';
 import { Listenable } from '../interfaces';
 import { Presentable } from '../types';
+
+import { standardize } from '../utils/functions';
 import {
   HandlerModelParams, PositioningParams, SliderModelParams,
 } from './types';
+import { ModelItemManager, SliderDataContainer } from './interfaces';
 
-export default class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
+import HandlerModel from './handler/HandlerModel';
+
+class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
   public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
 
   private items: Array<Presentable>;
@@ -317,3 +320,5 @@ export default class SliderModel implements Listenable, SliderDataContainer, Mod
     return result;
   }
 }
+
+export default SliderModel;

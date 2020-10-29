@@ -9,7 +9,7 @@ type TooltipViewParams = {
   isVisible?: boolean;
 };
 
-export default class TooltipView {
+class TooltipView {
   public static readonly DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__handler-tooltip`;
 
   public static readonly DEFAULT_VISIBLE_CLASS = `${TooltipView.DEFAULT_CLASS}_visible`;
@@ -91,3 +91,5 @@ export default class TooltipView {
     parentElement.appendChild(this.element);
   }
 }
+
+export default TooltipView;

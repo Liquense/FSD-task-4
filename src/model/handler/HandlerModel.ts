@@ -56,4 +56,3 @@ class HandlerModel implements Handler {
 }
 
 export default HandlerModel;
-export { SliderDataContainer, ModelItemManager };
