@@ -2,7 +2,6 @@
 import '../plugin/liquidSlider';
 import '../view/slider/SliderView.scss';
 import SliderPanel from './slider-panel/slider-panel';
-import './index.scss';
 
 function importContext(r: __WebpackModuleApi.RequireContext): void { r.keys().forEach(r); }
 importContext(require.context('./', true, /\.(scss)$/));

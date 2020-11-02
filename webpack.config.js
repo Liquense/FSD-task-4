@@ -1,7 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -13,11 +12,11 @@ module.exports = {
 	devtool: "inline-source-map",
 
 	entry: {
-		index: './src/demoPage/index.ts'
+		'demo-page': './src/demo-page/demo-page.ts'
 	},
 
 	output: {
-		filename: 'main.js',
+		filename: '[name].js',
 		chunkFilename: "[name].bundle.js",
 		path: path.resolve(__dirname, 'dist'),
 	},
@@ -27,22 +26,21 @@ module.exports = {
 	},
 
 	plugins: [
+		new CleanWebpackPlugin(),
 		new webpack.ProvidePlugin({
 			$: "jquery",
 			jQuery: "jquery",
 			"window.$": "jquery",
 			"window.jQuery": "jquery",
 		}),
-		new CleanWebpackPlugin(),
-		//new BundleAnalyzerPlugin(),
 		new HtmlWebpackPlugin({
-			template: `./src/demoPage/index.pug`,
-			filename: `index.html`,
-			chunks: [`index`, 'commons', 'vendors'],
+			template: `./src/demo-page/demo-page.pug`,
+			filename: `demo-page.html`,
+			chunks: [`demo-page`, 'vendors'],
 		}),
 		new MiniCssExtractPlugin({
 			filename: '[name].css',
-			chunkFilename: '[id].css',
+			chunkFilename: '[name].css',
 			ignoreOrder: false,
 		}),
 	],
@@ -51,10 +49,6 @@ module.exports = {
 		splitChunks: {
 			name: false,
 			cacheGroups: {
-				common: {
-					name: 'commons',
-					priority: 0
-				},
 				vendor: {
 					test: /[\\/]node_modules[\\/]/,
 					name: 'vendors',

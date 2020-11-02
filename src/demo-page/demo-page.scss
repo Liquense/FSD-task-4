@@ -1,0 +1,12 @@
+.demo-page {
+  &__panels {
+    margin-left: 5%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(641px, 1fr));
+    column-gap: 20px;
+    row-gap: 20px;
+    flex-wrap: wrap;
+    align-items: start;
+    justify-items: start;
+  }
+}
