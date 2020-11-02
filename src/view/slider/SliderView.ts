@@ -60,10 +60,7 @@ class SliderView implements Slider {
 
   private resizeObserver: ResizeObserver;
 
-  constructor(
-      private parentView: View,
-      params?: SliderViewParams,
-  ) {
+  constructor(private parentView: View, params?: SliderViewParams) {
     this.initProperties(params);
     this.createElements();
     this.setMouseEvents();
@@ -333,7 +330,7 @@ class SliderView implements Slider {
 
     const { wrap } = this.elements;
     wrap.classList.add(DEFAULT_SLIDER_CLASS);
-    parentElement.replaceWith(wrap);
+    parentElement.append(wrap);
 
     Object.keys(this.elements).forEach((elementName) => {
       if (elementName === 'wrap') return;
