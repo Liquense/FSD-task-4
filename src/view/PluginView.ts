@@ -1,4 +1,4 @@
-import { Listenable } from '../interfaces';
+import { Listenable } from '../utils/interfaces';
 
 import { HandlerModelData, PositioningParams } from '../model/types';
 

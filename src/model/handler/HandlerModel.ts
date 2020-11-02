@@ -1,6 +1,6 @@
 import { clamp } from '../../utils/functions';
 import { Handler, SliderDataContainer, ModelItemManager } from '../interfaces';
-import { Presentable } from '../../types';
+import { Presentable } from '../../utils/types';
 
 class HandlerModel implements Handler {
   private position: number;

@@ -1,5 +1,5 @@
-import { Listenable } from '../interfaces';
-import { KeyStringObj } from '../types';
+import { Listenable } from './interfaces';
+import { KeyStringObj } from './types';
 import { PositioningParams } from '../model/types';
 
 function parseClassesString(classesString: string): string[] {

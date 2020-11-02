@@ -1,7 +1,7 @@
 import { ResizeObserver } from 'resize-observer';
 
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../../constants';
-import { KeyStringObj } from '../../types';
+import { KeyStringObj } from '../../utils/types';
 
 import {
   clamp,

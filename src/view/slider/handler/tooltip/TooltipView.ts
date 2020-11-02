@@ -1,5 +1,5 @@
 import { DEFAULT_SLIDER_CLASS } from '../../../../constants';
-import { KeyStringObj, Presentable } from '../../../../types';
+import { KeyStringObj, Presentable } from '../../../../utils/types';
 
 import { SliderElement } from '../../../interfaces';
 

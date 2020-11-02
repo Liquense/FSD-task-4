@@ -1,5 +1,5 @@
 import { DEFAULT_SLIDER_CLASS } from '../../../constants';
-import { KeyStringObj } from '../../../types';
+import { KeyStringObj } from '../../../utils/types';
 
 import { Orientable, ScaleOwner, SliderContainer } from '../../interfaces';
 

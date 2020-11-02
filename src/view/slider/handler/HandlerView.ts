@@ -1,6 +1,6 @@
 import { DEFAULT_SLIDER_CLASS } from '../../../constants';
-import { Listenable } from '../../../interfaces';
-import { KeyStringObj, Presentable } from '../../../types';
+import { Listenable } from '../../../utils/interfaces';
+import { KeyStringObj, Presentable } from '../../../utils/types';
 
 import { calculateElementCenter } from '../../../utils/functions';
 

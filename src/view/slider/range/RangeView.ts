@@ -1,5 +1,5 @@
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_OPTIONS } from '../../../constants';
-import { KeyStringObj } from '../../../types';
+import { KeyStringObj } from '../../../utils/types';
 
 import {
   addListenerAfter,

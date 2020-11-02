@@ -7,8 +7,8 @@ import {
   removeListener,
   standardize,
 } from './functions';
-import { Listenable } from '../interfaces';
-import { KeyStringObj } from '../types';
+import { Listenable } from './interfaces';
+import { KeyStringObj } from './types';
 
 describe('Парсинг строки классов', () => {
   test('Передача пустого параметра', () => {

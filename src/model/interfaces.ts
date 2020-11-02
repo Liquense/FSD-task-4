@@ -1,4 +1,4 @@
-import { Presentable } from '../types';
+import { Presentable } from '../utils/types';
 import { SliderModelData, SliderModelParams } from './types';
 
 interface Handler {

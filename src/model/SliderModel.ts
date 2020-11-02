@@ -1,12 +1,13 @@
-import { Listenable } from '../interfaces';
-import { HandlerPluginParams, Presentable, SliderPluginParams } from '../types';
-
+import { Listenable } from '../utils/interfaces';
+import { Presentable } from '../utils/types';
 import { standardize } from '../utils/functions';
+import { HandlerPluginParams, SliderPluginParams } from '../plugin/types';
+
 import {
   HandlerModelData, HandlersModelData, PositioningParams, SliderModelData, SliderModelParams,
 } from './types';
-import { ModelItemManager, SliderDataContainer } from './interfaces';
 
+import { ModelItemManager, SliderDataContainer } from './interfaces';
 import HandlerModel from './handler/HandlerModel';
 
 class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {

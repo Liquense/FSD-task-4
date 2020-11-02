@@ -1,5 +1,5 @@
 /* eslint-disable dot-notation,@typescript-eslint/ban-ts-ignore */
-import { KeyStringObj } from '../types';
+import { KeyStringObj } from '../utils/types';
 
 import SliderModel from '../model/SliderModel';
 

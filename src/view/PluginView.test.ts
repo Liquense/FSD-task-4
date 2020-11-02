@@ -1,4 +1,4 @@
-import { KeyStringObj } from '../types';
+import { KeyStringObj } from '../utils/types';
 
 import View from './PluginView';
 

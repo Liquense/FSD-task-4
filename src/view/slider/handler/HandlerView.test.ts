@@ -1,4 +1,4 @@
-import { KeyStringObj, Presentable } from '../../../types';
+import { KeyStringObj, Presentable } from '../../../utils/types';
 
 import SliderView from '../SliderView';
 

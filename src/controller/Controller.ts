@@ -2,8 +2,7 @@ import PluginView from '../view/PluginView';
 import SliderModel from '../model/SliderModel';
 import { addListenerAfter } from '../utils/functions';
 import { View } from '../view/interfaces';
-import { Listenable } from '../interfaces';
-import { SliderPluginParams } from '../types';
+import { Listenable } from '../utils/interfaces';
 import { SliderViewData, SliderViewParams } from '../view/types';
 import {
   HandlerModelData,
@@ -11,6 +10,7 @@ import {
   SliderModelData,
   SliderModelParams,
 } from '../model/types';
+import { SliderPluginParams } from '../plugin/types';
 
 class Controller {
   private readonly view: View & Listenable;
