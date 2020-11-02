@@ -1,6 +1,6 @@
 import { Listenable } from './interfaces';
 import { KeyStringObj } from './types';
-import { PositioningParams } from '../model/types';
+import { SliderModelParams } from '../model/types';
 
 function parseClassesString(classesString: string): string[] {
   if (!classesString?.trim()) {
@@ -79,19 +79,19 @@ function roundToDecimal(numToRound: number, decimalsCount: number): number {
 }
 
 function standardize(
-  value: number, { min, max, stepPart }: PositioningParams,
+  value: number, { min, max, step }: SliderModelParams,
 ): number {
   const realMin = Math.min(max, min);
   const realMax = Math.max(max, min);
   if (value > realMax) return realMax;
   if (value < realMin) return realMin;
 
-  const remainder = (value - realMin) % stepPart;
+  const remainder = (value - realMin) % step;
   if (remainder === 0) return value;
 
   let resultValue = value - remainder;
-  if ((stepPart / 2) < remainder) {
-    resultValue += stepPart;
+  if ((step / 2) < remainder) {
+    resultValue += step;
   }
 
   resultValue = clamp(resultValue, realMin, realMax);

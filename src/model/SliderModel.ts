@@ -123,7 +123,7 @@ class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
     }
   }
 
-  public handlerValueChanged(
+  public handleHandlerValueChanged(
     changedHandler: HandlerModel,
   ): HandlerModelData {
     const changedHandlerIndex = this.handlers.findIndex(
@@ -149,7 +149,19 @@ class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
     this.handlers[movingHandlerIndex].setItemIndex(newStandardPosition);
   }
 
-  public checkItemOccupancy(itemIndex: number): boolean {
+  public setHandlerItem(handlerIndex: number, item: Presentable): void {
+    const foundIndex = this.getItemIndex(item);
+
+    let validIndex: number;
+    if (!this.isItemOccupied(foundIndex)) {
+      validIndex = standardize(foundIndex, this.getStandardizeParams());
+    }
+    if (Number.isNaN(validIndex)) { return; }
+
+    this.handlers[handlerIndex].setItemIndex(validIndex);
+  }
+
+  public isItemOccupied(itemIndex: number): boolean {
     return !(this.occupiedItems[itemIndex] === undefined);
   }
 
@@ -240,11 +252,11 @@ class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
     }
   }
 
-  private getStandardizeParams(): PositioningParams {
+  private getStandardizeParams(): SliderModelParams {
     return {
       min: this.min,
       max: this.max,
-      stepPart: this.step,
+      step: this.step,
     };
   }
 
@@ -310,13 +322,24 @@ class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
       i <= standardize(end, this.getStandardizeParams());
       i += this.step
     ) {
-      if (!this.checkItemOccupancy(i)) {
+      if (!this.isItemOccupied(i)) {
         result = i;
         break;
       }
     }
 
     return result;
+  }
+
+  private getItemIndex(itemToFind: Presentable): number {
+    if (this.isItemsCustom) {
+      return this.items.findIndex((item) => item.toString() === itemToFind.toString());
+    }
+
+    const parsedItem = Number.parseFloat(itemToFind.toString());
+    if (Number.isNaN(parsedItem)) { return null; }
+
+    return parsedItem;
   }
 }
 

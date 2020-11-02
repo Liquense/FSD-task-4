@@ -143,9 +143,9 @@ describe('Инициализация', () => {
 
       test('Проверка занятости значения', () => {
         testModel['occupiedItems'][4] = 0;
-        expect(testModel.checkItemOccupancy(4)).toBeTruthy();
+        expect(testModel.isItemOccupied(4)).toBeTruthy();
 
-        expect(testModel.checkItemOccupancy(2)).toBeFalsy();
+        expect(testModel.isItemOccupied(2)).toBeFalsy();
       });
     });
   });
@@ -229,7 +229,7 @@ describe('Инициализация', () => {
     test('Обработчик изменения значения хэндлера', () => {
       const testedHandler = testModel['handlers'][0];
 
-      expect(testModel.handlerValueChanged(testedHandler)).toStrictEqual({
+      expect(testModel.handleHandlerValueChanged(testedHandler)).toStrictEqual({
         handlerIndex: 0, positionPart: 0.5, item: 5, itemIndex: 5,
       });
     });

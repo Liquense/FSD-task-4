@@ -16,9 +16,9 @@ interface SliderDataContainer {
 interface ModelItemManager {
   releaseItem(itemIndex: number): void;
   occupyItem(itemIndex: number, handlerIndex: number): void;
-  checkItemOccupancy(itemIndex: number): boolean;
+  isItemOccupied(itemIndex: number): boolean;
   getItem(itemIndex: number): Presentable;
-  handlerValueChanged(handler: Handler): void;
+  handleHandlerValueChanged(handler: Handler): void;
 }
 
 export {

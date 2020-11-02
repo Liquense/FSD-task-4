@@ -12,13 +12,13 @@ class HandlerSection {
 
   private positionSection: PanelProperty;
 
-  private itemElement: HTMLElement;
+  private $itemElement: JQuery;
 
   private readonly handlerIndex: number;
 
   constructor(
     parentElement: HTMLElement, handlerIndex: number,
-    private itemIndex: number = null, private item: string = '',
+    private itemIndex: number = null, private item = '',
   ) {
     this.handlerIndex = handlerIndex;
     this.initElements(parentElement, handlerIndex);
@@ -40,6 +40,10 @@ class HandlerSection {
     this.positionSection.addOnChange(listener);
   }
 
+  public addOnItemInputChange(listener: EventListener): void {
+    this.$itemElement.on('change.handler-section', listener);
+  }
+
   public remove(): void {
     this.body.remove();
   }
@@ -53,7 +57,7 @@ class HandlerSection {
   }
 
   public updateElements(): void {
-    this.itemElement.innerText = this.item;
+    this.$itemElement.val(this.item);
     this.positionSection.setValue(this.itemIndex.toFixed(2));
   }
 
@@ -64,7 +68,7 @@ class HandlerSection {
     this.body.innerHTML = sectionTemplate({ index: handlerIndex + 1 });
     this.wrap.append(this.body);
 
-    this.itemElement = this.body.querySelector(`.js-${HandlerSection.DEFAULT_CLASS}__item`);
+    this.$itemElement = $(this.body).find(`.js-${HandlerSection.DEFAULT_CLASS}__item`);
 
     this.positionSection = new PanelProperty(this.body);
 

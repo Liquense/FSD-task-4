@@ -71,10 +71,11 @@ class SliderPanel {
     );
 
     newHandlerSection.addOnPositionInputChange((event) => {
-      const newPosition = Number.parseFloat((event.target as HTMLInputElement).value);
-      if (Number.isNaN(newPosition)) return;
+      this.handleHandlerInputPositionChange(handlerIndex, event);
+    });
 
-      this.slider.liquidSlider('moveHandler', handlerIndex, newPosition);
+    newHandlerSection.addOnItemInputChange((event) => {
+      this.handleHandlerInputItemChange(handlerIndex, event);
     });
 
     this.handlers.push(newHandlerSection);
@@ -120,7 +121,8 @@ class SliderPanel {
 
   private initElements(panelElement: HTMLElement): void {
     const $wrap = $(panelElement);
-    [this.elements.wrap] = $wrap;
+    [this.elements.wrap] = $wrap.hasClass(`js-${SliderPanel.classPrefix}`)
+      ? $wrap : $wrap.find(`.js-${SliderPanel.classPrefix}`);
     [this.elements.body] = $wrap.find(`.js-${SliderPanel.classPrefix}__body`);
     [this.elements.createHandlerSection] = $wrap.find(`.js-${SliderPanel.classPrefix}__create-handler`);
     [this.elements.handlersSection] = $wrap.find(`.js-${SliderPanel.classPrefix}__handlers`);
@@ -215,6 +217,18 @@ class SliderPanel {
     changedHandler.setItem(handlerData.item?.toString());
     changedHandler.setRelativePosition(handlerData.positionPart);
     changedHandler.updateElements();
+  }
+
+  private handleHandlerInputPositionChange = (handlerIndex: number, event: Event): void => {
+    const newPosition = Number.parseFloat((event.target as HTMLInputElement).value);
+    if (Number.isNaN(newPosition)) return;
+
+    this.slider.liquidSlider('moveHandler', handlerIndex, newPosition);
+  }
+
+  private handleHandlerInputItemChange = (handlerIndex: number, event: Event): void => {
+    const newItem = (event.target as HTMLInputElement).value;
+    this.slider.liquidSlider('setHandlerItem', handlerIndex, newItem);
   }
 
   private handleRemoveHandler = (removedHandlerIndex: number): void => {

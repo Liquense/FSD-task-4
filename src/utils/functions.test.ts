@@ -173,23 +173,23 @@ describe('Сжимание числа в диапазон', () => {
 
 describe('Стандартизация числа по параметрам слайдера', () => {
   test('всё корректно', () => {
-    expect(standardize(5, { min: 0, max: 10, stepPart: 1 })).toBe(5);
+    expect(standardize(5, { min: 0, max: 10, step: 1 })).toBe(5);
   });
 
   test('значение не подходит под шаг', () => {
-    expect(standardize(5, { min: 0, max: 10, stepPart: 0.3 })).toBe(5.1);
+    expect(standardize(5, { min: 0, max: 10, step: 0.3 })).toBe(5.1);
   });
 
   test('значение больше максимума', () => {
-    expect(standardize(5000, { min: 0, max: 10, stepPart: 1 })).toBe(10);
+    expect(standardize(5000, { min: 0, max: 10, step: 1 })).toBe(10);
   });
 
   test('значение меньше минимума', () => {
-    expect(standardize(-5, { min: 0, max: 10, stepPart: 1 })).toBe(0);
+    expect(standardize(-5, { min: 0, max: 10, step: 1 })).toBe(0);
   });
 
   test('проверка на перепутанные минимум и максимум', () => {
-    expect(standardize(-5, { min: 10, max: -10, stepPart: 1 })).toBe(-5);
+    expect(standardize(-5, { min: 10, max: -10, step: 1 })).toBe(-5);
   });
 });
 

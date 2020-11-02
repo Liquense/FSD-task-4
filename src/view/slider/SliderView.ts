@@ -421,13 +421,13 @@ class SliderView implements Slider {
       standardMousePosition = standardize(mousePosition, {
         min: penultimatePosition,
         max: 1,
-        stepPart: stepsRemainder,
+        step: stepsRemainder,
       });
     } else {
       standardMousePosition = standardize(mousePosition, {
         min: 0,
         max: penultimatePosition,
-        stepPart: this.stepPart,
+        step: this.stepPart,
       });
     }
 
@@ -511,7 +511,7 @@ class SliderView implements Slider {
 
     requestAnimationFrame(() => {
       for (let i = 0; i <= 1; i = roundToDecimal(i + this.stepPart, 5)) {
-        const standardPosition = standardize(i, { min: 0, max: 1, stepPart: this.stepPart });
+        const standardPosition = standardize(i, { min: 0, max: 1, step: this.stepPart });
         const shrinkPosition = standardPosition * this.calculateShrinkRatio();
         this.markup.addMark(shrinkPosition, this.calculateRelativeHandlerSize());
       }

@@ -37,7 +37,7 @@ describe('Инициализация контроллера', () => {
     testController = new Controller(rootElement);
 
     expect(mockAddListenerAfter).toBeCalledWith(
-      'handlerValueChanged',
+      'handleHandlerValueChanged',
       testController['passHandlerValueChange'],
       testController['model'],
     );
@@ -176,7 +176,7 @@ describe('Функции', () => {
     mockAddListenerAfter.mockClear();
     testController.addAfterHandlerValueChangedListener(testListener);
     expect(mockAddListenerAfter)
-      .toBeCalledWith('handlerValueChanged', testListener, testController['model']);
+      .toBeCalledWith('handleHandlerValueChanged', testListener, testController['model']);
 
     mockAddListenerAfter.mockClear();
     testController.addAfterRemoveHandlerListener(testListener);

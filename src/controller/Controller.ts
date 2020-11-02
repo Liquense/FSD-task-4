@@ -11,6 +11,7 @@ import {
   SliderModelParams,
 } from '../model/types';
 import { SliderPluginParams } from '../plugin/types';
+import { Presentable } from '../utils/types';
 
 class Controller {
   private readonly view: View & Listenable;
@@ -30,7 +31,7 @@ class Controller {
   }
 
   public addAfterHandlerValueChangedListener(listener: Function): void {
-    addListenerAfter('handlerValueChanged', listener, this.model);
+    addListenerAfter('handleHandlerValueChanged', listener, this.model);
   }
 
   public addAfterRemoveHandlerListener(listener: Function): void {
@@ -43,6 +44,10 @@ class Controller {
 
   public moveHandler(handlerIndex: number, positionPart: number): void {
     this.passHandlerPositionChange({ handlerIndex, positionPart });
+  }
+
+  public setHandlerItem(handlerIndex: number, item: Presentable): void {
+    this.model.setHandlerItem(handlerIndex, item);
   }
 
   public update(params: SliderModelParams & SliderViewParams): void {
@@ -78,7 +83,7 @@ class Controller {
   }
 
   private addDefaultListeners(): void {
-    addListenerAfter('handlerValueChanged', this.passHandlerValueChange, this.model);
+    addListenerAfter('handleHandlerValueChanged', this.passHandlerValueChange, this.model);
     addListenerAfter('removeHandler', this.removeHandlerInView, this.model);
     addListenerAfter('handleHandlerPositionChanged', this.passHandlerPositionChange, this.view);
   }

@@ -28,7 +28,7 @@ class HandlerModel implements Handler {
 
   public setItemIndex(itemIndex: number): void {
     const oldItemIndex = this.itemIndex;
-    if (this.parentModel.checkItemOccupancy(itemIndex)) {
+    if (this.parentModel.isItemOccupied(itemIndex)) {
       this.updatePosition();
       return;
     }
@@ -50,7 +50,7 @@ class HandlerModel implements Handler {
 
   private updatePosition(): void {
     this.position = this.calculatePosition();
-    this.parentModel.handlerValueChanged(this);
+    this.parentModel.handleHandlerValueChanged(this);
   }
 }
 
