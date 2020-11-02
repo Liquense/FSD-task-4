@@ -1,4 +1,4 @@
-import { HandlerModelParams, PositioningParams } from '../model/types';
+import { HandlerModelData, PositioningParams } from '../model/types';
 
 import { SliderViewData, SliderViewParams } from './types';
 
@@ -16,13 +16,13 @@ interface View {
     standardizedPosition: number,
   ): { view: View; handlerIndex: number; positionPart: number };
 
-  handlerValueChangedListener(data: HandlerModelParams): void;
+  handlerValueChangedListener(data: HandlerModelData): void;
 
   initHandlers(
-    handlersData: { isCustomHandlers: boolean; handlersArray: HandlerModelParams[] }
+    handlersData: { isCustomHandlers: boolean; handlersArray: HandlerModelData[] }
   ): void;
 
-  addHandler(handlerData: HandlerModelParams): void;
+  addHandler(handlerData: HandlerModelData): void;
 
   removeHandler(handlerIndex: number): void;
 }

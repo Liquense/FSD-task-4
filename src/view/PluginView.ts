@@ -1,6 +1,6 @@
 import { Listenable } from '../interfaces';
 
-import { HandlerModelParams, PositioningParams } from '../model/types';
+import { HandlerModelData, PositioningParams } from '../model/types';
 
 import { View } from './interfaces';
 import SliderView from './slider/SliderView';
@@ -40,7 +40,7 @@ class PluginView implements Listenable, View {
     return { view: this, handlerIndex, positionPart: standardizedPosition };
   }
 
-  public handlerValueChangedListener(data: HandlerModelParams): void {
+  public handlerValueChangedListener(data: HandlerModelData): void {
     this.slider.setHandlersData([data]);
   }
 
@@ -57,7 +57,7 @@ class PluginView implements Listenable, View {
     this.slider.update(positioningData);
   }
 
-  public addHandler(handlerParams: HandlerModelParams & { rangePair: number | string }): void {
+  public addHandler(handlerParams: HandlerModelData & { rangePair: number | string }): void {
     this.slider.addHandler(handlerParams);
   }
 

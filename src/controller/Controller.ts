@@ -6,7 +6,7 @@ import { Listenable } from '../interfaces';
 import { SliderPluginParams } from '../types';
 import { SliderViewData, SliderViewParams } from '../view/types';
 import {
-  HandlerModelParams,
+  HandlerModelData,
   HandlersModelData,
   SliderModelData,
   SliderModelParams,
@@ -68,7 +68,7 @@ class Controller {
     return handlersData;
   }
 
-  public addHandler(itemIndex: number, rangePair?: number | string): HandlerModelParams {
+  public addHandler(itemIndex: number, rangePair?: number | string): HandlerModelData {
     const handlerData = this.model.addHandler(itemIndex);
     if (!handlerData) { return null; }
 
@@ -97,7 +97,7 @@ class Controller {
     this.model.handleHandlerPositionChanged(data);
   }
 
-  private passHandlerValueChange = (data: HandlerModelParams): void => {
+  private passHandlerValueChange = (data: HandlerModelData): void => {
     this.view.handlerValueChangedListener(data);
   }
 
@@ -107,7 +107,7 @@ class Controller {
     targetView.initHandlers(handlersData);
   }
 
-  private addHandlerView(handlerParams: HandlerModelParams & { rangePair: number | string }): void {
+  private addHandlerView(handlerParams: HandlerModelData & { rangePair: number | string }): void {
     this.view.addHandler(handlerParams);
   }
 }

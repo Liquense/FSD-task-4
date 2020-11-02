@@ -5,7 +5,7 @@ import './slider-panel.scss';
 import { SliderPluginParams } from '../../types';
 import CreateHandlerSection from '../create-handler-section/create-handler-section';
 import { SliderViewParams } from '../../view/types';
-import { HandlerModelParams, SliderModelParams } from '../../model/types';
+import { HandlerModelData, SliderModelParams } from '../../model/types';
 import HandlerSection from '../handler-section/handler-section';
 import PanelProperty from '../panel-property/panel-property';
 

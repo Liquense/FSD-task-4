@@ -1,9 +1,15 @@
 import * as $ from 'jquery';
-
 import { DEFAULT_SLIDER_PARAMS } from './constants';
-import { SliderPluginParams } from './types';
+import {
+  HandlerPluginParams,
+  KeyStringObj, SliderPluginParams,
+} from './types';
 
 import Controller from './controller/Controller';
+import { HandlersModelData, SliderModelData, SliderModelParams } from './model/types';
+import { SliderViewData, SliderViewParams } from './view/types';
+
+type PluginUpdateParams = (SliderModelParams & SliderViewParams) | HandlerPluginParams | Function;
 
 /**
  * Расширение JQuery, добавляющее функцию для инициализации слайдера

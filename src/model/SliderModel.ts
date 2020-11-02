@@ -3,7 +3,7 @@ import { HandlerPluginParams, Presentable, SliderPluginParams } from '../types';
 
 import { standardize } from '../utils/functions';
 import {
-  HandlerModelParams, HandlersModelData, PositioningParams, SliderModelData, SliderModelParams,
+  HandlerModelData, HandlersModelData, PositioningParams, SliderModelData, SliderModelParams,
 } from './types';
 import { ModelItemManager, SliderDataContainer } from './interfaces';
 
@@ -73,7 +73,7 @@ class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
     };
   }
 
-  public addHandler(itemIndex: number): HandlerModelParams {
+  public addHandler(itemIndex: number): HandlerModelData {
     const indexes = this.handlers.map((handler) => handler.handlerIndex);
     const newHandlerIndex = Math.max(-1, ...indexes) + 1;
 
@@ -124,7 +124,7 @@ class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
 
   public handlerValueChanged(
     changedHandler: HandlerModel,
-  ): HandlerModelParams {
+  ): HandlerModelData {
     const changedHandlerIndex = this.handlers.findIndex(
       (handler) => handler.handlerIndex === changedHandler.handlerIndex,
     );

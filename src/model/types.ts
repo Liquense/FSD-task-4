@@ -13,12 +13,12 @@ type SliderModelData = {
   range?: number;
 };
 
-type HandlerModelParams = HandlerData & { itemIndex: number };
+type HandlerModelData = HandlerData & { itemIndex: number };
 
-type HandlersModelData = { isCustomHandlers: boolean; handlersArray: HandlerModelParams[] };
+type HandlersModelData = { isCustomHandlers: boolean; handlersArray: HandlerModelData[] };
 
 type PositioningParams = { min: number; max: number; stepPart: number };
 
 export {
-  SliderModelParams, HandlerModelParams, PositioningParams, HandlersModelData, SliderModelData,
+  SliderModelParams, HandlerModelData, PositioningParams, HandlersModelData, SliderModelData,
 };
