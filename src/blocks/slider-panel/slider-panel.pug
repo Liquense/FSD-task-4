@@ -1,7 +1,8 @@
 include ../panel-property/panel-property
 include ../create-handler-section/create-handler-section
+include ../slider/slider
 
-mixin slider-panel()
+mixin slider-panel(sliderParams)
   article.js-slider-panel.slider-panel
     section.js-slider-panel__body.slider-panel__body
       div.js-slider-panel__step.slider-panel__step
@@ -20,3 +21,4 @@ mixin slider-panel()
       div.js-slider-panel__create-handler.slider-panel__create-handler
         +create-handler-section()
     section.js-slider-panel__slider.slider-panel__slider
+      +slider(sliderParams)

@@ -18,6 +18,7 @@ import { PluginUpdateParams, SliderPluginParams } from './types';
  * @param option.isRange если хэндлеры не заданы вручную - определяет их количество
  * (false - 1, true - 2)
  * @param option.isVertical вертикальная ли ориентация
+ * @param option.isTooltipsVisible отображаются ли значения хэндлеров
  * @param option.min минимальное значение слайдера
  * @param option.max максимальное значение слайдер
  * @param option.step шаг слайдера
@@ -41,7 +42,9 @@ $.fn.liquidSlider = function liquidSlider(
       if (!this.data('originalHTML')) {
         this.data('originalHTML', element.innerHTML);
       }
-      const options = { ...DEFAULT_SLIDER_PARAMS, ...option };
+
+      const dataOptions = $(element).data();
+      const options = { ...DEFAULT_SLIDER_PARAMS, ...dataOptions, ...option };
       const controller = new Controller(element, options) as Controller & KeyStringObj;
       this.data('controller', controller);
 

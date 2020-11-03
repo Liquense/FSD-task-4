@@ -10,11 +10,13 @@ import HandlerSection from '../handler-section/handler-section';
 import initHandlerSection from '../handler-section/init';
 import PanelProperty from '../panel-property/panel-property';
 import initPanelProperty from '../panel-property/init';
+import initSliders from '../slider/init';
+import Slider from '../slider/slider';
 
 class SliderPanel {
   public static readonly DEFAULT_CLASS = 'slider-panel';
 
-  private slider: JQuery;
+  private slider: Slider;
 
   private isVertical: boolean;
 
@@ -51,17 +53,18 @@ class SliderPanel {
 
   public initSlider(sliderParams?: SliderPluginParams): void {
     const $element = $(this.elements.wrap).find(`.js-${SliderPanel.DEFAULT_CLASS}__slider`);
+    const [slider] = initSliders($element, sliderParams);
 
-    this.slider = $element.liquidSlider(sliderParams);
-    this.slider.liquidSlider('addAfterHandlerValueChangedListener', this.handleHandlerValueChange);
-    this.slider.liquidSlider('addAfterRemoveHandlerListener', this.handleRemoveHandler);
+    this.slider = slider;
+    this.slider.callPluginFunction('addAfterHandlerValueChangedListener', this.handleHandlerValueChange);
+    this.slider.callPluginFunction('addAfterRemoveHandlerListener', this.handleRemoveHandler);
 
-    const handlersData = this.slider.liquidSlider('getHandlersData');
+    const handlersData = this.slider.callPluginFunction('getHandlersData');
     this.initHandlers(handlersData);
 
-    const viewData = this.slider.liquidSlider('getSliderData');
+    const viewData = this.slider.callPluginFunction('getSliderData');
     this.updateVisuals(viewData);
-    this.updateSliderData(this.slider.liquidSlider('getSliderData'));
+    this.updateSliderData(this.slider.callPluginFunction('getSliderData'));
   }
 
   private addHandler({ handlerIndex, positionPart, item }: HandlerModelData): void {
@@ -70,7 +73,7 @@ class SliderPanel {
     );
 
     newHandlerSection.addOnRemoveButtonClick(
-      () => { this.slider.liquidSlider('removeHandler', handlerIndex); },
+      () => { this.slider.callPluginFunction('removeHandler', handlerIndex); },
     );
 
     newHandlerSection.addOnPositionInputChange((event) => {
@@ -161,7 +164,7 @@ class SliderPanel {
 
     const rangePair = this.handlerCreationSection.getSelectedPairOption();
 
-    const createdHandlerData = this.slider.liquidSlider('addHandler', itemIndex, rangePair);
+    const createdHandlerData = this.slider.callPluginFunction('addHandler', itemIndex, rangePair);
     this.addHandler(createdHandlerData);
   }
 
@@ -169,14 +172,14 @@ class SliderPanel {
     const withMarkup = (event.target as HTMLInputElement).checked;
     this.withMarkup = withMarkup;
 
-    this.slider.liquidSlider('update', { withMarkup });
+    this.slider.callPluginFunction('update', { withMarkup });
   }
 
   private handleOrientationInputChange = (event: Event): void => {
     const isVertical = (event.target as HTMLInputElement).checked;
     this.isVertical = isVertical;
 
-    this.slider.liquidSlider('update', { isVertical });
+    this.slider.callPluginFunction('update', { isVertical });
     this.updateOrientation();
   }
 
@@ -184,30 +187,30 @@ class SliderPanel {
     const minProp = this.properties.min;
     const min = Number.parseFloat(minProp.getValue() as string);
 
-    this.slider.liquidSlider('update', { min });
-    minProp.setValue(this.slider.liquidSlider('getSliderData').min);
+    this.slider.callPluginFunction('update', { min });
+    minProp.setValue(this.slider.callPluginFunction('getSliderData').min);
   }
 
   private handleMaxInputChange = (): void => {
     const maxProp = this.properties.max;
     const max = Number.parseFloat(maxProp.getValue() as string);
 
-    this.slider.liquidSlider('update', { max });
-    maxProp.setValue(this.slider.liquidSlider('getSliderData').max);
+    this.slider.callPluginFunction('update', { max });
+    maxProp.setValue(this.slider.callPluginFunction('getSliderData').max);
   }
 
   private handleStepInputChange = (): void => {
     const stepProp = this.properties.step;
     const step = Number.parseFloat(stepProp.getValue() as string);
 
-    this.slider.liquidSlider('update', { step });
-    stepProp.setValue(this.slider.liquidSlider('getSliderData').step);
+    this.slider.callPluginFunction('update', { step });
+    stepProp.setValue(this.slider.callPluginFunction('getSliderData').step);
   }
 
   private handleTooltipVisibilityInputChange = (): void => {
     const isVisible = this.properties.tooltipsVisibility.getValue() as boolean;
     this.isTooltipsVisible = isVisible;
-    this.slider.liquidSlider('update', { isTooltipsVisible: isVisible });
+    this.slider.callPluginFunction('update', { isTooltipsVisible: isVisible });
   }
 
   private handleHandlerValueChange = (handlerData: HandlerModelData): void => {
@@ -225,12 +228,12 @@ class SliderPanel {
     const newPosition = Number.parseFloat((event.target as HTMLInputElement).value);
     if (Number.isNaN(newPosition)) return;
 
-    this.slider.liquidSlider('moveHandler', handlerIndex, newPosition);
+    this.slider.callPluginFunction('moveHandler', handlerIndex, newPosition);
   }
 
   private handleHandlerInputItemChange = (handlerIndex: number, event: Event): void => {
     const newItem = (event.target as HTMLInputElement).value;
-    this.slider.liquidSlider('setHandlerItem', handlerIndex, newItem);
+    this.slider.callPluginFunction('setHandlerItem', handlerIndex, newItem);
   }
 
   private handleRemoveHandler = (removedHandlerIndex: number): void => {

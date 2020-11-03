@@ -1,0 +1,13 @@
+mixin slider({items, values, isRange, isVertical, isTooltipsVisible, withMarkup, min, max, step, handlers}={})
+  div.js-slider.slider(
+    data-items=items
+    data-values=values
+    data-is-range=isRange === undefined ? false : isRange.toString()
+    data-is-vertical=isVertical === undefined ? false : isVertical.toString()
+    data-is-tooltips-visible=isTooltipsVisible === undefined ? false : isTooltipsVisible.toString()
+    data-with-markup=withMarkup === undefined ? false : withMarkup.toString()
+    data-min=min
+    data-max=max
+    data-step=step
+    data-handlers=handlers
+  )

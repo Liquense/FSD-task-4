@@ -7,10 +7,48 @@ head
 body.demo-page
   div.demo-page__panels
     section.demo-page__panel
-      +slider-panel()
+      +slider-panel({
+        min: -50,
+        max: 20,
+        step: 1,
+        isVertical: true,
+      })
     section.demo-page__panel
-      +slider-panel()
+      +slider-panel({ isInverted: true })
     section.demo-page__panel
-      +slider-panel()
+      +slider-panel({
+        items: [
+          1,
+          'two',
+          "<img src='https://img.icons8.com/cotton/2x/like--v1.png' alt='heart'>",
+          'last',
+        ],
+        min: 0,
+        max: 22,
+        isRange: true,
+        isInverted: false,
+        isVertical: true,
+        withMarkup: true
+      })
     section.demo-page__panel
-      +slider-panel()
+      +slider-panel({
+        handlers: [
+          {
+            itemIndex: 2,
+            rangePair: 'start'
+          },
+          {
+            itemIndex: 4,
+            rangePair: 0
+          },
+          {
+            itemIndex: 6,
+            rangePair: 3
+          },
+          { itemIndex: 7 }
+        ],
+        step: 2,
+        isTooltipsVisible: false,
+        withMarkup: true,
+        isVertical: false
+      })
