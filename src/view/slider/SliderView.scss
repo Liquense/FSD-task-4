@@ -198,6 +198,7 @@ $minMaxFontSize: 10px;
   &__handler-body {
     @include commonStyles();
 
+    flex-shrink: 0;
     height: $handlerSize;
     width: $handlerSize;
     border-radius: 50%;
@@ -217,7 +218,7 @@ $minMaxFontSize: 10px;
   &__handler-tooltip {
     @include commonStyles();
 
-    height: $tooltipHeight + $tooltipPadding * 2;
+    min-height: $tooltipHeight + $tooltipPadding * 2;
     padding: $tooltipPadding;
     background-color: rgba(255, 255, 255, 0.75);
     border: solid $tooltipBorderWidth rgba(0, 0, 0, 0.25);
