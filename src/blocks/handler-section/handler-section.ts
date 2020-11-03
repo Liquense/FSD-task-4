@@ -2,7 +2,7 @@ import * as sectionTemplate from './handler-section-template.pug';
 import PanelProperty from '../panel-property/panel-property';
 
 class HandlerSection {
-  private static DEFAULT_CLASS = 'handler-section';
+  public static DEFAULT_CLASS = 'handler-section';
 
   private wrap: HTMLElement;
 

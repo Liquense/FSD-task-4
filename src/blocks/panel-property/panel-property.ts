@@ -39,7 +39,7 @@ class PanelProperty {
   }
 
   private initElements(parentElement: HTMLElement): void {
-    this.body = parentElement.querySelector(`.js-${PanelProperty.DEFAULT_CLASS}`);
+    this.body = parentElement;
     this.caption = this.body.querySelector(`.js-${PanelProperty.DEFAULT_CLASS}__caption`);
     this.input = this.body.querySelector(`.js-${PanelProperty.DEFAULT_CLASS}__input`);
   }

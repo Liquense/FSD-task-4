@@ -5,10 +5,15 @@ import { HandlerModelData, SliderModelParams } from '../../model/types';
 import { SliderViewParams } from '../../view/types';
 
 import CreateHandlerSection from '../create-handler-section/create-handler-section';
+import initCreateHandlerSection from '../create-handler-section/init';
 import HandlerSection from '../handler-section/handler-section';
+import initHandlerSection from '../handler-section/init';
 import PanelProperty from '../panel-property/panel-property';
+import initPanelProperty from '../panel-property/init';
 
 class SliderPanel {
+  public static readonly DEFAULT_CLASS = 'slider-panel';
+
   private slider: JQuery;
 
   private isVertical: boolean;
@@ -18,8 +23,6 @@ class SliderPanel {
   private withMarkup: boolean;
 
   private handlers: HandlerSection[] = [];
-
-  static readonly classPrefix = 'slider-panel';
 
   private readonly elements = {
     wrap: null as HTMLElement,
@@ -37,17 +40,18 @@ class SliderPanel {
     markupVisibility: null as PanelProperty,
   }
 
-  private readonly handlerCreationSection = null as CreateHandlerSection;
+  private readonly handlerCreationSection: CreateHandlerSection = null;
 
   constructor(private parentElement: HTMLElement) {
     this.initElements(parentElement);
     this.initProperties();
-    this.handlerCreationSection = new CreateHandlerSection(this.elements.createHandlerSection);
+    [this.handlerCreationSection] = initCreateHandlerSection(this.elements.createHandlerSection);
     this.initEventHandlers();
   }
 
-  public initSlider(element: HTMLElement | JQuery, sliderParams?: SliderPluginParams): void {
-    const $element = $(this.elements.wrap).find(element);
+  public initSlider(sliderParams?: SliderPluginParams): void {
+    const $element = $(this.elements.wrap).find(`.js-${SliderPanel.DEFAULT_CLASS}__slider`);
+
     this.slider = $element.liquidSlider(sliderParams);
     this.slider.liquidSlider('addAfterHandlerValueChangedListener', this.handleHandlerValueChange);
     this.slider.liquidSlider('addAfterRemoveHandlerListener', this.handleRemoveHandler);
@@ -61,9 +65,8 @@ class SliderPanel {
   }
 
   private addHandler({ handlerIndex, positionPart, item }: HandlerModelData): void {
-    const newHandlerSection = new HandlerSection(
-      this.elements.handlersSection, handlerIndex,
-      positionPart, item.toString(),
+    const newHandlerSection = initHandlerSection(
+      this.elements.handlersSection, handlerIndex, positionPart, item.toString(),
     );
 
     newHandlerSection.addOnRemoveButtonClick(
@@ -121,35 +124,34 @@ class SliderPanel {
 
   private initElements(panelElement: HTMLElement): void {
     const $wrap = $(panelElement);
-    [this.elements.wrap] = $wrap.hasClass(`js-${SliderPanel.classPrefix}`)
-      ? $wrap : $wrap.find(`.js-${SliderPanel.classPrefix}`);
-    [this.elements.body] = $wrap.find(`.js-${SliderPanel.classPrefix}__body`);
-    [this.elements.createHandlerSection] = $wrap.find(`.js-${SliderPanel.classPrefix}__create-handler`);
-    [this.elements.handlersSection] = $wrap.find(`.js-${SliderPanel.classPrefix}__handlers`);
+    [this.elements.wrap] = $wrap;
+    [this.elements.body] = $wrap.find(`.js-${SliderPanel.DEFAULT_CLASS}__body`);
+    [this.elements.createHandlerSection] = $wrap.find(`.js-${SliderPanel.DEFAULT_CLASS}__create-handler`);
+    [this.elements.handlersSection] = $wrap.find(`.js-${SliderPanel.DEFAULT_CLASS}__handlers`);
   }
 
   private initProperties(): void {
     this.properties.step = this.initProperty(
-      `.js-${SliderPanel.classPrefix}__step`, this.handleStepInputChange,
+      `.js-${SliderPanel.DEFAULT_CLASS}__step`, this.handleStepInputChange,
     );
 
     this.properties.min = this.initProperty(
-      `.js-${SliderPanel.classPrefix}__min`, this.handleMinInputChange,
+      `.js-${SliderPanel.DEFAULT_CLASS}__min`, this.handleMinInputChange,
     );
 
-    this.properties.max = this.initProperty(`.js-${SliderPanel.classPrefix}__max`,
+    this.properties.max = this.initProperty(`.js-${SliderPanel.DEFAULT_CLASS}__max`,
       this.handleMaxInputChange);
 
     this.properties.orientation = this.initProperty(
-      `.js-${SliderPanel.classPrefix}__orientation`, this.handleOrientationInputChange,
+      `.js-${SliderPanel.DEFAULT_CLASS}__orientation`, this.handleOrientationInputChange,
     );
 
     this.properties.tooltipsVisibility = this.initProperty(
-      `.js-${SliderPanel.classPrefix}__tooltips-visibility`, this.handleTooltipVisibilityInputChange,
+      `.js-${SliderPanel.DEFAULT_CLASS}__tooltips-visibility`, this.handleTooltipVisibilityInputChange,
     );
 
     this.properties.markupVisibility = this.initProperty(
-      `.js-${SliderPanel.classPrefix}__markup-visibility`, this.handleMarkupInputChange,
+      `.js-${SliderPanel.DEFAULT_CLASS}__markup-visibility`, this.handleMarkupInputChange,
     );
   }
 
@@ -236,7 +238,7 @@ class SliderPanel {
   }
 
   private initProperty(selector: string, handlerFunction: EventListener): PanelProperty {
-    const property = new PanelProperty(this.elements.body.querySelector(selector));
+    const property = initPanelProperty(this.elements.body.querySelector(selector) as HTMLElement);
     property.addOnChange(handlerFunction);
 
     return property;
@@ -251,8 +253,8 @@ class SliderPanel {
   }
 
   private updateOrientation(): void {
-    const orientationModifier = `${SliderPanel.classPrefix}_${this.isVertical ? 'vertical' : 'horizontal'}`;
-    const oldOrientationModifier = `${SliderPanel.classPrefix}_${this.isVertical ? 'horizontal' : 'vertical'}`;
+    const orientationModifier = `${SliderPanel.DEFAULT_CLASS}_${this.isVertical ? 'vertical' : 'horizontal'}`;
+    const oldOrientationModifier = `${SliderPanel.DEFAULT_CLASS}_${this.isVertical ? 'horizontal' : 'vertical'}`;
 
     this.elements.wrap.classList.add(orientationModifier);
     this.elements.wrap.classList.remove(oldOrientationModifier);

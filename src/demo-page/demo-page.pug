@@ -1,15 +1,16 @@
-include ./slider-panel/slider-panel
+include ../blocks/slider-panel/slider-panel
 
 head
   meta(charset="utf-8")
   meta(name="viewport" content="initial-scale=1.0, width=device-width")
   title Демонстрационная страница
-div.demo-page__panels
-  section.demo-page__panel
-    +slider-panel()
-  section.demo-page__panel
-    +slider-panel()
-  section.demo-page__panel
-    +slider-panel()
-  section.demo-page__panel
-    +slider-panel()
+body.demo-page
+  div.demo-page__panels
+    section.demo-page__panel
+      +slider-panel()
+    section.demo-page__panel
+      +slider-panel()
+    section.demo-page__panel
+      +slider-panel()
+    section.demo-page__panel
+      +slider-panel()

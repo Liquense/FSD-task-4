@@ -1,29 +1,25 @@
-/* eslint-disable no-undef */
 import '../plugin/liquidSlider';
+import './demo-page.scss';
+
 import '../view/slider/SliderView.scss';
-import SliderPanel from './slider-panel/slider-panel';
+import SliderPanel from '../blocks/slider-panel/slider-panel';
+import initSliderPanels from '../blocks/slider-panel/init';
 
 function importContext(r: __WebpackModuleApi.RequireContext): void { r.keys().forEach(r); }
-importContext(require.context('./', true, /\.(scss)$/));
+importContext(require.context('../blocks', true, /\.(scss)$/));
 
-const sliderInitSelector = '.js-slider-panel__slider';
-const panelSelector = '.slider-panel';
-const panels: SliderPanel[] = [];
+const panels = initSliderPanels() as SliderPanel[];
 
-$(panelSelector).get().forEach((panel) => {
-  panels.push(new SliderPanel(panel));
-});
-
-panels[0].initSlider($(sliderInitSelector), {
+panels[0].initSlider({
   min: -50,
   max: 20,
   step: 1,
   isVertical: true,
 });
 
-panels[1].initSlider($(sliderInitSelector), { isInverted: true });
+panels[1].initSlider({ isInverted: true });
 
-panels[2].initSlider($(sliderInitSelector), {
+panels[2].initSlider({
   items: [
     1,
     { toString(): string { return 'two'; } },
@@ -38,16 +34,15 @@ panels[2].initSlider($(sliderInitSelector), {
   withMarkup: true,
 });
 
-panels[3].initSlider($(sliderInitSelector),
-  {
-    handlers: [
-      { itemIndex: 2, rangePair: 'start' as const },
-      { itemIndex: 4, rangePair: 0 },
-      { itemIndex: 6, rangePair: 3 },
-      { itemIndex: 7 },
-    ],
-    step: 2,
-    isTooltipsVisible: false,
-    withMarkup: true,
-    isVertical: false,
-  });
+panels[3].initSlider({
+  handlers: [
+    { itemIndex: 2, rangePair: 'start' as const },
+    { itemIndex: 4, rangePair: 0 },
+    { itemIndex: 6, rangePair: 3 },
+    { itemIndex: 7 },
+  ],
+  step: 2,
+  isTooltipsVisible: false,
+  withMarkup: true,
+  isVertical: false,
+});

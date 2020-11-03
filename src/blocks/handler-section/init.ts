@@ -1,10 +1,9 @@
 import HandlerSection from './handler-section';
-import { initBlocks } from '../../utils/functions';
 
-function initHandlerSections(parentElement: JQuery | HTMLElement): HandlerSection[] {
-  return initBlocks(
-    parentElement, `.js-${HandlerSection.DEFAULT_CLASS}`, HandlerSection,
-  ) as HandlerSection[];
+function initHandlerSection(
+  parentElement: HTMLElement, handlerIndex: number, positionPart: number, item: string,
+): HandlerSection {
+  return new HandlerSection(parentElement, handlerIndex, positionPart, item);
 }
 
-export default initHandlerSections;
+export default initHandlerSection;
