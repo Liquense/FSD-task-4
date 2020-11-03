@@ -18,5 +18,5 @@ mixin panel-property({type='', caption='test', shape=''} = {})
       break
 
   div(class=`js-panel-property panel-property ${typeModifier} ${shapeModifier}`)
-    p(class=`js-panel-property__caption panel-property__caption`) #{caption}
-    #{inputElement}(class=`js-panel-property__input panel-property__input` type=inputType)
+    p.js-panel-property__caption.panel-property__caption #{caption}
+    #{inputElement}.js-panel-property__input.panel-property__input(type=inputType)

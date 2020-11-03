@@ -7,7 +7,7 @@
 [Jest](https://jestjs.io/) - для тестов, \
 [Webpack](https://webpack.js.org/) - для сборки. \
 Страница с демонстрацией на 
-[gh-pages](https://liquense.github.io/FSD-task-4/dist/index)
+[gh-pages](https://liquense.github.io/FSD-task-4/dist/demo-page)
 
 ## Установка
 ```
