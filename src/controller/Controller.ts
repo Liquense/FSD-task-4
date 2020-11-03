@@ -14,6 +14,8 @@ import { SliderPluginParams } from '../plugin/types';
 import { Presentable } from '../utils/types';
 
 class Controller {
+  public readonly originalHTML: string;
+
   private readonly view: View & Listenable;
 
   private readonly model: SliderModel;
@@ -24,6 +26,7 @@ class Controller {
   ) {
     this.view = new PluginView(element, parameters);
     this.model = new SliderModel(parameters);
+    this.originalHTML = element.innerHTML;
 
     this.addDefaultListeners();
     this.passSliderData();

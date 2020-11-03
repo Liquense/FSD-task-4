@@ -11,7 +11,9 @@ mockController.prototype.thing = 'test';
 const $testDiv = $(document.body.appendChild(document.createElement('div')));
 
 test('Инициализация слайдера', () => {
-  const testParameters = { something: 'test', anotherArg: 'test1', withMarkup: false };
+  const testParameters = {
+    controller: null as Controller, something: 'test', anotherArg: 'test1', withMarkup: false,
+  };
 
   $testDiv.liquidSlider();
   expect(mockController).toBeCalledWith($testDiv.get()[0], DEFAULT_SLIDER_PARAMS);

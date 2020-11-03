@@ -39,10 +39,6 @@ $.fn.liquidSlider = function liquidSlider(
 ): JQuery | (SliderModelData & SliderViewData) | HandlersModelData | void {
   const result = this.get().map((element: HTMLElement) => {
     if (typeof option === 'object') {
-      if (!this.data('originalHTML')) {
-        this.data('originalHTML', element.innerHTML);
-      }
-
       const dataOptions = $(element).data();
       const options = { ...DEFAULT_SLIDER_PARAMS, ...dataOptions, ...option };
       const controller = new Controller(element, options) as Controller & KeyStringObj;
@@ -56,7 +52,7 @@ $.fn.liquidSlider = function liquidSlider(
     switch (option) {
       case 'remove':
         this.liquidSlider = liquidSlider;
-        this.html(this.data('originalHTML'));
+        this.html(controller.originalHTML);
         this.data('controller', null);
         break;
       default:
