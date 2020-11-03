@@ -1,5 +1,5 @@
 import { Listenable } from './interfaces';
-import { KeyStringObj } from './types';
+import { KeyStringObj, Newable } from './types';
 import { SliderModelParams } from '../model/types';
 
 function parseClassesString(classesString: string): string[] {
@@ -150,8 +150,34 @@ function createButton(
   return button;
 }
 
+function initBlocks(
+  rootElement: JQuery | HTMLElement,
+  selector: string,
+  ClassToInit: Newable<any>,
+  ...classInitParams: any[]
+): object | object[] {
+  const blockInstanceKey = `${ClassToInit.name}Instance`;
+  const blocks: object[] = [];
+  const $blocks = rootElement ? $(rootElement).find(selector) : $(selector);
+
+  $blocks.each((index, element) => {
+    const $block = $(element);
+
+    if ($block.data(blockInstanceKey)) {
+      blocks.push($block.data(blockInstanceKey));
+      return;
+    }
+
+    const blockInstance = new ClassToInit(element, ...classInitParams);
+    $block.data(blockInstanceKey, blockInstance);
+    blocks.push(blockInstance);
+  });
+
+  return blocks;
+}
+
 export {
   parseClassesString, addListenerAfter, removeListener, standardize, calculateElementCenter, clamp,
   roundToDecimal, preventDefault,
-  createElement, createLabel, createInput, createButton,
+  createElement, createLabel, createInput, createButton, initBlocks,
 };
