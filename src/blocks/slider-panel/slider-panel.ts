@@ -27,21 +27,9 @@ class SliderPanel {
 
   private handlers: HandlerSection[] = [];
 
-  private readonly elements: PanelElements = {
-    wrap: null,
-    body: null,
-    handlersSection: null,
-    createHandlerSection: null,
-  };
+  private elements: PanelElements;
 
-  private readonly properties: PanelProperties = {
-    max: null,
-    min: null,
-    step: null,
-    orientation: null,
-    tooltipsVisibility: null,
-    markupVisibility: null,
-  }
+  private properties: PanelProperties;
 
   private readonly handlerCreationSection: CreateHandlerSection = null;
 
@@ -130,35 +118,30 @@ class SliderPanel {
 
   private initElements(panelElement: HTMLElement): void {
     const $wrap = $(panelElement);
-    [this.elements.wrap] = $wrap;
-    [this.elements.body] = $wrap.find(`.js-${SliderPanel.DEFAULT_CLASS}__body`);
-    [this.elements.createHandlerSection] = $wrap.find(`.js-${SliderPanel.DEFAULT_CLASS}__create-handler`);
-    [this.elements.handlersSection] = $wrap.find(`.js-${SliderPanel.DEFAULT_CLASS}__handlers`);
+    this.elements = {
+      wrap: $wrap[0],
+      body: $wrap.find(`.js-${SliderPanel.DEFAULT_CLASS}__body`)[0],
+      createHandlerSection: $wrap.find(`.js-${SliderPanel.DEFAULT_CLASS}__create-handler`)[0],
+      handlersSection: $wrap.find(`.js-${SliderPanel.DEFAULT_CLASS}__handlers`)[0],
+    };
   }
 
   private initProperties(): void {
-    this.properties.step = this.initProperty(
-      `.js-${SliderPanel.DEFAULT_CLASS}__step`, this.handleStepInputChange,
-    );
-
-    this.properties.min = this.initProperty(
-      `.js-${SliderPanel.DEFAULT_CLASS}__min`, this.handleMinInputChange,
-    );
-
-    this.properties.max = this.initProperty(`.js-${SliderPanel.DEFAULT_CLASS}__max`,
-      this.handleMaxInputChange);
-
-    this.properties.orientation = this.initProperty(
-      `.js-${SliderPanel.DEFAULT_CLASS}__orientation`, this.handleOrientationInputChange,
-    );
-
-    this.properties.tooltipsVisibility = this.initProperty(
-      `.js-${SliderPanel.DEFAULT_CLASS}__tooltips-visibility`, this.handleTooltipVisibilityInputChange,
-    );
-
-    this.properties.markupVisibility = this.initProperty(
-      `.js-${SliderPanel.DEFAULT_CLASS}__markup-visibility`, this.handleMarkupInputChange,
-    );
+    this.properties = {
+      step: this.initProperty(`.js-${SliderPanel.DEFAULT_CLASS}__step`, this.handleStepInputChange),
+      min: this.initProperty(`.js-${SliderPanel.DEFAULT_CLASS}__min`, this.handleMinInputChange),
+      max: this.initProperty(`.js-${SliderPanel.DEFAULT_CLASS}__max`, this.handleMaxInputChange),
+      orientation: this.initProperty(
+        `.js-${SliderPanel.DEFAULT_CLASS}__orientation`, this.handleOrientationInputChange,
+      ),
+      tooltipsVisibility: this.initProperty(
+        `.js-${SliderPanel.DEFAULT_CLASS}__tooltips-visibility`,
+        this.handleTooltipVisibilityInputChange,
+      ),
+      markupVisibility: this.initProperty(
+        `.js-${SliderPanel.DEFAULT_CLASS}__markup-visibility`, this.handleMarkupInputChange,
+      ),
+    };
   }
 
   private handleCreateHandlerButtonClick = (): void => {
