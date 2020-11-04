@@ -72,9 +72,9 @@ class SliderPanel {
       this.elements.handlersSection, handlerIndex, positionPart, item.toString(),
     );
 
-    newHandlerSection.addOnRemoveButtonClick(
-      () => { this.slider.callPluginFunction('removeHandler', handlerIndex); },
-    );
+    newHandlerSection.addOnRemoveButtonClick(() => {
+      this.slider.callPluginFunction('removeHandler', handlerIndex);
+    });
 
     newHandlerSection.addOnPositionInputChange((event) => {
       this.handleHandlerInputPositionChange(handlerIndex, event);
@@ -99,7 +99,9 @@ class SliderPanel {
   }
 
   private initHandlers(handlersData: { handlersArray: HandlerModelData[] }): void {
-    handlersData.handlersArray.forEach((handler) => { this.addHandler(handler); });
+    handlersData.handlersArray.forEach((handler) => {
+      this.addHandler(handler);
+    });
   }
 
   private updateSliderData({ step, min, max }: SliderModelParams): void {

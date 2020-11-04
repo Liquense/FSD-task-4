@@ -9,4 +9,6 @@ function importContext(r: __WebpackModuleApi.RequireContext): void { r.keys().fo
 importContext(require.context('../blocks', true, /\.(scss)$/));
 
 const panels = initSliderPanels() as SliderPanel[];
-panels.forEach((panel) => { panel.initSlider(); });
+panels.forEach((panel) => {
+  panel.initSlider();
+});
