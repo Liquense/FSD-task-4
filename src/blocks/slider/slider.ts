@@ -5,7 +5,7 @@ class Slider {
 
   private body: HTMLElement;
 
-  private slider: JQuery;
+  private $slider: JQuery;
 
   constructor(element: HTMLElement, sliderParams?: SliderPluginParams) {
     this.initElements(element);
@@ -13,7 +13,7 @@ class Slider {
   }
 
   public callPluginFunction(name: string, ...params: any[]): any {
-    return this.slider.liquidSlider(name, ...params);
+    return this.$slider.liquidSlider(name, ...params);
   }
 
   private initElements(element: HTMLElement): void {
@@ -21,7 +21,7 @@ class Slider {
   }
 
   private initSlider(params?: SliderPluginParams): void {
-    this.slider = $(this.body).liquidSlider(params);
+    this.$slider = $(this.body).liquidSlider(params);
   }
 }
 
