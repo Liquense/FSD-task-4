@@ -1,6 +1,5 @@
 import * as $ from 'jquery';
 import { DEFAULT_SLIDER_PARAMS } from '../constants';
-import { KeyStringObj } from '../utils/types';
 
 import Controller from '../controller/Controller';
 import { HandlersModelData, SliderModelData } from '../model/types';
@@ -41,7 +40,7 @@ $.fn.liquidSlider = function liquidSlider(
     if (typeof option === 'object') {
       const dataOptions = $(element).data();
       const options = { ...DEFAULT_SLIDER_PARAMS, ...dataOptions, ...option };
-      const controller = new Controller(element, options) as Controller & KeyStringObj;
+      const controller = new Controller(element, options);
       this.data('controller', controller);
 
       return this;

@@ -9,6 +9,7 @@ import TooltipView from './handler/tooltip/TooltipView';
 import HandlerView from './handler/HandlerView';
 import RangeView from './range/RangeView';
 import { KeyStringObj } from '../../utils/types';
+import { HandlerViewParams } from '../types';
 
 import Mock = jest.Mock;
 
@@ -548,8 +549,8 @@ describe('Функции', () => {
   test('Добавление нового хэндлера', () => {
     const prevHandlers = [...testSlider['handlers']];
     const prevRanges = [...testSlider['ranges']];
-    const testParams = {
-      positionPart: 0.2, item: 'hello', handlerIndex: 33, rangePair: null as number,
+    const testParams: HandlerViewParams = {
+      positionPart: 0.2, item: 'hello', handlerIndex: 33, rangePair: null,
     };
 
     testSlider.addHandler(testParams);
@@ -574,8 +575,8 @@ describe('Функции', () => {
   describe('Удаление хэндлера', () => {
     let prevHandlers: HandlerView[];
     let prevRanges: RangeView[];
-    const testParams = {
-      positionPart: 0.2, item: 'hello', handlerIndex: 44, rangePair: null as number,
+    const testParams: HandlerViewParams = {
+      positionPart: 0.2, item: 'hello', handlerIndex: 44, rangePair: null,
     };
 
     beforeAll(() => {

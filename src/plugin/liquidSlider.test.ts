@@ -3,6 +3,7 @@ import { DEFAULT_SLIDER_PARAMS } from '../constants';
 import './liquidSlider';
 
 import Controller from '../controller/Controller';
+import { SliderPluginParams } from './types';
 
 jest.mock('../controller/controller');
 
@@ -11,8 +12,8 @@ mockController.prototype.thing = 'test';
 const $testDiv = $(document.body.appendChild(document.createElement('div')));
 
 test('Инициализация слайдера', () => {
-  const testParameters = {
-    controller: null as Controller, something: 'test', anotherArg: 'test1', withMarkup: false,
+  const testParameters: SliderPluginParams = {
+    withMarkup: false, isRange: true, max: 50, min: -111,
   };
 
   $testDiv.liquidSlider();
@@ -21,7 +22,7 @@ test('Инициализация слайдера', () => {
   $testDiv.liquidSlider('remove');
   $testDiv.liquidSlider(testParameters);
   expect(mockController).toBeCalledWith(
-    $testDiv.get()[0], { ...DEFAULT_SLIDER_PARAMS, ...testParameters },
+    $testDiv.get()[0], { controller: null, ...DEFAULT_SLIDER_PARAMS, ...testParameters },
   );
 });
 

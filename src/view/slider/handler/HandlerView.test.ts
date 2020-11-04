@@ -6,15 +6,15 @@ import HandlerView from './HandlerView';
 
 import TooltipView from './tooltip/TooltipView';
 
-import Mock = jest.Mock;
-
-jest.mock('../sliderView');
-jest.mock('./tooltip/tooltipView');
+jest.mock('../SliderView');
+jest.mock('./tooltip/TooltipView');
 
 const testSlider = new SliderView(null, null);
-testSlider.getOrientationClass = jest.fn(function () {
-  return this.isVertical ? 'vertical' : 'horizontal';
-});
+testSlider.getOrientationClass = jest.fn(
+  function () {
+    return this.isVertical ? 'vertical' : 'horizontal';
+  },
+);
 
 testSlider.calculateHandlerOffset = jest.fn((positionPart) => positionPart * 100);
 testSlider.getHandlersContainer = jest.fn(() => document.body);
@@ -26,7 +26,7 @@ function createTestHandler(
   return new HandlerView(testSlider, { handlerIndex: index, positionPart, item });
 }
 
-const mockTooltip = (TooltipView as unknown as Mock);
+const mockTooltip = (TooltipView as unknown as jest.Mock);
 
 describe('Инициализация', () => {
   describe('Установка значений полей', () => {

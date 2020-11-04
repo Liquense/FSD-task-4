@@ -12,6 +12,7 @@ import PanelProperty from '../panel-property/panel-property';
 import initPanelProperty from '../panel-property/init';
 import initSliders from '../slider/init';
 import Slider from '../slider/slider';
+import { PanelElements, PanelProperties } from './types';
 
 class SliderPanel {
   public static readonly DEFAULT_CLASS = 'slider-panel';
@@ -26,20 +27,20 @@ class SliderPanel {
 
   private handlers: HandlerSection[] = [];
 
-  private readonly elements = {
-    wrap: null as HTMLElement,
-    body: null as HTMLElement,
-    handlersSection: null as HTMLElement,
-    createHandlerSection: null as HTMLElement,
+  private readonly elements: PanelElements = {
+    wrap: null,
+    body: null,
+    handlersSection: null,
+    createHandlerSection: null,
   };
 
-  private readonly properties = {
-    max: null as PanelProperty,
-    min: null as PanelProperty,
-    step: null as PanelProperty,
-    orientation: null as PanelProperty,
-    tooltipsVisibility: null as PanelProperty,
-    markupVisibility: null as PanelProperty,
+  private readonly properties: PanelProperties = {
+    max: null,
+    min: null,
+    step: null,
+    orientation: null,
+    tooltipsVisibility: null,
+    markupVisibility: null,
   }
 
   private readonly handlerCreationSection: CreateHandlerSection = null;
