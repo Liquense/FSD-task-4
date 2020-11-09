@@ -1,5 +1,4 @@
 import { DEFAULT_SLIDER_CLASS } from '../../../constants';
-import { KeyStringObj } from '../../../utils/types';
 
 import { Orientable, ScaleOwner, SliderContainer } from '../../interfaces';
 
@@ -30,12 +29,13 @@ class MarkupView {
     this.marks.push(newMark);
 
     const markOffset = this.calculateMarkOffset(relativePosition, relativeHandlerSize);
-    (newMark.style as KeyStringObj)[this.ownerSlider.getOffsetDirection()] = `${markOffset}%`;
+    const offsetDirection = this.ownerSlider.getOffsetDirection();
+    newMark.style[offsetDirection] = `${markOffset}%`;
   }
 
   private getMarkThickness(): number {
     const dimension = this.ownerSlider.getExpandDimension();
-    return (this.marks[0].getBoundingClientRect() as KeyStringObj)[dimension];
+    return this.marks[0].getBoundingClientRect()[dimension];
   }
 
   private getRelativeMarkThickness(): number {

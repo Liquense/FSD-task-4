@@ -109,55 +109,14 @@ function calculateElementCenter(DOMElement: Element): { x: number; y: number } {
 
 const preventDefault = (event: Event): void => event.preventDefault();
 
-function createElement(
-  elementName: string, classes: string, wrap?: HTMLElement,
-): HTMLElement {
-  const propElement = document.createElement(elementName);
-  propElement.classList.add(classes);
-
-  if (wrap) wrap.append(propElement);
-
-  return propElement;
-}
-
-function createLabel(
-  labelText: string, classes: string, wrap?: HTMLElement,
-): HTMLElement {
-  const label = createElement(
-    'label', classes, wrap,
-  );
-  label.innerText = labelText;
-
-  return label;
-}
-
-function createInput(
-  classes: string, wrap?: HTMLElement, isCheckbox?: boolean,
-): HTMLInputElement {
-  const input = createElement('input', classes, wrap);
-
-  if (isCheckbox) input.setAttribute('type', 'checkbox');
-
-  return (input as HTMLInputElement);
-}
-
-function createButton(
-  text: string, classes: string, wrap?: HTMLElement,
-): HTMLButtonElement {
-  const button = createElement('button', classes, wrap) as HTMLButtonElement;
-  button.innerText = text;
-
-  return button;
-}
-
-function initBlocks(
+function initBlocks<T extends object>(
   rootElement: JQuery | HTMLElement,
   selector: string,
-  ClassToInit: Newable<any>,
+  ClassToInit: Newable<T>,
   ...classInitParams: any[]
-): object | object[] {
+): T[] {
   const blockInstanceKey = `${ClassToInit.name}Instance`;
-  const blocks: object[] = [];
+  const blocks: T[] = [];
   const $blocks = rootElement ? $(rootElement).find(selector) : $(selector);
 
   $blocks.each((index, element) => {
@@ -176,8 +135,11 @@ function initBlocks(
   return blocks;
 }
 
+function hasOwnProperty<T>(object: T, key: PropertyKey): key is keyof T {
+  return key in object;
+}
+
 export {
   parseClassesString, addListenerAfter, removeListener, standardize, calculateElementCenter, clamp,
-  roundToDecimal, preventDefault,
-  createElement, createLabel, createInput, createButton, initBlocks,
+  roundToDecimal, preventDefault, initBlocks, hasOwnProperty,
 };

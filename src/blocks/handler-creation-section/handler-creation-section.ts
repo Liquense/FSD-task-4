@@ -80,9 +80,18 @@ class HandlerCreationSection {
     const $body = isBody ? $parentElement : $parentElement.find(`.js-${defaultClass}`);
 
     [this.body] = $body.get();
-    this.itemInput = $body.find(`.js-${defaultClass}__value .js-panel-property__input`).get()[0] as HTMLInputElement;
-    this.pairSelect = $body.find(`.js-${defaultClass}__pair .js-panel-property__input`).get()[0] as HTMLSelectElement;
-    this.createButton = $body.find(`.js-${defaultClass}__create-button`).get()[0] as HTMLButtonElement;
+    const itemInput = $body.find(`.js-${defaultClass}__value .js-panel-property__input`).get()[0];
+    if (itemInput instanceof HTMLInputElement) {
+      this.itemInput = itemInput;
+    }
+    const pairSelect = $body.find(`.js-${defaultClass}__pair .js-panel-property__input`).get()[0];
+    if (pairSelect instanceof HTMLSelectElement) {
+      this.pairSelect = pairSelect;
+    }
+    const createButton = $body.find(`.js-${defaultClass}__create-button`).get()[0];
+    if (createButton instanceof HTMLButtonElement) {
+      this.createButton = createButton;
+    }
   }
 
   private fillPairOptions(): void {

@@ -1,6 +1,6 @@
 import { DEFAULT_SLIDER_CLASS } from '../../../constants';
 import { Listenable } from '../../../utils/interfaces';
-import { KeyStringObj, Presentable } from '../../../utils/types';
+import { Presentable } from '../../../utils/types';
 
 import { calculateElementCenter } from '../../../utils/functions';
 
@@ -78,9 +78,9 @@ class HandlerView implements Listenable, SliderElement {
   }
 
   public getSize(dimension?: 'width' | 'height'): number {
-    return (this.element.body.getBoundingClientRect() as KeyStringObj)[
-      dimension ?? this.ownerSlider.getExpandDimension()
-    ];
+    const expandDimension = dimension ?? this.ownerSlider.getExpandDimension();
+
+    return this.element.body.getBoundingClientRect()[expandDimension];
   }
 
   public getItem(): Presentable {
@@ -97,11 +97,12 @@ class HandlerView implements Listenable, SliderElement {
 
   public refreshPosition(): void {
     const offset = this.calculateOffset();
+    const offsetDirection = this.ownerSlider.getOffsetDirection();
 
     this.element.wrap.style.removeProperty('left');
     this.element.wrap.style.removeProperty('top');
 
-    (this.element.wrap.style as KeyStringObj)[this.ownerSlider.getOffsetDirection()] = `${offset}px`;
+    this.element.wrap.style[offsetDirection] = `${offset}px`;
     this.tooltip.updateHTML();
   }
 

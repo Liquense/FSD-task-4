@@ -1,10 +1,9 @@
 import { ResizeObserver } from 'resize-observer';
 
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../../constants';
-import { KeyStringObj } from '../../utils/types';
 
 import {
-  clamp,
+  clamp, hasOwnProperty,
   preventDefault,
   roundToDecimal,
   standardize,
@@ -113,14 +112,14 @@ class SliderView implements Slider {
     return this.withMarkup;
   }
 
-  public getOffsetDirection(): string {
+  public getOffsetDirection(): 'top' | 'left' {
     if (this.isVertical) {
       return 'top';
     }
     return 'left';
   }
 
-  public getExpandDimension(): string {
+  public getExpandDimension(): 'height' | 'width' {
     if (this.isVertical) {
       return 'height';
     }
@@ -128,9 +127,7 @@ class SliderView implements Slider {
   }
 
   public getScaleLength(): number {
-    return Number.parseFloat(
-      (this.elements.scale.getBoundingClientRect() as KeyStringObj)[this.getExpandDimension()],
-    );
+    return this.elements.scale.getBoundingClientRect()[this.getExpandDimension()];
   }
 
   public setOrientation(isVertical: boolean): void {
@@ -371,14 +368,19 @@ class SliderView implements Slider {
   }
 
   private handleWindowMouseOut = (event: MouseEvent): void => {
-    const from = event.target as HTMLElement;
-    if (from.nodeName === 'HTML') {
+    const { target } = event;
+    const nodeNameKey = 'nodeName';
+
+    if (!hasOwnProperty(target, nodeNameKey)) return;
+    if (target[nodeNameKey] === 'HTML') {
       document.body.removeEventListener('mousemove', this.handleMouseMove);
     }
   }
 
   private handleDocumentMouseDown(event: MouseEvent): void {
-    const target = (event.target) as HTMLElement;
+    if (!(event.target instanceof HTMLElement)) return;
+
+    const { target } = event;
     if (!this.elements.wrap.contains(target)) {
       this.deactivateActiveHandler();
     }

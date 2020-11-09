@@ -1,5 +1,4 @@
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_OPTIONS } from '../../../constants';
-import { KeyStringObj } from '../../../utils/types';
 
 import {
   addListenerAfter,
@@ -57,8 +56,8 @@ class RangeView {
 
     this.clearPositionStyles();
 
-    (this.element.style as KeyStringObj)[parentSlider.getOffsetDirection()] = `${offset}px`;
-    (this.element.style as KeyStringObj)[parentSlider.getExpandDimension()] = `${length}px`;
+    this.element.style[parentSlider.getOffsetDirection()] = `${offset}px`;
+    this.element.style[parentSlider.getExpandDimension()] = `${length}px`;
   }
 
   public hasHandler(handler: HandlerView): boolean {

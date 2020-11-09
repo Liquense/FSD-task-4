@@ -6,7 +6,7 @@ import Slider from './slider';
 function initSliders(
   parentElement: JQuery | HTMLElement, sliderParams?: SliderPluginParams,
 ): Slider[] {
-  return initBlocks(parentElement, `.js-${Slider.DEFAULT_CLASS}`, Slider, sliderParams) as Slider[];
+  return initBlocks(parentElement, `.js-${Slider.DEFAULT_CLASS}`, Slider, sliderParams);
 }
 
 export default initSliders;

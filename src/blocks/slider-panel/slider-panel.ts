@@ -1,8 +1,10 @@
 import './slider-panel.scss';
+import { PanelElements, PanelProperties } from './types';
 
 import { SliderPluginParams } from '../../plugin/types';
 import { HandlerModelData, SliderModelParams } from '../../model/types';
 import { SliderViewParams } from '../../view/types';
+import { KeyStringObj } from '../../utils/types';
 
 import HandlerCreationSection from '../handler-creation-section/handler-creation-section';
 import initHandlerCreationSection from '../handler-creation-section/init';
@@ -12,7 +14,6 @@ import PanelProperty from '../panel-property/panel-property';
 import initPanelProperty from '../panel-property/init';
 import initSliders from '../slider/init';
 import Slider from '../slider/slider';
-import { PanelElements, PanelProperties } from './types';
 
 class SliderPanel {
   public static readonly DEFAULT_CLASS = 'slider-panel';
@@ -29,7 +30,7 @@ class SliderPanel {
 
   private elements: PanelElements;
 
-  private properties: PanelProperties;
+  private panelProperties: PanelProperties & KeyStringObj;
 
   private readonly handlerCreationSection: HandlerCreationSection;
 
@@ -94,12 +95,18 @@ class SliderPanel {
   }
 
   private updateSliderData({ step, min, max }: SliderModelParams): void {
-    this.properties.max.setValue(max);
-    this.properties.min.setValue(min);
-    this.properties.step.setValue(step);
+    this.panelProperties.max.setValue(max);
+    this.panelProperties.min.setValue(min);
+    this.panelProperties.step.setValue(step);
   }
 
-  private updateVisuals({ isVertical, withMarkup, isTooltipsVisible }: SliderViewParams): void {
+  private updateVisuals(
+    {
+      isVertical = this.isVertical,
+      withMarkup = this.withMarkup,
+      isTooltipsVisible = this.isTooltipsVisible,
+    }: SliderViewParams,
+  ): void {
     this.isVertical = isVertical;
     this.updateOrientation();
 
@@ -127,19 +134,27 @@ class SliderPanel {
   }
 
   private initProperties(): void {
-    this.properties = {
-      step: this.initProperty(`.js-${SliderPanel.DEFAULT_CLASS}__step`, this.handleStepInputChange),
-      min: this.initProperty(`.js-${SliderPanel.DEFAULT_CLASS}__min`, this.handleMinInputChange),
-      max: this.initProperty(`.js-${SliderPanel.DEFAULT_CLASS}__max`, this.handleMaxInputChange),
+    this.panelProperties = {
+      min: this.initProperty(
+        `.js-${SliderPanel.DEFAULT_CLASS}__min`, this.makePropInputChangeHandler('min'),
+      ),
+      max: this.initProperty(
+        `.js-${SliderPanel.DEFAULT_CLASS}__max`, this.makePropInputChangeHandler('max'),
+      ),
+      step: this.initProperty(
+        `.js-${SliderPanel.DEFAULT_CLASS}__step`, this.makePropInputChangeHandler('step'),
+      ),
       orientation: this.initProperty(
-        `.js-${SliderPanel.DEFAULT_CLASS}__orientation`, this.handleOrientationInputChange,
+        `.js-${SliderPanel.DEFAULT_CLASS}__orientation`,
+        this.makePropInputChangeHandler('orientation', 'isVertical'),
       ),
       tooltipsVisibility: this.initProperty(
         `.js-${SliderPanel.DEFAULT_CLASS}__tooltips-visibility`,
-        this.handleTooltipVisibilityInputChange,
+        this.makePropInputChangeHandler('tooltipsVisibility', 'isTooltipsVisible'),
       ),
       markupVisibility: this.initProperty(
-        `.js-${SliderPanel.DEFAULT_CLASS}__markup-visibility`, this.handleMarkupInputChange,
+        `.js-${SliderPanel.DEFAULT_CLASS}__markup-visibility`,
+        this.makePropInputChangeHandler('markupVisibility', 'withMarkup'),
       ),
     };
   }
@@ -154,49 +169,21 @@ class SliderPanel {
     this.addHandler(createdHandlerData);
   }
 
-  private handleMarkupInputChange = (event: Event): void => {
-    const withMarkup = (event.target as HTMLInputElement).checked;
-    this.withMarkup = withMarkup;
+  private makePropInputChangeHandler(propName: string, dataName?: string): EventListener {
+    return (): void => {
+      const prop = this.panelProperties[propName];
+      const value = prop.getValue();
+      const name = dataName ?? propName;
 
-    this.slider.callPluginFunction('update', { withMarkup });
-  }
-
-  private handleOrientationInputChange = (event: Event): void => {
-    const isVertical = (event.target as HTMLInputElement).checked;
-    this.isVertical = isVertical;
-
-    this.slider.callPluginFunction('update', { isVertical });
-    this.updateOrientation();
-  }
-
-  private handleMinInputChange = (): void => {
-    const minProp = this.properties.min;
-    const min = Number.parseFloat(minProp.getValue() as string);
-
-    this.slider.callPluginFunction('update', { min });
-    minProp.setValue(this.slider.callPluginFunction('getSliderData').min);
-  }
-
-  private handleMaxInputChange = (): void => {
-    const maxProp = this.properties.max;
-    const max = Number.parseFloat(maxProp.getValue() as string);
-
-    this.slider.callPluginFunction('update', { max });
-    maxProp.setValue(this.slider.callPluginFunction('getSliderData').max);
-  }
-
-  private handleStepInputChange = (): void => {
-    const stepProp = this.properties.step;
-    const step = Number.parseFloat(stepProp.getValue() as string);
-
-    this.slider.callPluginFunction('update', { step });
-    stepProp.setValue(this.slider.callPluginFunction('getSliderData').step);
-  }
-
-  private handleTooltipVisibilityInputChange = (): void => {
-    const isVisible = this.properties.tooltipsVisibility.getValue() as boolean;
-    this.isTooltipsVisible = isVisible;
-    this.slider.callPluginFunction('update', { isTooltipsVisible: isVisible });
+      if (typeof value === 'string' && Number.parseFloat(value)) {
+        this.slider.callPluginFunction('update', { [name]: Number.parseFloat(value) });
+        prop.setValue(this.slider.callPluginFunction('getSliderData')[name]);
+      }
+      if (typeof value === 'boolean') {
+        this.slider.callPluginFunction('update', { [name]: value });
+        this.updateVisuals({ [name]: value });
+      }
+    };
   }
 
   private handleHandlerValueChange = (handlerData: HandlerModelData): void => {
@@ -211,14 +198,23 @@ class SliderPanel {
   }
 
   private handleHandlerInputPositionChange = (handlerIndex: number, event: Event): void => {
-    const newPosition = Number.parseFloat((event.target as HTMLInputElement).value);
+    let inputElement: HTMLInputElement;
+    if (event.target instanceof HTMLInputElement) {
+      inputElement = event.target;
+    }
+    const newPosition = Number.parseFloat(inputElement.value);
     if (Number.isNaN(newPosition)) return;
 
     this.slider.callPluginFunction('moveHandler', handlerIndex, newPosition);
   }
 
   private handleHandlerInputItemChange = (handlerIndex: number, event: Event): void => {
-    const newItem = (event.target as HTMLInputElement).value;
+    let inputElement: HTMLInputElement;
+    if (event.target instanceof HTMLInputElement) {
+      inputElement = event.target;
+    }
+
+    const newItem = inputElement.value;
     this.slider.callPluginFunction('setHandlerItem', handlerIndex, newItem);
   }
 
@@ -227,18 +223,18 @@ class SliderPanel {
   }
 
   private initProperty(selector: string, handlerFunction: EventListener): PanelProperty {
-    const property = initPanelProperty(this.elements.body.querySelector(selector) as HTMLElement);
+    const property = initPanelProperty(this.elements.body.querySelector<HTMLElement>(selector));
     property.addOnChange(handlerFunction);
 
     return property;
   }
 
   private updateMarkupVisibility(): void {
-    this.properties.markupVisibility.setValue(this.withMarkup);
+    this.panelProperties.markupVisibility.setValue(this.withMarkup);
   }
 
   private updateTooltipVisibility(): void {
-    this.properties.tooltipsVisibility.setValue(this.isTooltipsVisible);
+    this.panelProperties.tooltipsVisibility.setValue(this.isTooltipsVisible);
   }
 
   private updateOrientation(): void {
@@ -248,7 +244,7 @@ class SliderPanel {
     this.elements.wrap.classList.add(orientationModifier);
     this.elements.wrap.classList.remove(oldOrientationModifier);
 
-    this.properties.orientation.setValue(this.isVertical);
+    this.panelProperties.orientation.setValue(this.isVertical);
   }
 }
 

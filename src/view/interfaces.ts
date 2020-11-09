@@ -29,8 +29,8 @@ interface View {
 
 interface Orientable {
   getIsVertical(): boolean;
-  getExpandDimension(): string;
-  getOffsetDirection(): string;
+  getExpandDimension(): 'height' | 'width';
+  getOffsetDirection(): 'top' | 'left';
 
   getOrientationClass(): string;
 }

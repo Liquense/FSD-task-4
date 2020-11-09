@@ -1,5 +1,5 @@
 import { DEFAULT_SLIDER_CLASS } from '../../../../constants';
-import { KeyStringObj, Presentable } from '../../../../utils/types';
+import { Presentable } from '../../../../utils/types';
 
 import { SliderElement } from '../../../interfaces';
 
@@ -38,9 +38,9 @@ class TooltipView {
   }
 
   public getSize(dimension?: 'height' | 'width'): number {
-    return (this.element.getBoundingClientRect() as KeyStringObj)[
-      dimension ?? this.ownerHandler.getOwnerSlider().getExpandDimension()
-    ];
+    const expandDimension = dimension ?? this.ownerHandler.getOwnerSlider().getExpandDimension();
+
+    return this.element.getBoundingClientRect()[expandDimension];
   }
 
   public getItem(): Presentable {
