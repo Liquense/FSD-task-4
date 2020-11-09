@@ -1,5 +1,5 @@
 include ../panel-property/panel-property
-include ../create-handler-section/create-handler-section
+include ../handler-creation-section/handler-creation-section
 include ../slider/slider
 
 mixin slider-panel(sliderParams)
@@ -19,6 +19,6 @@ mixin slider-panel(sliderParams)
         +panel-property({type: 'checkbox', caption: 'Разметка видна?'})
       div.js-slider-panel__handlers.slider-panel__handlers
       div.js-slider-panel__create-handler.slider-panel__create-handler
-        +create-handler-section()
+        +handler-creation-section()
     section.js-slider-panel__slider.slider-panel__slider
       +slider(sliderParams)

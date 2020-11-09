@@ -1,5 +1,5 @@
-class CreateHandlerSection {
-  public static readonly DEFAULT_CLASS = 'create-handler-section';
+class HandlerCreationSection {
+  public static readonly DEFAULT_CLASS = 'handler-creation-section';
 
   private readonly pairOptions = new Map()
     .set('Никем', null).set('Началом', 'start').set('Концом', 'end');
@@ -31,10 +31,6 @@ class CreateHandlerSection {
 
   public getPairSelect(): HTMLSelectElement {
     return this.pairSelect;
-  }
-
-  public getCreateButton(): HTMLButtonElement {
-    return this.createButton;
   }
 
   public getSelectedPairOption(): string {
@@ -78,7 +74,7 @@ class CreateHandlerSection {
   }
 
   private initElements(parentElement: HTMLElement | JQuery): void {
-    const defaultClass = CreateHandlerSection.DEFAULT_CLASS;
+    const defaultClass = HandlerCreationSection.DEFAULT_CLASS;
     const $parentElement = $(parentElement);
     const isBody = $parentElement.hasClass(defaultClass);
     const $body = isBody ? $parentElement : $parentElement.find(`.js-${defaultClass}`);
@@ -96,4 +92,4 @@ class CreateHandlerSection {
   }
 }
 
-export default CreateHandlerSection;
+export default HandlerCreationSection;

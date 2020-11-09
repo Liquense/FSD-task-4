@@ -4,8 +4,8 @@ import { SliderPluginParams } from '../../plugin/types';
 import { HandlerModelData, SliderModelParams } from '../../model/types';
 import { SliderViewParams } from '../../view/types';
 
-import CreateHandlerSection from '../create-handler-section/create-handler-section';
-import initCreateHandlerSection from '../create-handler-section/init';
+import HandlerCreationSection from '../handler-creation-section/handler-creation-section';
+import initHandlerCreationSection from '../handler-creation-section/init';
 import HandlerSection from '../handler-section/handler-section';
 import initHandlerSection from '../handler-section/init';
 import PanelProperty from '../panel-property/panel-property';
@@ -31,12 +31,12 @@ class SliderPanel {
 
   private properties: PanelProperties;
 
-  private readonly handlerCreationSection: CreateHandlerSection = null;
+  private readonly handlerCreationSection: HandlerCreationSection;
 
   constructor(private parentElement: HTMLElement) {
     this.initElements(parentElement);
     this.initProperties();
-    [this.handlerCreationSection] = initCreateHandlerSection(this.elements.createHandlerSection);
+    [this.handlerCreationSection] = initHandlerCreationSection(this.elements.createHandlerSection);
     this.initEventHandlers();
   }
 
