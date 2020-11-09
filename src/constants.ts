@@ -1,4 +1,6 @@
-const DEFAULT_SLIDER_PARAMS = { isVertical: false, isTooltipsVisible: true, withMarkup: false };
+const DEFAULT_SLIDER_PARAMS = {
+  isVertical: false, isTooltipsVisible: true, withMarkup: false, min: 0, max: 10, step: 1,
+};
 const DEFAULT_SLIDER_CLASS = 'liquid-slider';
 const RANGE_PAIR_OPTIONS = new Map()
   .set(null, null)

@@ -17,11 +17,11 @@ class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
 
   private occupiedItems: { [key: number]: number } = {};
 
-  private min = 0;
+  private min: number;
 
-  private max = 10;
+  private max: number;
 
-  private step = 1;
+  private step: number;
 
   private handlers: HandlerModel[] = [];
 

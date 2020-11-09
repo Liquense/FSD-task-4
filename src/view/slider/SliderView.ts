@@ -49,7 +49,7 @@ class SliderView implements Slider {
 
   private markup: MarkupView;
 
-  private stepPart = 0.01;
+  private stepPart: number;
 
   private min: number;
 
