@@ -2,8 +2,7 @@ import './slider-panel.scss';
 import { PanelElements, PanelProperties } from './types';
 
 import { SliderPluginParams } from '../../plugin/types';
-import { HandlerModelData, SliderModelParams } from '../../model/types';
-import { SliderViewParams } from '../../view/types';
+import { HandlerModelData, SliderModelParams, SliderVisualParams } from '../../model/types';
 import { KeyStringObj } from '../../utils/types';
 
 import HandlerCreationSection from '../handler-creation-section/handler-creation-section';
@@ -24,7 +23,7 @@ class SliderPanel {
 
   private isTooltipsVisible: boolean;
 
-  private withMarkup: boolean;
+  private isMarkupVisible: boolean;
 
   private handlers: HandlerSection[] = [];
 
@@ -103,14 +102,14 @@ class SliderPanel {
   private updateVisuals(
     {
       isVertical = this.isVertical,
-      withMarkup = this.withMarkup,
+      isMarkupVisible = this.isMarkupVisible,
       isTooltipsVisible = this.isTooltipsVisible,
-    }: SliderViewParams,
+    }: SliderVisualParams,
   ): void {
     this.isVertical = isVertical;
     this.updateOrientation();
 
-    this.withMarkup = withMarkup;
+    this.isMarkupVisible = isMarkupVisible;
     this.updateMarkupVisibility();
 
     this.isTooltipsVisible = isTooltipsVisible;
@@ -154,7 +153,7 @@ class SliderPanel {
       ),
       markupVisibility: this.initProperty(
         `.js-${SliderPanel.DEFAULT_CLASS}__markup-visibility`,
-        this.makePropInputChangeHandler('markupVisibility', 'withMarkup'),
+        this.makePropInputChangeHandler('markupVisibility', 'isMarkupVisible'),
       ),
     };
   }
@@ -230,7 +229,7 @@ class SliderPanel {
   }
 
   private updateMarkupVisibility(): void {
-    this.panelProperties.markupVisibility.setValue(this.withMarkup);
+    this.panelProperties.markupVisibility.setValue(this.isMarkupVisible);
   }
 
   private updateTooltipVisibility(): void {

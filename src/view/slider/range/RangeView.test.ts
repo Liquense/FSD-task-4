@@ -88,7 +88,7 @@ describe('Инициализация', () => {
 
       test('Один хэндлер', async () => {
         function initTest(
-          handlerSide: string, offsetDirection: string, expandDimension: string,
+          handlerSide: string, offsetDirection: 'top' | 'left', expandDimension: 'height' | 'width',
         ): Promise<unknown> {
           return new Promise((resolve) => {
             firstHandler.getRangePair = jest.fn(() => handlerSide);
@@ -124,7 +124,7 @@ describe('Инициализация', () => {
         firstHandler.getPositionPart = jest.fn(() => 0);
         secondHandler.getPositionPart = jest.fn(() => 1);
 
-        function initTest(offsetDirection: string, expandDimension: string): Promise<boolean> {
+        function initTest(offsetDirection: 'top' | 'left', expandDimension: 'height' | 'width'): Promise<boolean> {
           return new Promise((resolve) => {
             testSlider.getOffsetDirection = jest.fn(() => offsetDirection);
             testSlider.getExpandDimension = jest.fn(() => expandDimension);

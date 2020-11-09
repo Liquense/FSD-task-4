@@ -41,14 +41,14 @@ describe('Инициализация', () => {
     test('С передачей необязательных параметров', () => {
       testSlider = new SliderView(
         mockView, {
-          isVertical: true, isInverted: false, isTooltipsVisible: false, withMarkup: true,
+          isVertical: true, isInverted: false, isTooltipsVisible: false, isMarkupVisible: true,
         },
       );
 
       expect(testSlider.getIsVertical()).toBe(true);
       expect(testSlider['isRangesInverted']).toBe(false);
       expect(testSlider['isTooltipsAlwaysVisible']).toBe(false);
-      expect(testSlider['withMarkup']).toBe(true);
+      expect(testSlider['isMarkupVisible']).toBe(true);
     });
   });
 
@@ -293,7 +293,7 @@ describe('Инициализация', () => {
       });
 
       test('По слайдеру', () => {
-        testSlider.setOrientation(false);
+        testSlider.update({ isVertical: false, stepPart: 0.01 });
         testClicks();
 
         testSlider.setOrientation(true);
@@ -425,10 +425,10 @@ describe('Функции', () => {
     MarkupView.prototype.addMark = mockAddMark;
 
     testSlider['markup'] = undefined;
-    testSlider.update();
+    testSlider.update({ stepPart: 0.01 });
 
     testSlider.clearRanges();
-    testSlider['withMarkup'] = true;
+    testSlider['isMarkupVisible'] = true;
     testSlider.initHandlers({
       isCustomHandlers: false,
       handlersArray: [{ handlerIndex: 0, item: 'test', positionPart: 0.5 }],
@@ -505,7 +505,7 @@ describe('Функции', () => {
     let prevMax = testSlider['max'];
     let prevIsVertical = testSlider.getIsVertical();
     let prevTooltipVisibility = testSlider['isTooltipsAlwaysVisible'];
-    let prevMarkupVisibility = testSlider['withMarkup'];
+    let prevMarkupVisibility = testSlider['isMarkupVisible'];
 
     function checkOldValues(): void {
       expect(testSlider['stepPart']).toBe(prevStep);
@@ -513,7 +513,7 @@ describe('Функции', () => {
       expect(testSlider['max']).toBe(prevMax);
       expect(testSlider.getIsVertical()).toBe(prevIsVertical);
       expect(testSlider['isTooltipsAlwaysVisible']).toBe(prevTooltipVisibility);
-      expect(testSlider['withMarkup']).toBe(prevMarkupVisibility);
+      expect(testSlider['isMarkupVisible']).toBe(prevMarkupVisibility);
     }
 
     mockClearSpies(spies);
@@ -523,7 +523,12 @@ describe('Функции', () => {
 
     mockClearSpies(spies);
     testSlider.update({
-      stepPart: 2, min: -2, max: 22, isVertical: false, isTooltipsVisible: false, withMarkup: true,
+      stepPart: 2,
+      min: -2,
+      max: 22,
+      isVertical: false,
+      isTooltipsVisible: false,
+      isMarkupVisible: true,
     });
     checkSpiesToBeCalledOnce(spies);
     expect(testSlider['stepPart']).toBe(2);
@@ -531,14 +536,14 @@ describe('Функции', () => {
     expect(testSlider['max']).toBe(22);
     expect(testSlider.getIsVertical()).toBe(false);
     expect(testSlider['isTooltipsAlwaysVisible']).toBe(false);
-    expect(testSlider['withMarkup']).toBe(true);
+    expect(testSlider['isMarkupVisible']).toBe(true);
 
     prevStep = testSlider['stepPart'];
     prevMin = testSlider['min'];
     prevMax = testSlider['max'];
     prevIsVertical = testSlider.getIsVertical();
     prevTooltipVisibility = testSlider['isTooltipsAlwaysVisible'];
-    prevMarkupVisibility = testSlider['withMarkup'];
+    prevMarkupVisibility = testSlider['isMarkupVisible'];
 
     mockClearSpies(spies);
     testSlider.update({ stepPart: null });
@@ -657,14 +662,6 @@ describe('Функции', () => {
     slider = new SliderView(mockView, { [getterProp]: false });
     expect(slider[getterName]()).toBeFalsy();
   }
-
-  test('Получение инвертированности стандартных диапазонов', () => {
-    testGetter('getIsInverted', 'isInverted');
-  });
-
-  test('Получение видимости разметки', () => {
-    testGetter('getWithMarkup', 'withMarkup');
-  });
 
   test('Получение видимости тултипов', () => {
     testGetter('getIsTooltipsAlwaysVisible', 'isTooltipsVisible');

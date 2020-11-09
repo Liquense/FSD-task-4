@@ -5,7 +5,7 @@ import { HandlerModelData, PositioningParams } from '../model/types';
 import { View } from './interfaces';
 import SliderView from './slider/SliderView';
 import {
-  HandlersViewData, SliderViewData, SliderViewUpdateParams,
+  HandlersViewData, SliderViewUpdateParams,
 } from './types';
 
 class PluginView implements Listenable, View {
@@ -22,15 +22,6 @@ class PluginView implements Listenable, View {
 
   public getBody(): HTMLElement {
     return this.element;
-  }
-
-  public getViewData(): SliderViewData {
-    return {
-      isVertical: this.slider.getIsVertical(),
-      isTooltipsVisible: this.slider.getIsTooltipsAlwaysVisible(),
-      isInverted: this.slider.getIsInverted(),
-      withMarkup: this.slider.getWithMarkup(),
-    };
   }
 
   public handleHandlerPositionChanged(
@@ -53,7 +44,7 @@ class PluginView implements Listenable, View {
     this.slider.update(parameters);
   }
 
-  public updateData(positioningData: PositioningParams): void {
+  public updatePositioning(positioningData: PositioningParams): void {
     this.slider.update(positioningData);
   }
 

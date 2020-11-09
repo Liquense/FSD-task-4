@@ -2,6 +2,7 @@ import { ResizeObserver } from 'resize-observer';
 
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../../constants';
 
+import { SliderVisualParams } from '../../model/types';
 import {
   clamp, hasOwnProperty,
   preventDefault,
@@ -11,11 +12,10 @@ import {
 import {
   HandlersViewData,
   HandlerViewParams,
-  SliderViewParams,
   SliderViewUpdateParams,
 } from '../types';
-import { Slider, View } from '../interfaces';
 
+import { Slider, View } from '../interfaces';
 import HandlerView from './handler/HandlerView';
 import RangeView from './range/RangeView';
 import MarkupView from './markup/MarkupView';
@@ -45,7 +45,7 @@ class SliderView implements Slider {
 
   private isTooltipsAlwaysVisible: boolean;
 
-  private withMarkup: boolean;
+  private isMarkupVisible: boolean;
 
   private markup: MarkupView;
 
@@ -59,7 +59,7 @@ class SliderView implements Slider {
 
   private resizeObserver: ResizeObserver;
 
-  constructor(private parentView: View, params?: SliderViewParams) {
+  constructor(private parentView: View, params?: SliderVisualParams) {
     this.initProperties(params);
     this.createElements();
     this.setMouseEvents();
@@ -102,14 +102,6 @@ class SliderView implements Slider {
 
   public getIsVertical(): boolean {
     return this.isVertical;
-  }
-
-  public getIsInverted(): boolean {
-    return this.isRangesInverted;
-  }
-
-  public getWithMarkup(): boolean {
-    return this.withMarkup;
   }
 
   public getOffsetDirection(): 'top' | 'left' {
@@ -277,7 +269,7 @@ class SliderView implements Slider {
 
   public update(
     {
-      min, max, stepPart, isVertical, isTooltipsVisible, withMarkup,
+      min, max, stepPart, isVertical, isTooltipsVisible, isMarkupVisible,
     }: SliderViewUpdateParams = {},
   ): void {
     if (Number.isFinite(stepPart)) {
@@ -289,7 +281,7 @@ class SliderView implements Slider {
     if (Number.isFinite(max)) {
       this.max = max;
     }
-    this.withMarkup = withMarkup ?? this.withMarkup;
+    this.isMarkupVisible = isMarkupVisible ?? this.isMarkupVisible;
     this.setTooltipsVisibility(isTooltipsVisible);
     this.setOrientation(isVertical);
 
@@ -297,15 +289,15 @@ class SliderView implements Slider {
   }
 
   private initProperties({
-    isVertical, isInverted, isTooltipsVisible, withMarkup,
-  }: SliderViewParams = {}): void {
+    isVertical, isInverted, isTooltipsVisible, isMarkupVisible,
+  }: SliderVisualParams = {}): void {
     this.isVertical = isVertical ?? isVertical;
     this.isRangesInverted = isInverted ?? this.isRangesInverted;
     if (isTooltipsVisible !== undefined) {
       this.setTooltipsVisibility(isTooltipsVisible);
     }
-    if (withMarkup !== undefined) {
-      this.withMarkup = withMarkup;
+    if (isMarkupVisible !== undefined) {
+      this.isMarkupVisible = isMarkupVisible;
     }
   }
 
@@ -509,7 +501,7 @@ class SliderView implements Slider {
   private updateMarkup(): void {
     this.clearMarkup();
 
-    if (!this.withMarkup) { return; }
+    if (!this.isMarkupVisible) { return; }
 
     requestAnimationFrame(() => {
       for (let i = 0; i <= 1; i = roundToDecimal(i + this.stepPart, 5)) {

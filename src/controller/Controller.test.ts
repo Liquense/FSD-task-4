@@ -6,6 +6,7 @@ import SliderModel from '../model/SliderModel';
 import View from '../view/PluginView';
 import { addListenerAfter } from '../utils/functions';
 import Controller from './Controller';
+import { SliderData } from '../model/types';
 
 jest.mock('../utils/functions');
 jest.mock('../view/pluginView');
@@ -55,7 +56,7 @@ describe('Инициализация контроллера', () => {
     testController = new Controller(rootElement);
 
     expect(testController['model'].getPositioningData).toBeCalled();
-    expect(testController['view'].updateData).toBeCalledWith(testData);
+    expect(testController['view'].updatePositioning).toBeCalledWith(testData);
   });
 
   describe('Передача данных о хэндлерах в вид', () => {
@@ -152,12 +153,25 @@ describe('Функции', () => {
   test('Назначение параметров слайдера', () => {
     const testParams = { step: 1, min: 2, isVertical: true };
     const testPositioningData = { stepPart: 0.125, min: 2, max: 10 };
+    const testSliderData: SliderData = {
+      max: 10,
+      step: 1,
+      min: 0,
+      isMarkupVisible: true,
+      isTooltipsVisible: false,
+      isVertical: false,
+      range: 10,
+    };
+
     testController['model'].getPositioningData = jest.fn(() => testPositioningData);
+    testController['model'].getSliderData = jest.fn(() => testSliderData);
 
     testController.update(testParams);
     expect(testController['model'].setSliderParams).toBeCalledWith(testParams);
+    expect(testController['view'].updatePositioning)
+      .toBeCalledWith(testController['model'].getPositioningData());
     expect(testController['view'].updateVisuals)
-      .toBeCalledWith({ ...testParams, ...testPositioningData });
+      .toBeCalledWith(testController['model'].getSliderData());
   });
 
   test('Передача изменения значения хэндлера в вид', () => {
@@ -195,16 +209,15 @@ describe('Функции', () => {
   });
 
   test('Получение данных о слайдере', () => {
-    const testModelData = { min: -1, max: 5, step: 3 };
-    testController['model'].getSliderData = jest.fn(() => testModelData);
-
-    const testViewData = {
-      isVertical: true, withMarkup: false, isTooltipsVisible: false, isInverted: false,
+    const testModelData = {
+      min: -1, max: 5, step: 3, range: 6,
     };
-    testController['view'].getViewData = jest.fn(() => testViewData);
+    const testVisualData = {
+      isVertical: true, isMarkupVisible: false, isTooltipsVisible: false, isInverted: false,
+    };
+    const testData = { ...testModelData, ...testVisualData };
 
-    const testData = { ...testModelData, ...testViewData };
-
-    expect(testController.getSliderData()).toStrictEqual(testData);
+    testController['model'].getSliderData = jest.fn(() => testData);
+    expect(testController.getSliderData()).toStrictEqual(testController['model'].getSliderData());
   });
 });

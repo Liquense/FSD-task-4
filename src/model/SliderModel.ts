@@ -4,7 +4,10 @@ import { standardize } from '../utils/functions';
 import { HandlerPluginParams, SliderPluginParams } from '../plugin/types';
 
 import {
-  HandlerModelData, HandlersModelData, PositioningParams, SliderModelData, SliderModelParams,
+  HandlerModelData,
+  HandlersModelData,
+  PositioningParams, SliderData,
+  SliderModelParams, SliderParams,
 } from './types';
 
 import { ModelItemManager, SliderDataContainer } from './interfaces';
@@ -16,6 +19,14 @@ class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
   private items: Array<Presentable>;
 
   private occupiedItems: { [key: number]: number } = {};
+
+  private isVertical: boolean;
+
+  private isMarkupVisible: boolean;
+
+  private isTooltipsVisible: boolean;
+
+  private isInverted: boolean;
 
   private min: number;
 
@@ -29,26 +40,45 @@ class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
 
   private isItemsCustom: boolean;
 
-  constructor({
-    isRange, min, max, step, items, values, handlers,
-  }: SliderPluginParams = {}) {
-    this.setMinMax(min, max);
+  constructor(
+    {
+      isRange, min, max, step, items, values, handlers,
+      isTooltipsVisible, isMarkupVisible, isVertical, isInverted,
+    }: SliderPluginParams = {},
+  ) {
+    this.setSliderParams({
+      min, max, step, isMarkupVisible, isTooltipsVisible, isVertical, isInverted,
+    });
     this.setItems(items);
-    this.setStep(step);
     this.initHandlers(isRange, values, handlers);
   }
 
-  public setSliderParams({ min, max, step }: SliderModelParams): void {
+  public setSliderParams(
+    {
+      min, max, step,
+      isVertical = this.isVertical,
+      isTooltipsVisible = this.isTooltipsVisible,
+      isMarkupVisible = this.isMarkupVisible,
+      isInverted = this.isInverted,
+    }: SliderParams,
+  ): void {
     this.setMinMax(min, max);
     this.setStep(step);
+    this.isVertical = isVertical;
+    this.isTooltipsVisible = isTooltipsVisible;
+    this.isMarkupVisible = isMarkupVisible;
+    this.isInverted = isInverted;
   }
 
-  public getSliderData(): SliderModelData {
+  public getSliderData(): SliderData {
     return {
       min: this.min,
       max: this.max,
       step: this.step,
       range: this.getRange(),
+      isTooltipsVisible: this.isTooltipsVisible,
+      isVertical: this.isVertical,
+      isMarkupVisible: this.isMarkupVisible,
     };
   }
 
@@ -274,7 +304,6 @@ class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
       newHandlers: HandlerModel[], handler: { itemIndex?: number },
     ): HandlerModel[] => {
       const itemIndex = standardize(handler.itemIndex, this.getStandardizeParams());
-
       const newHandler = this.createHandler(itemIndex, newHandlers.length);
       if (newHandler !== null) {
         newHandlers.push(newHandler);

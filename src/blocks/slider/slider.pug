@@ -1,4 +1,4 @@
-mixin slider({items, values, isRange, isVertical, isTooltipsVisible, withMarkup, min, max, step, handlers}={})
+mixin slider({items, values, isRange, isInverted, isVertical, isTooltipsVisible, withMarkup, min, max, step, handlers}={})
   div.js-slider.slider(
     data-items=items
     data-values=values
@@ -6,6 +6,7 @@ mixin slider({items, values, isRange, isVertical, isTooltipsVisible, withMarkup,
     data-is-vertical=isVertical === undefined ? false : isVertical.toString()
     data-is-tooltips-visible=isTooltipsVisible === undefined ? false : isTooltipsVisible.toString()
     data-with-markup=withMarkup === undefined ? false : withMarkup.toString()
+    data-is-inverted=isInverted === undefined ? false : isInverted.toString()
     data-min=min
     data-max=max
     data-step=step

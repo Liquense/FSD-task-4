@@ -13,7 +13,7 @@ const $testDiv = $(document.body.appendChild(document.createElement('div')));
 
 test('Инициализация слайдера', () => {
   const testParameters: SliderPluginParams = {
-    withMarkup: false, isRange: true, max: 50, min: -111,
+    isMarkupVisible: false, isRange: true, max: 50, min: -111,
   };
 
   $testDiv.liquidSlider();

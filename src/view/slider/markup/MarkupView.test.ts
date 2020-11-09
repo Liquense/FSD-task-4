@@ -9,7 +9,7 @@ import MarkupView from './MarkupView';
 document.body.innerHTML = '<div class="liquidSlider liquidSlider_horizontal"></div>';
 const testSliderContainer = document.querySelector('.liquidSlider') as HTMLElement;
 const testView = new View(testSliderContainer, {});
-let testSlider: SliderView & KeyStringObj = new SliderView(testView, { withMarkup: true });
+let testSlider: SliderView & KeyStringObj = new SliderView(testView, { isMarkupVisible: true });
 let testMarkup: MarkupView & KeyStringObj;
 
 describe('Инициализация экземпляра разметки', () => {
@@ -54,7 +54,7 @@ describe('Функционал разметки', () => {
 
   describe('Получение относительной ширины метки', () => {
     beforeAll(() => {
-      testSlider = new SliderView(testView, { withMarkup: true });
+      testSlider = new SliderView(testView, { isMarkupVisible: true });
 
       testMarkup = new MarkupView(testSlider);
       testMarkup['getMarkThickness'] = jest.fn(() => 1);
@@ -73,7 +73,7 @@ describe('Функционал разметки', () => {
 
   describe('Добавление метки', () => {
     beforeEach(() => {
-      testSlider = new SliderView(testView, { withMarkup: true });
+      testSlider = new SliderView(testView, { isMarkupVisible: true });
       testMarkup = new MarkupView(testSlider);
     });
 

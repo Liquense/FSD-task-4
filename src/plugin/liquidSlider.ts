@@ -2,8 +2,7 @@ import * as $ from 'jquery';
 import { DEFAULT_SLIDER_PARAMS } from '../constants';
 
 import Controller from '../controller/Controller';
-import { HandlersModelData, SliderModelData } from '../model/types';
-import { SliderViewData } from '../view/types';
+import { HandlersModelData, SliderData } from '../model/types';
 
 import { PluginUpdateParams, SliderPluginParams } from './types';
 
@@ -35,7 +34,7 @@ import { PluginUpdateParams, SliderPluginParams } from './types';
  */
 $.fn.liquidSlider = function liquidSlider(
   option: SliderPluginParams | string = {}, ...params: PluginUpdateParams[]
-): JQuery | (SliderModelData & SliderViewData) | HandlersModelData | void {
+): JQuery | SliderData | HandlersModelData | void {
   const result = this.get().map((element: HTMLElement) => {
     if (typeof option === 'object') {
       const dataOptions = $(element).data();

@@ -1,7 +1,10 @@
+import { DEFAULT_SLIDER_PARAMS } from '../../constants';
+
 import SliderModel from '../SliderModel';
+
 import HandlerModel from './HandlerModel';
 
-const testModel = new SliderModel();
+const testModel = new SliderModel(DEFAULT_SLIDER_PARAMS);
 let testHandlerModel: HandlerModel;
 
 beforeEach(() => {

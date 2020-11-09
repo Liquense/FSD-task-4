@@ -3,12 +3,10 @@ import SliderModel from '../model/SliderModel';
 import { addListenerAfter } from '../utils/functions';
 import { View } from '../view/interfaces';
 import { Listenable } from '../utils/interfaces';
-import { SliderViewData, SliderViewParams } from '../view/types';
 import {
   HandlerModelData,
-  HandlersModelData,
-  SliderModelData,
-  SliderModelParams,
+  HandlersModelData, SliderData,
+  SliderParams,
 } from '../model/types';
 import { SliderPluginParams } from '../plugin/types';
 import { Presentable } from '../utils/types';
@@ -24,12 +22,12 @@ class Controller {
     private element: HTMLElement,
     private parameters?: SliderPluginParams,
   ) {
-    this.view = new PluginView(element, parameters);
     this.model = new SliderModel(parameters);
+    this.view = new PluginView(element, this.model.getSliderData());
     this.originalHTML = element.innerHTML;
 
     this.addDefaultListeners();
-    this.passSliderData();
+    this.passPositioningData();
     this.passHandlersData(this.view, parameters?.handlers);
   }
 
@@ -53,15 +51,15 @@ class Controller {
     this.model.setHandlerItem(handlerIndex, item);
   }
 
-  public update(params: SliderModelParams & SliderViewParams): void {
+  public update(params: SliderParams): void {
     this.model.setSliderParams(params);
-    const modelData = this.model.getPositioningData();
 
-    this.view.updateVisuals({ ...params, ...modelData });
+    this.view.updateVisuals(this.model.getSliderData());
+    this.view.updatePositioning(this.model.getPositioningData());
   }
 
-  public getSliderData(): SliderModelData & SliderViewData {
-    return { ...this.view.getViewData(), ...this.model.getSliderData() };
+  public getSliderData(): SliderData {
+    return this.model.getSliderData();
   }
 
   public getHandlersData(initHandlersData?: object[]): HandlersModelData {
@@ -95,8 +93,8 @@ class Controller {
     this.view.removeHandler(handlerIndex);
   }
 
-  private passSliderData(): void {
-    this.view.updateData(this.model.getPositioningData());
+  private passPositioningData(): void {
+    this.view.updatePositioning(this.model.getPositioningData());
   }
 
   private passHandlerPositionChange = (

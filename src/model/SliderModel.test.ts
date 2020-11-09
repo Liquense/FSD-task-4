@@ -4,18 +4,16 @@ import { KeyStringObj } from '../utils/types';
 import SliderModel from './SliderModel';
 import HandlerModel from './handler/HandlerModel';
 import { HandlersModelData } from './types';
+import { DEFAULT_SLIDER_PARAMS } from '../constants';
 
 let testModel: SliderModel & KeyStringObj;
 
 describe('Инициализация', () => {
   describe('Конструктор', () => {
-    const defaultSliderParams = {
-      min: 0, max: 10, range: 10, step: 1,
-    };
-
-    test('Создание без передачи параметров', () => {
-      testModel = new SliderModel();
-      expect(testModel.getSliderData()).toStrictEqual(defaultSliderParams);
+    test('Создание без передачи нестандартных параметров', () => {
+      testModel = new SliderModel(DEFAULT_SLIDER_PARAMS);
+      expect(testModel.getSliderData())
+        .toStrictEqual({ ...DEFAULT_SLIDER_PARAMS, ...{ range: 10 } });
       expect(testModel.getHandlersData()).toStrictEqual(
         {
           isCustomHandlers: false,
@@ -27,9 +25,11 @@ describe('Инициализация', () => {
     });
 
     test('Создание с передачей items', () => {
-      testModel = new SliderModel({ isRange: true, max: 3, items: [2, 6, 12, 15] });
+      testModel = new SliderModel(
+        { ...DEFAULT_SLIDER_PARAMS, ...{ isRange: true, max: 3, items: [2, 6, 12, 15] } },
+      );
       expect(testModel.getSliderData())
-        .toStrictEqual({ ...defaultSliderParams, ...{ max: 3, range: 3 } });
+        .toStrictEqual({ ...DEFAULT_SLIDER_PARAMS, ...{ max: 3, range: 3 } });
       expect(testModel.getHandlersData()).toStrictEqual({
         isCustomHandlers: false,
         handlersArray: [
@@ -44,8 +44,12 @@ describe('Инициализация', () => {
     });
 
     test('С передачей своих значений хэндлеров', () => {
-      testModel = new SliderModel({ handlers: [{ itemIndex: 1 }, { itemIndex: 3 }] });
-      expect(testModel.getSliderData()).toStrictEqual(defaultSliderParams);
+      testModel = new SliderModel(
+        { ...DEFAULT_SLIDER_PARAMS, ...{ handlers: [{ itemIndex: 1 }, { itemIndex: 3 }] } },
+      );
+      expect(testModel.getSliderData()).toStrictEqual(
+        { ...DEFAULT_SLIDER_PARAMS, ...{ range: 10 } },
+      );
       expect(testModel.getHandlersData()).toStrictEqual({
         isCustomHandlers: true,
         handlersArray: [
@@ -62,7 +66,7 @@ describe('Инициализация', () => {
 
   describe('Установка полей', () => {
     beforeEach(() => {
-      testModel = new SliderModel();
+      testModel = new SliderModel(DEFAULT_SLIDER_PARAMS);
     });
 
     describe('Создание хэндлеров с пользовательскими значениями', () => {
@@ -152,11 +156,14 @@ describe('Инициализация', () => {
 
   describe('Обмен данными', () => {
     beforeEach(() => {
-      testModel = new SliderModel();
+      testModel = new SliderModel(DEFAULT_SLIDER_PARAMS);
     });
 
     describe('Получение из модели данных о хэндлерах', () => {
-      const testParameters = { handlers: [{ itemIndex: 1 }, { itemIndex: 3 }] };
+      const testParameters = {
+        ...DEFAULT_SLIDER_PARAMS,
+        ...{ handlers: [{ itemIndex: 1 }, { itemIndex: 3 }] },
+      };
       beforeEach(() => {
         testModel = new SliderModel(testParameters);
       });
@@ -178,7 +185,7 @@ describe('Инициализация', () => {
       });
 
       test('Стандартные хэндлеры', () => {
-        testModel = new SliderModel({ isRange: true });
+        testModel = new SliderModel({ ...DEFAULT_SLIDER_PARAMS, ...{ isRange: true } });
         expect(testModel.getHandlersData()).toStrictEqual({
           isCustomHandlers: false,
           handlersArray: [
@@ -196,7 +203,7 @@ describe('Инициализация', () => {
     });
 
     test('Получение из модели данных для слайдера', () => {
-      testModel = new SliderModel({ min: -44, max: 44, step: 10 });
+      testModel = new SliderModel({ ...DEFAULT_SLIDER_PARAMS, ...{ min: -44, max: 44, step: 10 } });
       expect(testModel.getPositioningData())
         .toStrictEqual({ stepPart: (10 / 88), min: -44, max: 44 });
     });
@@ -238,7 +245,7 @@ describe('Инициализация', () => {
 
 describe('Функции', () => {
   beforeEach(() => {
-    testModel = new SliderModel();
+    testModel = new SliderModel(DEFAULT_SLIDER_PARAMS);
   });
 
   test('Установка набора пользовательских значений', () => {

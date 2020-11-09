@@ -1,5 +1,4 @@
 import { SliderModelParams } from '../model/types';
-import { SliderViewParams } from '../view/types';
 import { Presentable } from '../utils/types';
 
 type HandlerPluginParams = { itemIndex: number; rangePair?: number | 'start' | 'end' }
@@ -14,10 +13,10 @@ type SliderPluginParams = {
   isVertical?: boolean;
   isInverted?: boolean;
   isTooltipsVisible?: boolean;
-  withMarkup?: boolean;
+  isMarkupVisible?: boolean;
   handlers?: HandlerPluginParams[];
 };
 
-type PluginUpdateParams = (SliderModelParams & SliderViewParams) | HandlerPluginParams | Function;
+type PluginUpdateParams = SliderModelParams | HandlerPluginParams | Function;
 
 export { PluginUpdateParams, SliderPluginParams, HandlerPluginParams };

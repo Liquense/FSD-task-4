@@ -31,7 +31,9 @@ describe('Функции', () => {
     if (viewFuncName in testView) { testView[viewFuncName](testData); }
 
     let passData;
-    if (passArray) { passData = [testData]; }
+    if (passArray) {
+      passData = [testData];
+    }
 
     if (passData !== undefined) {
       expect(mockSliderInstance[sliderFuncName]).toBeCalledWith(passData);
@@ -76,9 +78,9 @@ describe('Функции', () => {
   });
 
   test('Обновление данных слайдера', () => {
-    testFunctionCall('update', 'updateData', null);
-    testFunctionCall('update', 'updateData', {});
-    testFunctionCall('update', 'updateData', { something: 'test' });
+    testFunctionCall('update', 'updatePositioning', null);
+    testFunctionCall('update', 'updatePositioning', {});
+    testFunctionCall('update', 'updatePositioning', { something: 'test' });
 
     testFunctionCall('update', 'updateVisuals', null);
     testFunctionCall('update', 'updateVisuals', {});
@@ -92,19 +94,5 @@ describe('Функции', () => {
 
   test('Удаление хэндлера', () => {
     testFunctionCall('removeHandler', 'removeHandler');
-  });
-
-  test('Получение данных из вью', () => {
-    mockSliderInstance.getIsVertical.mockImplementationOnce(() => true);
-    mockSliderInstance.getIsTooltipsAlwaysVisible.mockImplementationOnce(() => false);
-    mockSliderInstance.getIsInverted.mockImplementationOnce(() => true);
-    mockSliderInstance.getWithMarkup.mockImplementationOnce(() => false);
-
-    expect(testView.getViewData()).toStrictEqual({
-      isVertical: true,
-      isTooltipsVisible: false,
-      isInverted: true,
-      withMarkup: false,
-    });
   });
 });
