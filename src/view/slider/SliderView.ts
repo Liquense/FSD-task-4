@@ -494,8 +494,9 @@ class SliderView implements Slider {
   }
 
   private clearMarkup(): void {
-    if (!this.markup) { return; }
-    this.markup.clearAllMarks();
+    if (this.markup) {
+      this.markup.clearAllMarks();
+    }
   }
 
   private updateMarkup(): void {
