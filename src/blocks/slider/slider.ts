@@ -3,7 +3,7 @@ import { SliderPluginParams } from '../../plugin/types';
 class Slider {
   public static readonly DEFAULT_CLASS = 'slider';
 
-  private body: HTMLElement;
+  private bodyElement: HTMLElement;
 
   private $slider: JQuery;
 
@@ -17,11 +17,11 @@ class Slider {
   }
 
   private initElements(element: HTMLElement): void {
-    this.body = element;
+    this.bodyElement = element;
   }
 
   private initSlider(params?: SliderPluginParams): void {
-    this.$slider = $(this.body).liquidSlider(params);
+    this.$slider = $(this.bodyElement).liquidSlider(params);
   }
 }
 
