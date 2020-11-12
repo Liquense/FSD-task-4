@@ -4,25 +4,26 @@ import { KeyStringObj } from '../utils/types';
 import SliderModel from '../model/SliderModel';
 
 import View from '../view/PluginView';
-import { addListenerAfter } from '../utils/functions';
 import Controller from './Controller';
 import { SliderData } from '../model/types';
+import { Observer } from '../utils/Observer/Observer';
 
 jest.mock('../utils/functions');
 jest.mock('../view/pluginView');
 jest.mock('../model/sliderModel');
+jest.mock('../utils/Observer/Observer');
 
 let testController: Controller & KeyStringObj;
 const rootElement = document.createElement('div');
 document.body.appendChild(rootElement);
 
-const mockAddListenerAfter = addListenerAfter as jest.Mock;
+const mockAddListener = Observer.addListener as jest.Mock;
 const mockModel = SliderModel as jest.Mock;
 const mockView = View as jest.Mock;
 
 describe('Инициализация контроллера', () => {
   beforeEach(() => {
-    mockAddListenerAfter.mockClear();
+    mockAddListener.mockClear();
     mockModel.mockClear();
     mockView.mockClear();
   });
@@ -37,15 +38,15 @@ describe('Инициализация контроллера', () => {
   test('Назначение слушателей на нужные функции', () => {
     testController = new Controller(rootElement);
 
-    expect(mockAddListenerAfter).toBeCalledWith(
+    expect(mockAddListener).toBeCalledWith(
       'handleHandlerValueChanged',
-      testController['passHandlerValueChange'],
       testController['model'],
+      testController['passHandlerValueChange'],
     );
-    expect(mockAddListenerAfter).toBeCalledWith(
+    expect(mockAddListener).toBeCalledWith(
       'handleHandlerPositionChanged',
-      testController['passHandlerPositionChange'],
       testController['view'],
+      testController['passHandlerPositionChange'],
     );
   });
 
@@ -118,7 +119,7 @@ describe('Функции', () => {
   });
 
   beforeEach(() => {
-    mockAddListenerAfter.mockClear();
+    mockAddListener.mockClear();
     mockModel.mockClear();
     mockView.mockClear();
   });
@@ -185,17 +186,17 @@ describe('Функции', () => {
   });
 
   test('Функции назначения слушателей', () => {
-    const testListener = (): void => { console.log('i\'m a mock function'); };
+    const testListener = (): string => 'i\'m a mock function';
 
-    mockAddListenerAfter.mockClear();
+    mockAddListener.mockClear();
     testController.addAfterHandlerValueChangedListener(testListener);
-    expect(mockAddListenerAfter)
-      .toBeCalledWith('handleHandlerValueChanged', testListener, testController['model']);
+    expect(mockAddListener)
+      .toBeCalledWith('handleHandlerValueChanged', testController['model'], testListener);
 
-    mockAddListenerAfter.mockClear();
+    mockAddListener.mockClear();
     testController.addAfterRemoveHandlerListener(testListener);
-    expect(mockAddListenerAfter)
-      .toBeCalledWith('removeHandler', testListener, testController['model']);
+    expect(mockAddListener)
+      .toBeCalledWith('removeHandler', testController['model'], testListener);
   });
 
   test('Функция перемещения хэндлера', () => {

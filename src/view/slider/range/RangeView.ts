@@ -1,13 +1,9 @@
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_OPTIONS } from '../../../constants';
 
-import {
-  addListenerAfter,
-  removeListener,
-} from '../../../utils/functions';
-
 import { Orientable, ScaleOwner } from '../../interfaces';
 
 import HandlerView from '../handler/HandlerView';
+import { Observer } from '../../../utils/Observer/Observer';
 
 class RangeView {
   private startHandler: HandlerView;
@@ -65,19 +61,17 @@ class RangeView {
   }
 
   public remove(): void {
-    removeListener(
-      'refreshPosition', this.refreshPosition, this.startHandler,
-    );
-    removeListener('refreshPosition', this.refreshPosition, this.endHandler);
+    Observer.removeListener('refreshPosition', this.startHandler, this.refreshPosition);
+    Observer.removeListener('refreshPosition', this.endHandler, this.refreshPosition);
     this.element.remove();
   }
 
   private addHandlersRefreshListener(): void {
     if (this.startHandler) {
-      addListenerAfter('refreshPosition', this.refreshPosition, this.startHandler);
+      Observer.addListener('refreshPosition', this.startHandler, this.refreshPosition);
     }
     if (this.endHandler) {
-      addListenerAfter('refreshPosition', this.refreshPosition, this.endHandler);
+      Observer.addListener('refreshPosition', this.endHandler, this.refreshPosition);
     }
   }
 

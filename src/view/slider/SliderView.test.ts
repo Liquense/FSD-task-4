@@ -10,18 +10,22 @@ import HandlerView from './handler/HandlerView';
 import RangeView from './range/RangeView';
 import { KeyStringObj } from '../../utils/types';
 import { HandlerViewParams } from '../types';
+import { Observer } from '../../utils/Observer/Observer';
 
 import Mock = jest.Mock;
 
 jest.mock('../pluginView');
 
+let testSlider: SliderView;
 const mockView = new PluginView(null, null);
 mockView.getBody = jest.fn(
   () => document.body.appendChild(document.createElement('div')),
 );
+mockView['initDefaultListeners'] = jest.fn(
+  () => Observer.addListener('handleMouseMove', testSlider, mockView.handleHandlerPositionChanged),
+);
 
-mockView.handleHandlerPositionChanged = jest.fn(() => undefined);
-let testSlider: SliderView;
+mockView.handleHandlerPositionChanged = jest.fn(() => null);
 
 function resetHTML(): void {
   document.body.innerHTML = '';
@@ -274,7 +278,7 @@ describe('Инициализация', () => {
             if ((testSlider.calculateMouseRelativePos(testMouseDownEvent) !== 0.4)
                 && (testSlider.calculateMouseRelativePos(testMouseDownEvent) !== 0.9)) {
               expect(mockView.handleHandlerPositionChanged).toBeCalledWith(
-                testSlider['activeHandler'].getIndex(), i / 100,
+                { handlerIndex: testSlider['activeHandler'].getIndex(), position: i / 100 },
               );
             }
 
@@ -293,6 +297,7 @@ describe('Инициализация', () => {
       });
 
       test('По слайдеру', () => {
+        mockView['initDefaultListeners']();
         testSlider.update({ isVertical: false, stepPart: 0.01 });
         testClicks();
 

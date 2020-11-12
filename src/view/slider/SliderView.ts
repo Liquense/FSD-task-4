@@ -10,6 +10,7 @@ import {
   standardize,
 } from '../../utils/functions';
 import {
+  HandlerPositionData,
   HandlersViewData,
   HandlerViewParams,
   SliderViewUpdateParams,
@@ -19,9 +20,11 @@ import { Slider, View } from '../interfaces';
 import HandlerView from './handler/HandlerView';
 import RangeView from './range/RangeView';
 import MarkupView from './markup/MarkupView';
+import { KeyStringObj } from '../../utils/types';
+import { Observable, Observer } from '../../utils/Observer/Observer';
 
-class SliderView implements Slider {
-  public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
+class SliderView implements Slider, Observable, KeyStringObj {
+  public observers: { [key: string]: Observer } = {};
 
   private isRangesInverted = false;
 
@@ -397,9 +400,10 @@ class SliderView implements Slider {
     window.addEventListener('mouseout', this.handleWindowMouseOut);
   }
 
-  private handleMouseMove = (event: MouseEvent): void => {
+  private handleMouseMove = (event: MouseEvent): HandlerPositionData => {
+    let result: HandlerPositionData = { handlerIndex: null, position: null };
     const closestHandler = this.getClosestToMouseHandler(event.clientX, event.clientY);
-    if (closestHandler !== this.activeHandler) { return; }
+    if (closestHandler !== this.activeHandler) { return result; }
 
     this.activateHandler(closestHandler);
 
@@ -423,10 +427,14 @@ class SliderView implements Slider {
     }
 
     if (standardMousePosition === roundToDecimal(closestHandler.getPositionPart(), 4)) {
-      return;
+      return result;
     }
 
-    this.parentView.handleHandlerPositionChanged(closestHandler.getIndex(), standardMousePosition);
+    result = { handlerIndex: closestHandler.getIndex(), position: standardMousePosition };
+    if (this.observers.handleMouseMove) {
+      this.observers.handleMouseMove.callListeners(result);
+    }
+    return result;
   }
 
   private deactivateActiveHandler(): void {

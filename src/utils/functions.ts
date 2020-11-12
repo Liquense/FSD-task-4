@@ -1,5 +1,4 @@
-import { Listenable } from './interfaces';
-import { KeyStringObj, Newable } from './types';
+import { Newable } from './types';
 import { SliderModelParams } from '../model/types';
 
 function parseClassesString(classesString: string): string[] {
@@ -8,60 +7,6 @@ function parseClassesString(classesString: string): string[] {
   }
 
   return classesString.split(' ').filter((value) => value.length > 0);
-}
-
-function bindListeners(
-  executor: string, listeners: Function[], executorContext: Listenable & KeyStringObj,
-): void {
-  const context = executorContext;
-  const pureFunc = context.listenDictionary[executor].func;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  context[executor] = (...args: any): void => {
-    const functionResult = pureFunc.call(context, ...args);
-
-    listeners.forEach((listener) => {
-      listener(functionResult);
-    });
-  };
-}
-
-function addListenerAfter(
-  executorName: string, listener: Function, executorContext: Listenable & KeyStringObj,
-): void {
-  if (!executorContext) return;
-
-  const context = executorContext;
-  if (!context.listenDictionary) {
-    context.listenDictionary = {};
-  }
-  if (!executorContext.listenDictionary[executorName]) {
-    context.listenDictionary[executorName] = {
-      func: executorContext[executorName],
-      listeners: [],
-    };
-  }
-
-  const { listeners } = executorContext.listenDictionary[executorName];
-  listeners.push(listener);
-
-  bindListeners(executorName, listeners, executorContext);
-}
-
-function removeListener(
-  executor: string, listener: Function, executorContext: Listenable,
-): void {
-  if (!executorContext?.listenDictionary?.[executor]) {
-    return;
-  }
-
-  const { listeners } = executorContext.listenDictionary[executor];
-  const listenerIndex = listeners.findIndex((value: Function) => listener === value);
-  if (listenerIndex === -1) {
-    return;
-  }
-
-  listeners.splice(listenerIndex, 1);
 }
 
 function clamp(num: number, min: number, max: number): number {
@@ -140,6 +85,6 @@ function hasOwnProperty<T>(object: T, key: PropertyKey): key is keyof T {
 }
 
 export {
-  parseClassesString, addListenerAfter, removeListener, standardize, calculateElementCenter, clamp,
+  parseClassesString, standardize, calculateElementCenter, clamp,
   roundToDecimal, preventDefault, initBlocks, hasOwnProperty,
 };

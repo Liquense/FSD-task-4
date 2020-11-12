@@ -4,7 +4,9 @@ import View from './PluginView';
 
 import SliderView from './slider/SliderView';
 
+jest.mock('../utils/Observer/Observer');
 jest.mock('./slider/SliderView');
+
 const wrapperElement = document.createElement('div');
 document.body.appendChild(wrapperElement);
 
@@ -73,8 +75,8 @@ describe('Функции', () => {
   });
 
   test('Передача данных об изменении позиции хэндлера в виде объекта', () => {
-    const result = testView.handleHandlerPositionChanged(0, 0.5);
-    expect(result).toStrictEqual({ handlerIndex: 0, positionPart: 0.5, view: testView });
+    const result = testView.handleHandlerPositionChanged({ handlerIndex: 0, position: 0.5 });
+    expect(result).toStrictEqual({ handlerIndex: 0, positionPart: 0.5 });
   });
 
   test('Обновление данных слайдера', () => {

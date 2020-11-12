@@ -1,4 +1,3 @@
-import { Listenable } from '../utils/interfaces';
 import { Presentable } from '../utils/types';
 import { standardize } from '../utils/functions';
 import { HandlerPluginParams, SliderPluginParams } from '../plugin/types';
@@ -12,9 +11,10 @@ import {
 
 import { ModelItemManager, SliderDataContainer } from './interfaces';
 import HandlerModel from './handler/HandlerModel';
+import { Observable, Observer } from '../utils/Observer/Observer';
 
-class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
-  public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
+class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
+  public observers: { [key: string]: Observer } = {};
 
   private items: Array<Presentable>;
 
@@ -131,6 +131,10 @@ class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
 
     this.releaseItem(this.handlers[handlerToRemoveIndex].getItemIndex());
     this.handlers.splice(handlerToRemoveIndex, 1);
+
+    if (this.observers.removeHandler) {
+      this.observers.removeHandler.callListeners(handlerIndex);
+    }
     return handlerIndex;
   }
 
@@ -162,12 +166,17 @@ class SliderModel implements Listenable, SliderDataContainer, ModelItemManager {
 
     if (changedHandlerIndex === -1) { return null; }
 
-    return {
+    const result = {
       handlerIndex: changedHandler.handlerIndex,
       positionPart: changedHandler.getPosition(),
       item: changedHandler.getItem(),
       itemIndex: changedHandler.getItemIndex(),
     };
+
+    if (this.observers.handleHandlerValueChanged) {
+      this.observers.handleHandlerValueChanged.callListeners(result);
+    }
+    return result;
   }
 
   public handleHandlerPositionChanged(data: { handlerIndex: number; positionPart: number }): void {

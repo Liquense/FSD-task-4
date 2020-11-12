@@ -1,8 +1,6 @@
 import PluginView from '../view/PluginView';
 import SliderModel from '../model/SliderModel';
-import { addListenerAfter } from '../utils/functions';
 import { View } from '../view/interfaces';
-import { Listenable } from '../utils/interfaces';
 import {
   HandlerModelData,
   HandlersModelData, SliderData,
@@ -10,11 +8,12 @@ import {
 } from '../model/types';
 import { SliderPluginParams } from '../plugin/types';
 import { Presentable } from '../utils/types';
+import { Observable, Observer } from '../utils/Observer/Observer';
 
 class Controller {
   public readonly originalHTML: string;
 
-  private readonly view: View & Listenable;
+  private readonly view: View & Observable;
 
   private readonly model: SliderModel;
 
@@ -32,11 +31,11 @@ class Controller {
   }
 
   public addAfterHandlerValueChangedListener(listener: Function): void {
-    addListenerAfter('handleHandlerValueChanged', listener, this.model);
+    Observer.addListener('handleHandlerValueChanged', this.model, listener);
   }
 
   public addAfterRemoveHandlerListener(listener: Function): void {
-    addListenerAfter('removeHandler', listener, this.model);
+    Observer.addListener('removeHandler', this.model, listener);
   }
 
   public removeHandler(handlerIndex: number): void {
@@ -84,9 +83,9 @@ class Controller {
   }
 
   private addDefaultListeners(): void {
-    addListenerAfter('handleHandlerValueChanged', this.passHandlerValueChange, this.model);
-    addListenerAfter('removeHandler', this.removeHandlerInView, this.model);
-    addListenerAfter('handleHandlerPositionChanged', this.passHandlerPositionChange, this.view);
+    Observer.addListener('handleHandlerValueChanged', this.model, this.passHandlerValueChange);
+    Observer.addListener('removeHandler', this.model, this.removeHandlerInView);
+    Observer.addListener('handleHandlerPositionChanged', this.view, this.passHandlerPositionChange);
   }
 
   private removeHandlerInView = (handlerIndex: number): void => {

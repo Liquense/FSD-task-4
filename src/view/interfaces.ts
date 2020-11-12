@@ -1,4 +1,5 @@
 import { HandlerModelData, PositioningParams, SliderModelParams } from '../model/types';
+import { HandlerPositionData } from './types';
 
 interface View {
   getBody(): HTMLElement;
@@ -7,10 +8,9 @@ interface View {
 
   updatePositioning(positioningData: PositioningParams): void;
 
-  handleHandlerPositionChanged(
-    handlerIndex: number,
-    standardizedPosition: number,
-  ): { view: View; handlerIndex: number; positionPart: number };
+  handleHandlerPositionChanged({ handlerIndex, position }: HandlerPositionData): {
+    handlerIndex: number; positionPart: number;
+  };
 
   handlerValueChangedListener(data: HandlerModelData): void;
 

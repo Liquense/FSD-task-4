@@ -1,5 +1,4 @@
 import { DEFAULT_SLIDER_CLASS } from '../../../constants';
-import { Listenable } from '../../../utils/interfaces';
 import { Presentable } from '../../../utils/types';
 
 import { calculateElementCenter } from '../../../utils/functions';
@@ -8,9 +7,10 @@ import { Slider, SliderElement } from '../../interfaces';
 import { HandlerViewParams } from '../../types';
 
 import TooltipView from './tooltip/TooltipView';
+import { Observable, Observer } from '../../../utils/Observer/Observer';
 
-class HandlerView implements Listenable, SliderElement {
-  public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
+class HandlerView implements Observable, SliderElement {
+  public observers: { [key: string]: Observer } = {};
 
   private readonly tooltip: TooltipView;
 
@@ -104,6 +104,10 @@ class HandlerView implements Listenable, SliderElement {
 
     this.element.wrap.style[offsetDirection] = `${offset}px`;
     this.tooltip.updateHTML();
+
+    if (this.observers.refreshPosition) {
+      this.observers.refreshPosition.callListeners();
+    }
   }
 
   public setPosition(newPositionPart: number): void {

@@ -157,6 +157,10 @@ describe('Инициализация', () => {
     testSlider.getExpandDimension = jest.fn(() => 'width');
     firstHandler.getPositionCoordinate = jest.fn(() => 1);
     secondHandler.getPositionCoordinate = jest.fn(() => 10);
+    firstHandler.refreshPosition = jest.fn(() => {
+      firstHandler.observers.refreshPosition.callListeners();
+    });
+
     firstHandler.refreshPosition();
     expect(testRange['element'].style.left).toBe('1px');
     expect(testRange['element'].style.width).toBe('9px');

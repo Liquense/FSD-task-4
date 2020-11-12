@@ -1,34 +1,44 @@
-import { Listenable } from '../utils/interfaces';
-
 import { HandlerModelData, PositioningParams } from '../model/types';
 
 import { View } from './interfaces';
 import SliderView from './slider/SliderView';
 import {
+  HandlerPositionData,
   HandlersViewData, SliderViewUpdateParams,
 } from './types';
+import { Observable, Observer } from '../utils/Observer/Observer';
 
-class PluginView implements Listenable, View {
-  listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
+class PluginView implements Observable, View {
+  observers: { [key: string]: Observer } = {};
 
   private readonly element: HTMLElement;
 
-  private slider: SliderView;
+  private readonly slider: SliderView;
 
   constructor(element: HTMLElement, parameters?: object) {
     this.element = element;
     this.slider = new SliderView(this, parameters);
+    this.initDefaultListeners();
   }
 
   public getBody(): HTMLElement {
     return this.element;
   }
 
-  public handleHandlerPositionChanged(
-    handlerIndex: number,
-    standardizedPosition: number,
-  ): { view: View; handlerIndex: number; positionPart: number } {
-    return { view: this, handlerIndex, positionPart: standardizedPosition };
+  private initDefaultListeners(): void {
+    Observer.addListener('handleMouseMove', this.slider, this.handleHandlerPositionChanged);
+  }
+
+  public handleHandlerPositionChanged = ({ handlerIndex, position }: HandlerPositionData): {
+    handlerIndex: number; positionPart: number;
+  } => {
+    if (handlerIndex === null || position === null) { return null; }
+
+    const result = { handlerIndex, positionPart: position };
+    if (this.observers.handleHandlerPositionChanged) {
+      this.observers.handleHandlerPositionChanged.callListeners(result);
+    }
+    return result;
   }
 
   public handlerValueChangedListener(data: HandlerModelData): void {

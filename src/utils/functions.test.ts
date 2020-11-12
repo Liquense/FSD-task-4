@@ -1,14 +1,10 @@
 /* eslint-disable class-methods-use-this,@typescript-eslint/no-empty-function */
 import {
-  addListenerAfter,
   calculateElementCenter,
   clamp,
   parseClassesString,
-  removeListener,
   standardize,
 } from './functions';
-import { Listenable } from './interfaces';
-import { KeyStringObj } from './types';
 
 describe('Парсинг строки классов', () => {
   test('Передача пустого параметра', () => {
@@ -34,122 +30,6 @@ describe('Парсинг строки классов', () => {
   test('передача трёх нормальных классов', () => {
     const testClassString = 'test1 test-2 test_3';
     expect(parseClassesString(testClassString)).toStrictEqual(['test1', 'test-2', 'test_3']);
-  });
-});
-
-describe('Слушатель', () => {
-  class TestContext implements Listenable {
-        public listenDictionary: { [key: string]: { func: Function; listeners: Function[] } };
-
-        testExecutor(): void { }
-  }
-
-  let spyTestExecutor: jest.SpyInstance;
-  let testListener: jest.Mock;
-  let secondTestListener: jest.Mock;
-  let testContext: TestContext & KeyStringObj;
-
-  let spyExecutorCalls = 0;
-  let testListenerCalls = 0;
-  let secondTestListenerCalls = 0;
-
-  function testCalls(): void {
-    expect(spyTestExecutor).toBeCalledTimes(spyExecutorCalls);
-    expect(testListener).toBeCalledTimes(testListenerCalls);
-    expect(secondTestListener).toBeCalledTimes(secondTestListenerCalls);
-  }
-
-  beforeAll(() => {
-    testContext = new TestContext();
-    spyTestExecutor = jest.spyOn(testContext, 'testExecutor');
-    testListener = jest.fn();
-    secondTestListener = jest.fn();
-  });
-
-  beforeEach(() => {
-    spyTestExecutor.mockClear();
-    testListener.mockClear();
-    secondTestListener.mockClear();
-    spyExecutorCalls = 0;
-    testListenerCalls = 0;
-    secondTestListenerCalls = 0;
-  });
-
-  describe('Добавление слушателя к функции', () => {
-    test('изначально вызывается только функция', () => {
-      testContext.testExecutor();
-      spyExecutorCalls += 1;
-      expect(spyTestExecutor).toBeCalledTimes(spyExecutorCalls);
-      expect(testListener).not.toBeCalled();
-      expect(secondTestListener).not.toBeCalled();
-    });
-
-    test('добавление без передачи контекста (ничего не должно добавиться)', () => {
-      addListenerAfter('testExecutor', testListener, null);
-      testContext.testExecutor();
-      spyExecutorCalls += 1;
-      expect(spyTestExecutor).toBeCalledTimes(spyExecutorCalls);
-      expect(testListener).not.toBeCalled();
-      expect(secondTestListener).not.toBeCalled();
-    });
-
-    test('добавление первого слушателя', () => {
-      addListenerAfter('testExecutor', testListener, testContext);
-      testContext.testExecutor();
-      spyExecutorCalls += 1;
-      expect(spyTestExecutor).toBeCalledTimes(spyExecutorCalls);
-      testListenerCalls += 1;
-      expect(testListener).toBeCalledTimes(testListenerCalls);
-      expect(secondTestListener).not.toBeCalled();
-    });
-
-    test('добавление второго слушателя', () => {
-      addListenerAfter('testExecutor', secondTestListener, testContext);
-      testContext.testExecutor();
-      spyExecutorCalls += 1;
-      testListenerCalls += 1;
-      secondTestListenerCalls += 1;
-      expect(spyTestExecutor).toBeCalledTimes(spyExecutorCalls);
-      expect(testListener).toBeCalledTimes(testListenerCalls);
-      expect(secondTestListener).toBeCalledTimes(secondTestListenerCalls);
-    });
-  });
-
-  describe('Удаление слушателя к функции', () => {
-    test('без передачи контекста (не должно ничего удалиться)', () => {
-      removeListener('testExecutor', testListener, null);
-      testContext.testExecutor();
-      spyExecutorCalls += 1;
-      testListenerCalls += 1;
-      secondTestListenerCalls += 1;
-      testCalls();
-    });
-
-    test('передана функция, которой нет в списке (не должно ничего удалиться)', () => {
-      removeListener('testExecutor', (): void => undefined, testContext);
-      testContext.testExecutor();
-      spyExecutorCalls += 1;
-      testListenerCalls += 1;
-      secondTestListenerCalls += 1;
-      testCalls();
-    });
-
-    test('удаление первого слушателя', () => {
-      removeListener('testExecutor', testListener, testContext);
-      testContext.testExecutor();
-      spyExecutorCalls += 1;
-      secondTestListenerCalls += 1;
-      testCalls();
-    });
-
-    test('удаление второго', () => {
-      removeListener('testExecutor', secondTestListener, testContext);
-      testContext.testExecutor();
-      spyExecutorCalls += 1;
-      expect(spyTestExecutor).toBeCalledTimes(spyExecutorCalls);
-      expect(testListener).toBeCalledTimes(testListenerCalls);
-      expect(secondTestListener).toBeCalledTimes(secondTestListenerCalls);
-    });
   });
 });
 

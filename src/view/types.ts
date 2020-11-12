@@ -8,6 +8,8 @@ type HandlerViewParams = HandlerData & { isTooltipVisible?: boolean; rangePair?:
 
 type HandlersViewData = { isCustomHandlers: boolean; handlersArray: HandlerViewParams[] };
 
+type HandlerPositionData = { handlerIndex: number; position: number };
+
 export {
-  SliderViewUpdateParams, HandlerViewParams, HandlersViewData,
+  SliderViewUpdateParams, HandlerViewParams, HandlersViewData, HandlerPositionData,
 };
