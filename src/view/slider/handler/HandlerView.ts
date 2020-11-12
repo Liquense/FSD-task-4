@@ -41,7 +41,7 @@ class HandlerView implements Listenable, SliderElement {
     );
     this.setItem(params.item);
 
-    requestAnimationFrame(this.refreshPosition.bind(this));
+    requestAnimationFrame(this.refreshPosition);
   }
 
   public getOwnerSlider(): Slider {
@@ -95,7 +95,7 @@ class HandlerView implements Listenable, SliderElement {
     return this.tooltip.getElement();
   }
 
-  public refreshPosition(): void {
+  public refreshPosition = (): void => {
     const offset = this.calculateOffset();
     const offsetDirection = this.ownerSlider.getOffsetDirection();
 

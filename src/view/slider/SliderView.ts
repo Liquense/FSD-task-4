@@ -342,20 +342,20 @@ class SliderView implements Slider {
   private setMouseEvents(): void {
     document.body.addEventListener(
       'mousedown',
-      this.handleDocumentMouseDown.bind(this),
+      this.handleDocumentMouseDown,
     );
     this.elements.body.addEventListener(
       'mousedown',
-      this.handleMouseDown.bind(this),
+      this.handleMouseDown,
     );
     document.body.addEventListener(
       'mouseup',
-      this.handleMouseUp.bind(this),
+      this.handleMouseUp,
     );
   }
 
   private setResizeObserver(): void {
-    this.resizeObserver = new ResizeObserver(this.refreshElements.bind(this));
+    this.resizeObserver = new ResizeObserver(this.refreshElements);
     this.resizeObserver.observe(this.elements.body);
   }
 
@@ -369,7 +369,7 @@ class SliderView implements Slider {
     }
   }
 
-  private handleDocumentMouseDown(event: MouseEvent): void {
+  private handleDocumentMouseDown = (event: MouseEvent): void => {
     if (!(event.target instanceof HTMLElement)) return;
 
     const { target } = event;
@@ -378,12 +378,12 @@ class SliderView implements Slider {
     }
   }
 
-  private handleMouseUp(): void {
+  private handleMouseUp = (): void => {
     document.body.removeEventListener('mousemove', this.handleMouseMove);
     document.body.removeEventListener('mouseout', this.handleWindowMouseOut);
   }
 
-  private handleMouseDown(event: MouseEvent): void {
+  private handleMouseDown = (event: MouseEvent): void => {
     const closestHandler = this.getClosestToMouseHandler(event.clientX, event.clientY);
 
     if (!closestHandler) { return; }
@@ -399,10 +399,7 @@ class SliderView implements Slider {
 
   private handleMouseMove = (event: MouseEvent): void => {
     const closestHandler = this.getClosestToMouseHandler(event.clientX, event.clientY);
-
-    if (closestHandler !== this.activeHandler) {
-      return;
-    }
+    if (closestHandler !== this.activeHandler) { return; }
 
     this.activateHandler(closestHandler);
 
@@ -519,7 +516,7 @@ class SliderView implements Slider {
     this.handlers = [];
   }
 
-  private refreshElements(): void {
+  private refreshElements = (): void => {
     this.updateMarkup();
 
     this.handlers.forEach((handler) => {
