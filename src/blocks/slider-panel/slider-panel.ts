@@ -53,7 +53,7 @@ class SliderPanel {
 
     const viewData = this.slider.callPluginFunction('getSliderData');
     this.updateVisuals(viewData);
-    this.updateSliderData(this.slider.callPluginFunction('getSliderData'));
+    this.updateSliderData(viewData);
   }
 
   private addHandler({ handlerIndex, positionPart, item }: HandlerModelData): void {
