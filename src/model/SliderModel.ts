@@ -12,6 +12,7 @@ import {
 import { ModelItemManager, SliderDataContainer } from './interfaces';
 import HandlerModel from './handler/HandlerModel';
 import { Observable, Observer } from '../utils/Observer/Observer';
+import { HandlerPositionData } from '../view/types';
 
 class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
   public observers: { [key: string]: Observer } = {};
@@ -179,8 +180,8 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
     return result;
   }
 
-  public handleHandlerPositionChanged(data: { handlerIndex: number; positionPart: number }): void {
-    const newStandardPosition = this.getItemIndexFromPosition(data.positionPart);
+  public handleHandlerPositionChanged(data: HandlerPositionData): void {
+    const newStandardPosition = this.getItemIndexFromPosition(data.position);
 
     const movingHandlerIndex = this.handlers.findIndex(
       (handler) => handler.handlerIndex === data.handlerIndex,

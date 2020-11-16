@@ -1,6 +1,4 @@
-import PluginView from '../view/PluginView';
 import SliderModel from '../model/SliderModel';
-import { View } from '../view/interfaces';
 import {
   HandlerModelData,
   HandlersModelData, SliderData,
@@ -9,11 +7,13 @@ import {
 import { SliderPluginParams } from '../plugin/types';
 import { Presentable } from '../utils/types';
 import { Observable, Observer } from '../utils/Observer/Observer';
+import SliderView from '../view/slider/SliderView';
+import { HandlerPositionData } from '../view/types';
 
 class Controller {
   public readonly originalHTML: string;
 
-  private readonly view: View & Observable;
+  private readonly view: SliderView & Observable;
 
   private readonly model: SliderModel;
 
@@ -22,7 +22,9 @@ class Controller {
     private parameters?: SliderPluginParams,
   ) {
     this.model = new SliderModel(parameters);
-    this.view = new PluginView(element, this.model.getSliderData());
+    this.view = new SliderView(
+      element, { ...this.model.getPositioningData(), ...this.model.getSliderData() },
+    );
     this.originalHTML = element.innerHTML;
 
     this.addDefaultListeners();
@@ -42,8 +44,8 @@ class Controller {
     this.model.removeHandler(handlerIndex);
   }
 
-  public moveHandler(handlerIndex: number, positionPart: number): void {
-    this.passHandlerPositionChange({ handlerIndex, positionPart });
+  public moveHandler(handlerIndex: number, position: number): void {
+    this.passHandlerPositionChange({ handlerIndex, position });
   }
 
   public setHandlerItem(handlerIndex: number, item: Presentable): void {
@@ -53,8 +55,7 @@ class Controller {
   public update(params: SliderParams): void {
     this.model.setSliderParams(params);
 
-    this.view.updateVisuals(this.model.getSliderData());
-    this.view.updatePositioning(this.model.getPositioningData());
+    this.view.update({ ...this.model.getSliderData(), ...this.model.getPositioningData() });
   }
 
   public getSliderData(): SliderData {
@@ -85,7 +86,7 @@ class Controller {
   private addDefaultListeners(): void {
     Observer.addListener('handleHandlerValueChanged', this.model, this.passHandlerValueChange);
     Observer.addListener('removeHandler', this.model, this.removeHandlerInView);
-    Observer.addListener('handleHandlerPositionChanged', this.view, this.passHandlerPositionChange);
+    Observer.addListener('handleMouseMove', this.view, this.passHandlerPositionChange);
   }
 
   private removeHandlerInView = (handlerIndex: number): void => {
@@ -93,20 +94,20 @@ class Controller {
   }
 
   private passPositioningData(): void {
-    this.view.updatePositioning(this.model.getPositioningData());
+    this.view.update(this.model.getPositioningData());
   }
 
   private passHandlerPositionChange = (
-    data: { handlerIndex: number; positionPart: number },
+    data: HandlerPositionData,
   ): void => {
     this.model.handleHandlerPositionChanged(data);
   }
 
   private passHandlerValueChange = (data: HandlerModelData): void => {
-    this.view.handlerValueChangedListener(data);
+    this.view.setHandlersData([data]);
   }
 
-  private passHandlersData(targetView: View, initHandlersData?: object[]): void {
+  private passHandlersData(targetView: SliderView, initHandlersData?: object[]): void {
     const handlersData = this.getHandlersData(initHandlersData);
 
     targetView.initHandlers(handlersData);

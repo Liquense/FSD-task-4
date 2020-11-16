@@ -2,7 +2,10 @@ import { ResizeObserver } from 'resize-observer';
 
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../../constants';
 
-import { SliderVisualParams } from '../../model/types';
+import {
+  HandlerModelData,
+  PositioningParams, SliderData,
+} from '../../model/types';
 import {
   clamp, hasOwnProperty,
   preventDefault,
@@ -16,14 +19,13 @@ import {
   SliderViewUpdateParams,
 } from '../types';
 
-import { Slider, View } from '../interfaces';
+import { Slider } from '../interfaces';
 import HandlerView from './handler/HandlerView';
 import RangeView from './range/RangeView';
 import MarkupView from './markup/MarkupView';
-import { KeyStringObj } from '../../utils/types';
 import { Observable, Observer } from '../../utils/Observer/Observer';
 
-class SliderView implements Slider, Observable, KeyStringObj {
+class SliderView implements Slider, Observable {
   public observers: { [key: string]: Observer } = {};
 
   private isRangesInverted = false;
@@ -62,7 +64,7 @@ class SliderView implements Slider, Observable, KeyStringObj {
 
   private resizeObserver: ResizeObserver;
 
-  constructor(private parentView: View, params?: SliderVisualParams) {
+  constructor(private bodyElement: HTMLElement, params?: SliderData & PositioningParams) {
     this.initProperties(params);
     this.createElements();
     this.setMouseEvents();
@@ -254,16 +256,14 @@ class SliderView implements Slider, Observable, KeyStringObj {
     return this.handlerSize / this.getWorkZoneLength();
   }
 
-  public setHandlersData(handlers: HandlerViewParams[]): void {
+  public setHandlersData(handlers: HandlerModelData[]): void {
     if (handlers.some((handler) => handler === null)) return;
 
     handlers.forEach(({ handlerIndex, item, positionPart }) => {
       const realIndex = this.handlers.findIndex(
         (handler) => handler.getIndex() === handlerIndex,
       );
-      if (realIndex === -1) {
-        return;
-      }
+      if (realIndex === -1) { return; }
 
       this.handlers[realIndex].setItem(item);
       this.handlers[realIndex].setPosition(positionPart);
