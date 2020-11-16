@@ -1,7 +1,7 @@
-import { DEFAULT_SLIDER_CLASS } from '../../../../constants';
-import { Presentable } from '../../../../utils/types';
+import { DEFAULT_SLIDER_CLASS } from '../../../constants';
+import { Presentable } from '../../../utils/types';
 
-import { SliderElement } from '../../../interfaces';
+import { SliderElement } from '../../interfaces';
 
 type TooltipViewParams = {
   bodyHTML?: string;

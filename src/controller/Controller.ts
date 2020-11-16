@@ -7,7 +7,7 @@ import {
 import { SliderPluginParams } from '../plugin/types';
 import { Presentable } from '../utils/types';
 import { Observable, Observer } from '../utils/Observer/Observer';
-import SliderView from '../view/slider/SliderView';
+import SliderView from '../view/SliderView';
 import { HandlerPositionData } from '../view/types';
 
 class Controller {

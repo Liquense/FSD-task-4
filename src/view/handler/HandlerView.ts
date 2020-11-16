@@ -1,13 +1,13 @@
-import { DEFAULT_SLIDER_CLASS } from '../../../constants';
-import { Presentable } from '../../../utils/types';
+import { DEFAULT_SLIDER_CLASS } from '../../constants';
+import { Presentable } from '../../utils/types';
 
-import { calculateElementCenter } from '../../../utils/functions';
+import { calculateElementCenter } from '../../utils/functions';
 
-import { Slider, SliderElement } from '../../interfaces';
-import { HandlerViewParams } from '../../types';
+import { Slider, SliderElement } from '../interfaces';
+import { HandlerViewParams } from '../types';
 
 import TooltipView from './tooltip/TooltipView';
-import { Observable, Observer } from '../../../utils/Observer/Observer';
+import { Observable, Observer } from '../../utils/Observer/Observer';
 
 class HandlerView implements Observable, SliderElement {
   public observers: { [key: string]: Observer } = {};
@@ -79,7 +79,6 @@ class HandlerView implements Observable, SliderElement {
 
   public getSize(dimension?: 'width' | 'height'): number {
     const expandDimension = dimension ?? this.ownerSlider.getExpandDimension();
-
     return this.element.body.getBoundingClientRect()[expandDimension];
   }
 

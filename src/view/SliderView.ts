@@ -1,29 +1,29 @@
 import { ResizeObserver } from 'resize-observer';
 
-import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../../constants';
+import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../constants';
 
 import {
   HandlerModelData,
   PositioningParams, SliderData,
-} from '../../model/types';
+} from '../model/types';
 import {
   clamp, hasOwnProperty,
   preventDefault,
   roundToDecimal,
   standardize,
-} from '../../utils/functions';
+} from '../utils/functions';
 import {
   HandlerPositionData,
   HandlersViewData,
   HandlerViewParams,
   SliderViewUpdateParams,
-} from '../types';
+} from './types';
 
-import { Slider } from '../interfaces';
+import { Slider } from './interfaces';
 import HandlerView from './handler/HandlerView';
 import RangeView from './range/RangeView';
 import MarkupView from './markup/MarkupView';
-import { Observable, Observer } from '../../utils/Observer/Observer';
+import { Observable, Observer } from '../utils/Observer/Observer';
 
 class SliderView implements Slider, Observable {
   public observers: { [key: string]: Observer } = {};

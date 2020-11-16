@@ -1,9 +1,9 @@
-import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_OPTIONS } from '../../../constants';
+import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_OPTIONS } from '../../constants';
 
-import { Orientable, ScaleOwner } from '../../interfaces';
+import { Orientable, ScaleOwner } from '../interfaces';
 
 import HandlerView from '../handler/HandlerView';
-import { Observer } from '../../../utils/Observer/Observer';
+import { Observer } from '../../utils/Observer/Observer';
 
 class RangeView {
   private startHandler: HandlerView;

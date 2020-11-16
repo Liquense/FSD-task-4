@@ -1,6 +1,6 @@
-import { DEFAULT_SLIDER_CLASS } from '../../../constants';
+import { DEFAULT_SLIDER_CLASS } from '../../constants';
 
-import { Orientable, ScaleOwner, SliderContainer } from '../../interfaces';
+import { Orientable, ScaleOwner, SliderContainer } from '../interfaces';
 
 class MarkupView {
   private wrap: HTMLElement;

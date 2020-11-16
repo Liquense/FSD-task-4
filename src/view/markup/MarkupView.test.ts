@@ -1,15 +1,22 @@
 /* eslint-disable dot-notation,no-undef */
-import { KeyStringObj } from '../../../utils/types';
-
-import View from '../../PluginView';
+import { KeyStringObj } from '../../utils/types';
 
 import SliderView from '../SliderView';
 import MarkupView from './MarkupView';
+import { DEFAULT_SLIDER_PARAMS } from '../../constants';
 
 document.body.innerHTML = '<div class="liquidSlider liquidSlider_horizontal"></div>';
 const testSliderContainer = document.querySelector('.liquidSlider') as HTMLElement;
-const testView = new View(testSliderContainer, {});
-let testSlider: SliderView & KeyStringObj = new SliderView(testView, { isMarkupVisible: true });
+const defaultSliderParams = {
+  ...DEFAULT_SLIDER_PARAMS,
+  ...{
+    range: 10, stepPart: 0.1, isInverted: false, isMarkupVisible: true,
+  },
+};
+let testSlider: SliderView & KeyStringObj = new SliderView(
+  testSliderContainer,
+  defaultSliderParams,
+);
 let testMarkup: MarkupView & KeyStringObj;
 
 describe('Инициализация экземпляра разметки', () => {
@@ -54,7 +61,7 @@ describe('Функционал разметки', () => {
 
   describe('Получение относительной ширины метки', () => {
     beforeAll(() => {
-      testSlider = new SliderView(testView, { isMarkupVisible: true });
+      testSlider = new SliderView(testSliderContainer, defaultSliderParams);
 
       testMarkup = new MarkupView(testSlider);
       testMarkup['getMarkThickness'] = jest.fn(() => 1);
@@ -73,7 +80,7 @@ describe('Функционал разметки', () => {
 
   describe('Добавление метки', () => {
     beforeEach(() => {
-      testSlider = new SliderView(testView, { isMarkupVisible: true });
+      testSlider = new SliderView(testSliderContainer, defaultSliderParams);
       testMarkup = new MarkupView(testSlider);
     });
 
