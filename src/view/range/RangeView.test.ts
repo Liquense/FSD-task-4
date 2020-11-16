@@ -3,12 +3,15 @@ import SliderView from '../SliderView';
 import HandlerView from '../handler/HandlerView';
 
 import RangeView from './RangeView';
+import { DEFAULT_SLIDER_PARAMS } from '../../constants';
+import { HandlerPair } from '../types';
 
 jest.mock('../handler/handlerView');
 jest.mock('../sliderView');
 let testRange: RangeView;
 
-const testSlider = new SliderView(null, {});
+const defaultParams = { ...DEFAULT_SLIDER_PARAMS, ...{ range: 10, stepPart: 0.1 } };
+const testSlider = new SliderView(null, defaultParams);
 testSlider.getScaleStart = jest.fn(() => 0);
 testSlider.getScaleEnd = jest.fn(() => 100);
 testSlider.getScaleBorderWidth = jest.fn(() => 2);
@@ -88,7 +91,7 @@ describe('Инициализация', () => {
 
       test('Один хэндлер', async () => {
         function initTest(
-          handlerSide: string, offsetDirection: 'top' | 'left', expandDimension: 'height' | 'width',
+          handlerSide: HandlerPair, offsetDirection: 'top' | 'left', expandDimension: 'height' | 'width',
         ): Promise<unknown> {
           return new Promise((resolve) => {
             firstHandler.getPair = jest.fn(() => handlerSide);

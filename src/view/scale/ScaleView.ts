@@ -39,7 +39,7 @@ class ScaleView {
       ? mouseEvent.clientY : mouseEvent.clientX;
     const initialOffset = this.parentSlider.getHandlerSize() / 2;
     const scaledCoordinate = (mouseCoordinate - this.getStart() - initialOffset)
-      / this.parentSlider.calculateShrinkRatio();
+      / this.calculateShrinkRatio();
 
     return clamp((scaledCoordinate) / this.getLength(), 0, 1);
   }

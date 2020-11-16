@@ -35,9 +35,9 @@ type HandlerModelData = HandlerData & { itemIndex: number };
 
 type HandlersModelData = { isCustomHandlers: boolean; handlersArray: HandlerModelData[] };
 
-type PositioningParams = { min: number; max: number; stepPart: number };
+type PositioningData = { min: number; max: number; stepPart: number };
 
 export {
-  SliderModelParams, HandlerModelData, PositioningParams, HandlersModelData, SliderModelData,
+  SliderModelParams, HandlerModelData, PositioningData, HandlersModelData, SliderModelData,
   SliderVisualData, SliderVisualParams, SliderParams, SliderData,
 };

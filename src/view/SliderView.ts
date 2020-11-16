@@ -4,7 +4,7 @@ import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '
 
 import {
   HandlerModelData,
-  PositioningParams, SliderData,
+  PositioningData, SliderData,
 } from '../model/types';
 import {
   hasOwnProperty,
@@ -68,7 +68,7 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
 
   private resizeObserver: ResizeObserver;
 
-  constructor(private bodyElement: HTMLElement, params?: SliderData & PositioningParams) {
+  constructor(private bodyElement: HTMLElement, params: SliderData & PositioningData) {
     this.initProperties(params);
     this.createElements();
     this.setMouseEvents();
@@ -287,7 +287,7 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
 
   private initProperties({
     isVertical, isInverted, isTooltipsVisible, isMarkupVisible, min, max, stepPart,
-  }: SliderData & PositioningParams): void {
+  }: SliderData & PositioningData): void {
     this.isVertical = isVertical;
     this.isRangesInverted = isInverted;
     this.isMarkupVisible = isMarkupVisible;
@@ -298,6 +298,8 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
   }
 
   private setHandlerSize(): void {
+    if (this.handlers.length === 0) { return; }
+
     const exemplarHandler = this.handlers[0];
     this.handlerSize = exemplarHandler.getSize();
   }

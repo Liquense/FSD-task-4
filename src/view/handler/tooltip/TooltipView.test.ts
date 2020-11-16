@@ -1,4 +1,6 @@
 /* eslint-disable dot-notation */
+import { DEFAULT_SLIDER_PARAMS } from '../../../constants';
+
 import { KeyStringObj, Presentable } from '../../../utils/types';
 
 import SliderView from '../../SliderView';
@@ -11,7 +13,8 @@ jest.mock('../../sliderView');
 
 jest.mock('../handlerView');
 
-const mockSlider = new SliderView(null, {});
+const defaultParams = { ...DEFAULT_SLIDER_PARAMS, ...{ range: 10, stepPart: 0.1 } };
+const mockSlider = new SliderView(null, defaultParams);
 
 const handler = new HandlerView(mockSlider, { handlerIndex: 0, positionPart: 0, item: 'test' });
 handler.getOwnerSlider = jest.fn(() => mockSlider);

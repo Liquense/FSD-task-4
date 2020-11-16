@@ -1,4 +1,4 @@
-import { HandlerModelData, PositioningParams, SliderModelParams } from '../model/types';
+import { HandlerModelData, PositioningData, SliderModelParams } from '../model/types';
 import { HandlerPositionData } from './types';
 
 interface View {
@@ -6,7 +6,7 @@ interface View {
 
   updateVisuals(parameters?: SliderModelParams): void;
 
-  updatePositioning(positioningData: PositioningParams): void;
+  updatePositioning(positioningData: PositioningData): void;
 
   handleHandlerPositionChanged({ handlerIndex, position }: HandlerPositionData): {
     handlerIndex: number; positionPart: number;

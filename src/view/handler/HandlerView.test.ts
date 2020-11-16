@@ -5,25 +5,25 @@ import SliderView from '../SliderView';
 import HandlerView from './HandlerView';
 
 import TooltipView from './tooltip/TooltipView';
+import { HandlerPair } from '../types';
 
 jest.mock('../SliderView');
 jest.mock('./tooltip/TooltipView');
 
-const testSlider = new SliderView(null, null);
-testSlider.getOrientationClass = jest.fn(
+const mockSlider = new SliderView(null, null);
+mockSlider.getOrientationClass = jest.fn(
   function () {
     return this.isVertical ? 'vertical' : 'horizontal';
   },
 );
 
-testSlider.calculateHandlerOffset = jest.fn((positionPart) => positionPart * 100);
-testSlider.getHandlersContainer = jest.fn(() => document.body);
+mockSlider.getHandlersContainer = jest.fn(() => document.body);
 
 let testHandler: HandlerView;
 function createTestHandler(
   index = 0, positionPart = 0.5, item: Presentable = 'test',
 ): HandlerView {
-  return new HandlerView(testSlider, { handlerIndex: index, positionPart, item });
+  return new HandlerView(mockSlider, { handlerIndex: index, positionPart, item });
 }
 
 const mockTooltip = (TooltipView as unknown as jest.Mock);
@@ -53,8 +53,8 @@ describe('Инициализация', () => {
     test('с необязательными параметрами', () => {
       mockTooltip.mockClear();
       const isTooltipVisible = false;
-      const rangePair: string = null;
-      testHandler = new HandlerView(testSlider, {
+      const rangePair: HandlerPair = null;
+      testHandler = new HandlerView(mockSlider, {
         handlerIndex: index, positionPart, item, isTooltipVisible, rangePair,
       });
 
@@ -85,11 +85,12 @@ test('Установка позиции', () => {
   mockTooltip.prototype.getSize.mockImplementation(() => 10);
 
   function checkSettingPosition(isVertical: boolean, value: number): void {
-    testSlider.getOffsetDirection = jest.fn(() => (isVertical ? 'top' : 'left'));
-    testSlider.getExpandDimension = jest.fn(() => (isVertical ? 'height' : 'width'));
+    mockSlider.getOffsetDirection = jest.fn(() => (isVertical ? 'top' : 'left'));
+    mockSlider.getExpandDimension = jest.fn(() => (isVertical ? 'height' : 'width'));
+    mockSlider.getWorkZoneLength = jest.fn(() => 100);
 
     testHandler.setPosition(value);
-    expect((testHandler.getElement().wrap.style as KeyStringObj)[testSlider.getOffsetDirection()])
+    expect((testHandler.getElement().wrap.style as KeyStringObj)[mockSlider.getOffsetDirection()])
       .toBe(`${value * 100}px`);
     expect(mockTooltip.prototype.updateHTML).toBeCalled();
   }
@@ -112,10 +113,10 @@ test('Получение центра хэндлера', () => {
     toJSON: undefined,
   }));
 
-  testSlider.getIsVertical = jest.fn(() => false);
+  mockSlider.getIsVertical = jest.fn(() => false);
   expect(testHandler.getPositionCoordinate()).toBe(5);
 
-  testSlider.getIsVertical = jest.fn(() => true);
+  mockSlider.getIsVertical = jest.fn(() => true);
   expect(testHandler.getPositionCoordinate()).toBe(15);
 });
 

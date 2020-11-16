@@ -210,7 +210,7 @@ describe('Инициализация', () => {
 
     describe('Обработка изменения позиции хэндлера', () => {
       let spyGetItemIndexFromPosition: jest.SpyInstance;
-      const testData = { handlerIndex: 0, positionPart: 0.6 };
+      const testData = { handlerIndex: 0, position: 0.6 };
       let spySetItemIndex: jest.SpyInstance;
 
       beforeEach(() => {
@@ -220,13 +220,13 @@ describe('Инициализация', () => {
 
       test('Обычная ситуация', () => {
         testModel.handleHandlerPositionChanged(testData);
-        expect(spyGetItemIndexFromPosition).toBeCalledWith(testData.positionPart);
+        expect(spyGetItemIndexFromPosition).toBeCalledWith(testData.position);
         expect(spySetItemIndex).toBeCalledWith(spyGetItemIndexFromPosition.mock.results[0].value);
       });
 
       test('Если последнее значение не делится ровно на шаг', () => {
         testModel.setSliderParams({ step: 3 });
-        testData.positionPart = 1;
+        testData.position = 1;
 
         testModel.handleHandlerPositionChanged(testData);
         expect(spySetItemIndex).toBeCalledWith(10);

@@ -3,13 +3,13 @@ import { KeyStringObj } from '../utils/types';
 
 import SliderModel from '../model/SliderModel';
 
-import View from '../view/PluginView';
 import Controller from './Controller';
 import { SliderData } from '../model/types';
 import { Observer } from '../utils/Observer/Observer';
+import SliderView from '../view/SliderView';
 
 jest.mock('../utils/functions');
-jest.mock('../view/pluginView');
+jest.mock('../view/SliderView');
 jest.mock('../model/sliderModel');
 jest.mock('../utils/Observer/Observer');
 
@@ -19,7 +19,7 @@ document.body.appendChild(rootElement);
 
 const mockAddListener = Observer.addListener as jest.Mock;
 const mockModel = SliderModel as jest.Mock;
-const mockView = View as jest.Mock;
+const mockView = SliderView as jest.Mock;
 
 describe('Инициализация контроллера', () => {
   beforeEach(() => {
@@ -44,7 +44,7 @@ describe('Инициализация контроллера', () => {
       testController['passHandlerValueChange'],
     );
     expect(mockAddListener).toBeCalledWith(
-      'handleHandlerPositionChanged',
+      'handleMouseMove',
       testController['view'],
       testController['passHandlerPositionChange'],
     );
@@ -57,7 +57,7 @@ describe('Инициализация контроллера', () => {
     testController = new Controller(rootElement);
 
     expect(testController['model'].getPositioningData).toBeCalled();
-    expect(testController['view'].updatePositioning).toBeCalledWith(testData);
+    expect(testController['view'].update).toBeCalledWith(testData);
   });
 
   describe('Передача данных о хэндлерах в вид', () => {
@@ -162,6 +162,7 @@ describe('Функции', () => {
       isTooltipsVisible: false,
       isVertical: false,
       range: 10,
+      isInverted: false,
     };
 
     testController['model'].getPositioningData = jest.fn(() => testPositioningData);
@@ -169,10 +170,11 @@ describe('Функции', () => {
 
     testController.update(testParams);
     expect(testController['model'].setSliderParams).toBeCalledWith(testParams);
-    expect(testController['view'].updatePositioning)
-      .toBeCalledWith(testController['model'].getPositioningData());
-    expect(testController['view'].updateVisuals)
-      .toBeCalledWith(testController['model'].getSliderData());
+    expect(testController['view'].update)
+      .toBeCalledWith({
+        ...testController['model'].getSliderData(),
+        ...testController['model'].getPositioningData(),
+      });
   });
 
   test('Передача изменения значения хэндлера в вид', () => {
@@ -181,8 +183,8 @@ describe('Функции', () => {
     };
     testController['passHandlerValueChange'](testData);
 
-    expect(testController['view'].handlerValueChangedListener)
-      .toBeCalledWith(testData);
+    expect(testController['view'].setHandlersData)
+      .toBeCalledWith([testData]);
   });
 
   test('Функции назначения слушателей', () => {
@@ -206,7 +208,7 @@ describe('Функции', () => {
 
     expect(testController['model']
       .handleHandlerPositionChanged)
-      .toBeCalledWith({ handlerIndex: testIndex, positionPart: testPositionPart });
+      .toBeCalledWith({ handlerIndex: testIndex, position: testPositionPart });
   });
 
   test('Получение данных о слайдере', () => {

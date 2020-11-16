@@ -5,7 +5,7 @@ import { HandlerPluginParams, SliderPluginParams } from '../plugin/types';
 import {
   HandlerModelData,
   HandlersModelData,
-  PositioningParams, SliderData,
+  PositioningData, SliderData,
   SliderModelParams, SliderParams,
 } from './types';
 
@@ -98,7 +98,7 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
     };
   }
 
-  public getPositioningData(): PositioningParams {
+  public getPositioningData(): PositioningData {
     return {
       stepPart: this.step / this.getRange(),
       min: this.min,

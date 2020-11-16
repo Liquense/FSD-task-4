@@ -1,62 +1,63 @@
 /* eslint-disable dot-notation,@typescript-eslint/ban-ts-ignore */
+import { DEFAULT_SLIDER_PARAMS } from '../constants';
+
+import { HandlerViewParams } from './types';
 import SliderView from './SliderView';
+import { KeyStringObj } from '../utils/types';
+import Controller from '../controller/Controller';
 
-import MarkupView from './markup/MarkupView';
-
-import TooltipView from './handler/tooltip/TooltipView';
 import HandlerView from './handler/HandlerView';
 import RangeView from './range/RangeView';
-import { KeyStringObj } from '../utils/types';
-import { HandlerViewParams } from './types';
 import { Observer } from '../utils/Observer/Observer';
 
-import Mock = jest.Mock;
+import TooltipView from './handler/tooltip/TooltipView';
 
-jest.mock('../pluginView');
+jest.mock('../controller/Controller');
+jest.mock('./scale/ScaleView');
+jest.mock('./markup/MarkupView');
 
 let testSlider: SliderView;
-const mockView = new PluginView(null, null);
-mockView.getBody = jest.fn(
-  () => document.body.appendChild(document.createElement('div')),
-);
-mockView['initDefaultListeners'] = jest.fn(
-  () => Observer.addListener('handleMouseMove', testSlider, mockView.handleHandlerPositionChanged),
+let sliderWrap = document.body.appendChild(document.createElement('div'));
+const mockController = new Controller(sliderWrap);
+mockController['addDefaultListeners'] = jest.fn(
+  () => Observer.addListener(
+    'handleMouseMove', testSlider, mockController['passHandlerPositionChange'],
+  ),
 );
 
-mockView.handleHandlerPositionChanged = jest.fn(() => null);
+mockController['passHandlerPositionChange'] = jest.fn(() => null);
 
 function resetHTML(): void {
   document.body.innerHTML = '';
-  mockView.getBody = jest.fn(
-    () => document.body.appendChild(document.createElement('div')),
-  );
+  sliderWrap = document.body.appendChild(document.createElement('div'));
 }
+const defaultParams = { ...DEFAULT_SLIDER_PARAMS, ...{ range: 10, stepPart: 0.1 } };
 
 describe('Инициализация', () => {
-  describe('Установка значений полей', () => {
-    test('Без передачи необязательных параметров', () => {
-      testSlider = new SliderView(mockView);
-
-      expect(testSlider.getIsVertical()).toBe(undefined);
-    });
-
-    test('С передачей необязательных параметров', () => {
-      testSlider = new SliderView(
-        mockView, {
-          isVertical: true, isInverted: false, isTooltipsVisible: false, isMarkupVisible: true,
+  test('Установка значений полей', () => {
+    testSlider = new SliderView(
+      sliderWrap, {
+        ...DEFAULT_SLIDER_PARAMS,
+        ...{
+          range: 10,
+          stepPart: 0.1,
+          isVertical: true,
+          isInverted: false,
+          isTooltipsVisible: false,
+          isMarkupVisible: true,
         },
-      );
+      },
+    );
 
-      expect(testSlider.getIsVertical()).toBe(true);
-      expect(testSlider['isRangesInverted']).toBe(false);
-      expect(testSlider['isTooltipsAlwaysVisible']).toBe(false);
-      expect(testSlider['isMarkupVisible']).toBe(true);
-    });
+    expect(testSlider.getIsVertical()).toBe(true);
+    expect(testSlider['isRangesInverted']).toBe(false);
+    expect(testSlider['isTooltipsAlwaysVisible']).toBe(false);
+    expect(testSlider['isMarkupVisible']).toBe(true);
   });
 
   test('Создание HTML-элементов', () => {
     resetHTML();
-    testSlider = new SliderView(mockView);
+    testSlider = new SliderView(sliderWrap, defaultParams);
 
     const wrap = document.body.querySelector('.liquid-slider');
     const body = document.body.querySelector('.liquid-slider__body');
@@ -209,7 +210,7 @@ describe('Инициализация', () => {
   describe('Проверка слушателей событий', () => {
     beforeEach(() => {
       resetHTML();
-      testSlider = new SliderView(mockView);
+      testSlider = new SliderView(sliderWrap, defaultParams);
 
       testSlider.getBodyElement().style.width = '100px';
       testSlider.getScaleLength = jest.fn(() => 100);
@@ -265,7 +266,8 @@ describe('Инициализация', () => {
           new Array(100).fill(0).forEach((handler, i) => {
             // несмотря на клик, позиции хэндлеров остаются неизменными,
             // потому что вью мокнут и нет обмена данными с моделью
-            (mockView.handleHandlerPositionChanged as jest.Mock).mockClear();
+            testSlider['scale'].calculateMouseRelativePosition = jest.fn(() => i / 100);
+            (mockController['passHandlerPositionChange'] as jest.Mock).mockClear();
             simulateMouseDown(i);
 
             if (i <= 65) expect(testSlider['activeHandler']).toBe(testSlider['handlers'][0]);
@@ -275,7 +277,7 @@ describe('Инициализация', () => {
 
             if ((testSlider.calculateMouseRelativePosition(testMouseDownEvent) !== 0.4)
                 && (testSlider.calculateMouseRelativePosition(testMouseDownEvent) !== 0.9)) {
-              expect(mockView.handleHandlerPositionChanged).toBeCalledWith(
+              expect(mockController['passHandlerPositionChange']).toBeCalledWith(
                 { handlerIndex: testSlider['activeHandler'].getIndex(), position: i / 100 },
               );
             }
@@ -295,7 +297,7 @@ describe('Инициализация', () => {
       });
 
       test('По слайдеру', () => {
-        mockView['initDefaultListeners']();
+        mockController['addDefaultListeners']();
         testSlider.update({ isVertical: false, stepPart: 0.01 });
         testClicks();
 
@@ -326,7 +328,7 @@ describe('Инициализация', () => {
       let testMouseMoveEvent: Event;
       let testMouseDownEvent: Event;
       let testMouseUpEvent: Event;
-      let spyMouseMoveHandler: Mock;
+      let spyMouseMoveHandler: jest.Mock;
 
       beforeAll(() => {
         testMouseMoveEvent = new Event('mousemove');
@@ -391,7 +393,7 @@ describe('Инициализация', () => {
 describe('Функции', () => {
   beforeAll(() => {
     resetHTML();
-    testSlider = new SliderView(mockView);
+    testSlider = new SliderView(sliderWrap, defaultParams);
 
     testSlider.initHandlers({
       isCustomHandlers: false,
@@ -422,34 +424,12 @@ describe('Функции', () => {
   });
 
   test('Создание разметки', async () => {
-    testSlider.setOrientation(false);
-    const origGetScaleLength = testSlider.getScaleLength;
-    const mockAddMark = jest.fn();
-    MarkupView.prototype.addMark = mockAddMark;
+    testSlider.update({ isMarkupVisible: true });
+    expect(testSlider['markup'].createMarks).toBeCalledTimes(1);
+    (testSlider['markup'].createMarks as jest.Mock).mockClear();
 
-    testSlider['markup'] = undefined;
-    testSlider.update({ stepPart: 0.01 });
-
-    testSlider.clearRanges();
-    testSlider['isMarkupVisible'] = true;
-    testSlider.initHandlers({
-      isCustomHandlers: false,
-      handlersArray: [{ handlerIndex: 0, item: 'test', positionPart: 0.5 }],
-    });
-    testSlider.getScaleLength = (): number => 100;
-
-    expect(testSlider['markup']?.ownerSlider).toBe(testSlider);
-    await new Promise((resolve) => requestAnimationFrame(() => {
-      resolve();
-    }));
-
-    const marksCount = 1 / testSlider['stepPart'] + 1;
-    expect(mockAddMark.mock.calls.length).toBe(marksCount);
-    for (let i = 1; i < marksCount; i += 1) {
-      expect(mockAddMark).toBeCalledWith(Number.parseFloat((testSlider['stepPart'] * i).toFixed(4)), 0);
-    }
-
-    testSlider.getScaleLength = origGetScaleLength;
+    testSlider.initHandlers({ isCustomHandlers: false, handlersArray: [] });
+    expect(testSlider['markup'].createMarks).toBeCalledTimes(1);
   });
 
   test('Установка данных хэндлеров', () => {
@@ -472,8 +452,12 @@ describe('Функции', () => {
     const
       newPosition2 = 0.8;
     testSlider.setHandlersData([
-      { handlerIndex: 0, item: newValue1, positionPart: newPosition1 },
-      { handlerIndex: 22, item: newValue2, positionPart: newPosition2 },
+      {
+        handlerIndex: 0, item: newValue1, positionPart: newPosition1, itemIndex: 0,
+      },
+      {
+        handlerIndex: 22, item: newValue2, positionPart: newPosition2, itemIndex: 1,
+      },
     ]);
 
     expect(spySetValue1).toBeCalledWith(newValue1);
@@ -504,16 +488,16 @@ describe('Функции', () => {
     }
 
     let prevStep = testSlider['stepPart'];
-    let prevMin = testSlider['min'];
-    let prevMax = testSlider['max'];
+    let prevMin = testSlider['minIndex'];
+    let prevMax = testSlider['maxIndex'];
     let prevIsVertical = testSlider.getIsVertical();
     let prevTooltipVisibility = testSlider['isTooltipsAlwaysVisible'];
     let prevMarkupVisibility = testSlider['isMarkupVisible'];
 
     function checkOldValues(): void {
       expect(testSlider['stepPart']).toBe(prevStep);
-      expect(testSlider['min']).toBe(prevMin);
-      expect(testSlider['max']).toBe(prevMax);
+      expect(testSlider['minIndex']).toBe(prevMin);
+      expect(testSlider['maxIndex']).toBe(prevMax);
       expect(testSlider.getIsVertical()).toBe(prevIsVertical);
       expect(testSlider['isTooltipsAlwaysVisible']).toBe(prevTooltipVisibility);
       expect(testSlider['isMarkupVisible']).toBe(prevMarkupVisibility);
@@ -535,15 +519,15 @@ describe('Функции', () => {
     });
     checkSpiesToBeCalledOnce(spies);
     expect(testSlider['stepPart']).toBe(2);
-    expect(testSlider['min']).toBe(-2);
-    expect(testSlider['max']).toBe(22);
+    expect(testSlider['minIndex']).toBe(-2);
+    expect(testSlider['maxIndex']).toBe(22);
     expect(testSlider.getIsVertical()).toBe(false);
     expect(testSlider['isTooltipsAlwaysVisible']).toBe(false);
     expect(testSlider['isMarkupVisible']).toBe(true);
 
     prevStep = testSlider['stepPart'];
-    prevMin = testSlider['min'];
-    prevMax = testSlider['max'];
+    prevMin = testSlider['minIndex'];
+    prevMax = testSlider['maxIndex'];
     prevIsVertical = testSlider.getIsVertical();
     prevTooltipVisibility = testSlider['isTooltipsAlwaysVisible'];
     prevMarkupVisibility = testSlider['isMarkupVisible'];
@@ -613,56 +597,34 @@ describe('Функции', () => {
   });
 
   test('Получение начала шкалы', () => {
-    const oldGetBoundingClientRect = testSlider['elements'].scale.getBoundingClientRect;
-    testSlider['elements'].scale.getBoundingClientRect = jest.fn(() => ({
-      toJSON: undefined,
-      height: 0,
-      width: 0,
-      x: 0,
-      y: 0,
-      bottom: 0,
-      right: 0,
-      left: 1,
-      top: 2,
-    }));
-    testSlider.setOrientation(false);
-    expect(testSlider.getScaleStart()).toBe(1);
-
+    (testSlider['scale'].getStart as jest.Mock).mockImplementationOnce(() => 2);
     testSlider.setOrientation(true);
     expect(testSlider.getScaleStart()).toBe(2);
-
-    testSlider['elements'].scale.getBoundingClientRect = oldGetBoundingClientRect;
   });
 
   test('Получение Конца шкалы', () => {
-    const oldGetBoundingClientRect = testSlider['elements'].scale.getBoundingClientRect;
-    testSlider['elements'].scale.getBoundingClientRect = jest.fn(() => ({
-      toJSON: undefined,
-      height: 0,
-      width: 0,
-      x: 0,
-      y: 0,
-      left: 0,
-      top: 0,
-      bottom: 3,
-      right: 4,
-    }));
-    testSlider.setOrientation(false);
-    expect(testSlider.getScaleEnd()).toBe(4);
-
+    (testSlider['scale'].getEnd as jest.Mock).mockImplementationOnce(() => 3);
     testSlider.setOrientation(true);
     expect(testSlider.getScaleEnd()).toBe(3);
-
-    testSlider['elements'].scale.getBoundingClientRect = oldGetBoundingClientRect;
   });
 
   function testGetter(getterName: string, getterProp: string): void {
     let slider: SliderView & KeyStringObj;
 
-    slider = new SliderView(mockView, { [getterProp]: true });
+    slider = new SliderView(sliderWrap, {
+      ...DEFAULT_SLIDER_PARAMS,
+      ...{
+        [getterProp]: true, stepPart: 0.1, range: 10, isInverted: false,
+      },
+    });
     expect(slider[getterName]()).toBeTruthy();
 
-    slider = new SliderView(mockView, { [getterProp]: false });
+    slider = new SliderView(sliderWrap, {
+      ...DEFAULT_SLIDER_PARAMS,
+      ...{
+        [getterProp]: false, stepPart: 0.1, range: 10, isInverted: false,
+      },
+    });
     expect(slider[getterName]()).toBeFalsy();
   }
 
