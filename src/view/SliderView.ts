@@ -19,13 +19,15 @@ import {
   SliderViewUpdateParams,
 } from './types';
 
-import { Slider } from './interfaces';
+import {
+  HandlersOwner, Orientable, ScaleOwner, SliderContainer,
+} from './interfaces';
 import HandlerView from './handler/HandlerView';
 import RangeView from './range/RangeView';
 import MarkupView from './markup/MarkupView';
 import { Observable, Observer } from '../utils/Observer/Observer';
 
-class SliderView implements Slider, Observable {
+class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwner, Observable {
   public observers: { [key: string]: Observer } = {};
 
   private isRangesInverted = false;
@@ -93,6 +95,10 @@ class SliderView implements Slider, Observable {
     return this.isVertical
       ? this.elements.scale.getBoundingClientRect().bottom
       : this.elements.scale.getBoundingClientRect().right;
+  }
+
+  public getStepPart(): number {
+    return this.stepPart;
   }
 
   public getScaleBorderWidth(): number {
@@ -310,7 +316,7 @@ class SliderView implements Slider, Observable {
   }
 
   private createElements(): void {
-    const parentElement = this.parentView.getBody();
+    const parentElement = this.bodyElement;
     this.elements = {
       wrap: document.createElement('div'),
       body: document.createElement('div'),
@@ -492,8 +498,7 @@ class SliderView implements Slider, Observable {
     return new RangeView(this, this.elements.scale, handler, pairedHandler);
   }
 
-  private initMarkup():
-      void {
+  private initMarkup = (): void => {
     this.markup = new MarkupView(this);
     this.updateMarkup();
   }
@@ -507,15 +512,9 @@ class SliderView implements Slider, Observable {
   private updateMarkup(): void {
     this.clearMarkup();
 
-    if (!this.isMarkupVisible) { return; }
+    if (!this.isMarkupVisible || !this.markup) { return; }
 
-    requestAnimationFrame(() => {
-      for (let i = 0; i <= 1; i = roundToDecimal(i + this.stepPart, 5)) {
-        const standardPosition = standardize(i, { min: 0, max: 1, step: this.stepPart });
-        const shrinkPosition = standardPosition * this.calculateShrinkRatio();
-        this.markup.addMark(shrinkPosition, this.calculateRelativeHandlerSize());
-      }
-    });
+    this.markup.createMarks();
   }
 
   private clearHandlers(): void {

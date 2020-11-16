@@ -46,6 +46,8 @@ interface ScaleOwner {
 }
 
 interface HandlersOwner {
+  getStepPart(): number;
+  calculateRelativeHandlerSize(): number;
   calculateHandlerOffset(relativePosition: number): number;
 }
 

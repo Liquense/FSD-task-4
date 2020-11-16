@@ -1,6 +1,7 @@
 import { DEFAULT_SLIDER_CLASS } from '../../constants';
 
-import { Orientable, ScaleOwner, SliderContainer } from '../interfaces';
+import { Slider } from '../interfaces';
+import { roundToDecimal, standardize } from '../../utils/functions';
 
 class MarkupView {
   private wrap: HTMLElement;
@@ -9,14 +10,21 @@ class MarkupView {
 
   private static DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__markup`;
 
-  constructor(
-      public ownerSlider: Orientable & ScaleOwner & SliderContainer,
-  ) {
+  constructor(private ownerSlider: Slider) {
     this.createWrap();
   }
 
   public getWrap(): HTMLElement {
     return this.wrap;
+  }
+
+  public createMarks(): void {
+    const stepPart = this.ownerSlider.getStepPart();
+    for (let i = 0; i <= 1; i = roundToDecimal(i + stepPart, 5)) {
+      const standardPosition = standardize(i, { min: 0, max: 1, step: stepPart });
+      const shrinkPosition = standardPosition * this.ownerSlider.calculateShrinkRatio();
+      this.addMark(shrinkPosition, this.ownerSlider.calculateRelativeHandlerSize());
+    }
   }
 
   public clearAllMarks(): void {
