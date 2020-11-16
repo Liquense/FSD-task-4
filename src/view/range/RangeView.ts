@@ -79,9 +79,9 @@ class RangeView {
     if (secondHandler) {
       this.arrangeHandlers(firstHandler, secondHandler);
     } else {
-      this.startHandler = RANGE_PAIR_OPTIONS.get(firstHandler.getRangePair())
+      this.startHandler = RANGE_PAIR_OPTIONS.get(firstHandler.getPair())
         ? firstHandler : null;
-      this.endHandler = RANGE_PAIR_OPTIONS.get(firstHandler.getRangePair())
+      this.endHandler = RANGE_PAIR_OPTIONS.get(firstHandler.getPair())
         ? null : firstHandler;
     }
   }

@@ -80,6 +80,7 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
       isTooltipsVisible: this.isTooltipsVisible,
       isVertical: this.isVertical,
       isMarkupVisible: this.isMarkupVisible,
+      isInverted: this.isInverted,
     };
   }
 

@@ -8,7 +8,7 @@ import { SliderPluginParams } from '../plugin/types';
 import { Presentable } from '../utils/types';
 import { Observable, Observer } from '../utils/Observer/Observer';
 import SliderView from '../view/SliderView';
-import { HandlerPositionData } from '../view/types';
+import { HandlerPair, HandlerPositionData } from '../view/types';
 
 class Controller {
   public readonly originalHTML: string;
@@ -74,11 +74,11 @@ class Controller {
     return handlersData;
   }
 
-  public addHandler(itemIndex: number, rangePair?: number | string): HandlerModelData {
+  public addHandler(itemIndex: number, pair?: HandlerPair): HandlerModelData {
     const handlerData = this.model.addHandler(itemIndex);
     if (!handlerData) { return null; }
 
-    this.addHandlerView({ ...handlerData, rangePair });
+    this.addHandlerView({ ...handlerData, rangePair: pair });
 
     return handlerData;
   }
@@ -113,7 +113,7 @@ class Controller {
     targetView.initHandlers(handlersData);
   }
 
-  private addHandlerView(handlerParams: HandlerModelData & { rangePair: number | string }): void {
+  private addHandlerView(handlerParams: HandlerModelData & { rangePair: HandlerPair }): void {
     this.view.addHandler(handlerParams);
   }
 }

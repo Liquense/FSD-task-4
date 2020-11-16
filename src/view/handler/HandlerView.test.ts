@@ -43,7 +43,7 @@ describe('Инициализация', () => {
 
       expect(testHandler.getIndex()).toBe(index);
       expect(testHandler.getPositionPart()).toBe(positionPart);
-      expect(testHandler.getRangePair()).toBe(null);
+      expect(testHandler.getPair()).toBe(null);
       expect(mockTooltip).toBeCalledWith(
         testHandler.getElement().wrap,
         testHandler, { isVisible: true, item },
@@ -58,7 +58,7 @@ describe('Инициализация', () => {
         handlerIndex: index, positionPart, item, isTooltipVisible, rangePair,
       });
 
-      expect(testHandler.getRangePair()).toBe(rangePair);
+      expect(testHandler.getPair()).toBe(rangePair);
       expect(mockTooltip).toBeCalledWith(
         testHandler.getElement().wrap,
         testHandler, { isVisible: isTooltipVisible, item },

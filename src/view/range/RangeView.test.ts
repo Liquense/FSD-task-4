@@ -37,11 +37,11 @@ describe('Инициализация', () => {
 
   describe('Правильное назначение хэндлеров', () => {
     test('Один хэндлер', () => {
-      firstHandler.getRangePair = jest.fn(() => 'start');
+      firstHandler.getPair = jest.fn(() => 'start');
       testRange = new RangeView(testSlider, document.body, firstHandler);
       expect(testRange.getEndHandler()).toBe(firstHandler);
 
-      firstHandler.getRangePair = jest.fn(() => 'end');
+      firstHandler.getPair = jest.fn(() => 'end');
       testRange = new RangeView(testSlider, document.body, firstHandler);
       expect(testRange.getStartHandler()).toBe(firstHandler);
     });
@@ -91,7 +91,7 @@ describe('Инициализация', () => {
           handlerSide: string, offsetDirection: 'top' | 'left', expandDimension: 'height' | 'width',
         ): Promise<unknown> {
           return new Promise((resolve) => {
-            firstHandler.getRangePair = jest.fn(() => handlerSide);
+            firstHandler.getPair = jest.fn(() => handlerSide);
             testSlider.getOffsetDirection = jest.fn(() => offsetDirection);
             testSlider.getExpandDimension = jest.fn(() => expandDimension);
 

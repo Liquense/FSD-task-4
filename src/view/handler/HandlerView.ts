@@ -4,7 +4,7 @@ import { Presentable } from '../../utils/types';
 import { calculateElementCenter } from '../../utils/functions';
 
 import { Slider, SliderElement } from '../interfaces';
-import { HandlerViewParams } from '../types';
+import { HandlerPair, HandlerViewParams } from '../types';
 
 import TooltipView from './tooltip/TooltipView';
 import { Observable, Observer } from '../../utils/Observer/Observer';
@@ -23,7 +23,7 @@ class HandlerView implements Observable, SliderElement {
     body: HTMLElement;
   };
 
-  private rangePair: number | string;
+  private pair: HandlerPair;
 
   private static DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__handler`;
 
@@ -57,12 +57,12 @@ class HandlerView implements Observable, SliderElement {
     return this.element;
   }
 
-  public getRangePair(): number | string {
-    return this.rangePair;
+  public getPair(): HandlerPair {
+    return this.pair;
   }
 
-  public setRangePair(rangePair: number | string): void {
-    this.rangePair = rangePair;
+  public setPair(pair: HandlerPair): void {
+    this.pair = pair;
   }
 
   public getIndex(): number {
@@ -118,12 +118,16 @@ class HandlerView implements Observable, SliderElement {
     this.tooltip.setVisibility(stateToSet);
   }
 
+  public calculateDistanceToMouse(mouseCoordinate: number): number {
+    return Math.abs(this.getPositionCoordinate() - mouseCoordinate);
+  }
+
   public remove(): void {
     this.element.wrap.remove();
   }
 
   private initProperties({ rangePair, positionPart }: HandlerViewParams): void {
-    this.rangePair = rangePair ?? null;
+    this.pair = rangePair ?? null;
     this.positionPart = positionPart;
   }
 
@@ -143,7 +147,7 @@ class HandlerView implements Observable, SliderElement {
   }
 
   private calculateOffset(): number {
-    const shift = this.ownerSlider.calculateHandlerOffset(this.positionPart);
+    const shift = this.ownerSlider.getWorkZoneLength() * this.positionPart;
 
     const handlerSize = this.getSize();
     const tooltipSize = this.tooltip.getSize();

@@ -7,7 +7,7 @@ import {
   PositioningParams, SliderData,
 } from '../model/types';
 import {
-  clamp, hasOwnProperty,
+  hasOwnProperty,
   preventDefault,
   roundToDecimal,
   standardize,
@@ -25,6 +25,7 @@ import {
 import HandlerView from './handler/HandlerView';
 import RangeView from './range/RangeView';
 import MarkupView from './markup/MarkupView';
+import ScaleView from './scale/ScaleView';
 import { Observable, Observer } from '../utils/Observer/Observer';
 
 class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwner, Observable {
@@ -32,14 +33,15 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
 
   private isRangesInverted = false;
 
-  private handlerSize = 0;
+  private handlerSize: number;
 
   private handlers: HandlerView[] = [];
+
+  private scale: ScaleView;
 
   private isVertical: boolean;
 
   private elements: {
-      [key: string]: HTMLElement;
       wrap: HTMLElement;
       body: HTMLElement;
       scale: HTMLElement;
@@ -58,9 +60,9 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
 
   private stepPart: number;
 
-  private min: number;
+  private minIndex: number;
 
-  private max: number;
+  private maxIndex: number;
 
   private ranges: RangeView[] = [];
 
@@ -71,6 +73,7 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     this.createElements();
     this.setMouseEvents();
     this.setResizeObserver();
+    this.initScale();
   }
 
   public setRangesInversion(isInverted: boolean): void {
@@ -86,15 +89,11 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
   }
 
   public getScaleStart(): number {
-    return this.isVertical
-      ? this.elements.scale.getBoundingClientRect().top
-      : this.elements.scale.getBoundingClientRect().left;
+    return this.scale.getStart();
   }
 
   public getScaleEnd(): number {
-    return this.isVertical
-      ? this.elements.scale.getBoundingClientRect().bottom
-      : this.elements.scale.getBoundingClientRect().right;
+    return this.scale.getEnd();
   }
 
   public getStepPart(): number {
@@ -102,13 +101,11 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
   }
 
   public getScaleBorderWidth(): number {
-    return Number.parseFloat(
-      getComputedStyle(this.elements.scale).getPropertyValue(`border-${this.getOffsetDirection()}-width`),
-    );
+    return this.scale.getBorderWidth();
   }
 
   public calculateShrinkRatio(): number {
-    return this.getWorkZoneLength() / this.getScaleLength();
+    return this.scale.calculateShrinkRatio();
   }
 
   public getIsVertical(): boolean {
@@ -130,18 +127,22 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
   }
 
   public getScaleLength(): number {
-    return this.elements.scale.getBoundingClientRect()[this.getExpandDimension()];
+    return this.scale.getLength();
+  }
+
+  public getHandlerSize(): number {
+    return this.handlerSize;
   }
 
   public setOrientation(isVertical: boolean): void {
     if (isVertical === undefined || isVertical === null) { return; }
 
-    const oldOrientClass = this.getOrientationClass();
+    const oldOrientationClass = this.getOrientationClass();
     this.isVertical = isVertical;
-    const newOrientClass = this.getOrientationClass();
+    const newOrientationClass = this.getOrientationClass();
 
-    this.elements.wrap.classList.remove(oldOrientClass);
-    this.elements.wrap.classList.add(newOrientClass);
+    this.elements.wrap.classList.remove(oldOrientationClass);
+    this.elements.wrap.classList.add(newOrientationClass);
   }
 
   public getIsTooltipsAlwaysVisible(): boolean {
@@ -162,13 +163,8 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
       ? `${DEFAULT_SLIDER_CLASS}_vertical` : `${DEFAULT_SLIDER_CLASS}_horizontal`;
   }
 
-  public calculateMouseRelativePos(mouseEvent: MouseEvent): number {
-    const mouseCoordinate = this.isVertical ? mouseEvent.clientY : mouseEvent.clientX;
-    const initialOffset = this.handlerSize / 2;
-    const scaledCoordinate = (mouseCoordinate - this.getScaleStart() - initialOffset)
-      / this.calculateShrinkRatio();
-
-    return clamp((scaledCoordinate) / this.getScaleLength(), 0, 1);
+  public calculateMouseRelativePosition(mouseEvent: MouseEvent): number {
+    return this.scale.calculateMouseRelativePosition(mouseEvent);
   }
 
   public clearRanges(): void {
@@ -192,23 +188,21 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
   public initHandlers(handlersData: HandlersViewData): void {
     this.clearHandlers();
     this.handlers = handlersData.handlersArray.map((handler, index, handlers) => {
-      const newHandler = new HandlerView(this, {
-        ...handler,
-        isTooltipVisible: this.isTooltipsAlwaysVisible,
-      });
+      const newHandler = new HandlerView(this,
+        { ...handler, isTooltipVisible: this.isTooltipsAlwaysVisible });
 
       if (handlersData.isCustomHandlers) { return newHandler; }
 
       if (handlers.length === 2) {
         if (index === 0) {
-          newHandler.setRangePair(this.isRangesInverted ? RANGE_PAIR_START_KEY : 1);
+          newHandler.setPair(this.isRangesInverted ? RANGE_PAIR_START_KEY : 1);
         }
         if (index === 1) {
-          newHandler.setRangePair(this.isRangesInverted ? RANGE_PAIR_END_KEY : 0);
+          newHandler.setPair(this.isRangesInverted ? RANGE_PAIR_END_KEY : 0);
         }
       } else {
         newHandler
-          .setRangePair(this.isRangesInverted ? RANGE_PAIR_END_KEY : RANGE_PAIR_START_KEY);
+          .setPair(this.isRangesInverted ? RANGE_PAIR_END_KEY : RANGE_PAIR_START_KEY);
       }
       return newHandler;
     });
@@ -249,13 +243,7 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
   }
 
   public getWorkZoneLength(): number {
-    const { handlerSize } = this;
-    const scaleSize = this.getScaleLength();
-    return scaleSize - handlerSize;
-  }
-
-  public calculateHandlerOffset(relativePosition: number): number {
-    return this.getWorkZoneLength() * relativePosition;
+    return this.scale.getWorkZoneLength();
   }
 
   public calculateRelativeHandlerSize(): number {
@@ -285,10 +273,10 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
       this.stepPart = stepPart;
     }
     if (Number.isFinite(min)) {
-      this.min = min;
+      this.minIndex = min;
     }
     if (Number.isFinite(max)) {
-      this.max = max;
+      this.maxIndex = max;
     }
     this.isMarkupVisible = isMarkupVisible ?? this.isMarkupVisible;
     this.setTooltipsVisibility(isTooltipsVisible);
@@ -298,16 +286,15 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
   }
 
   private initProperties({
-    isVertical, isInverted, isTooltipsVisible, isMarkupVisible,
-  }: SliderVisualParams = {}): void {
-    this.isVertical = isVertical ?? isVertical;
-    this.isRangesInverted = isInverted ?? this.isRangesInverted;
-    if (isTooltipsVisible !== undefined) {
-      this.setTooltipsVisibility(isTooltipsVisible);
-    }
-    if (isMarkupVisible !== undefined) {
-      this.isMarkupVisible = isMarkupVisible;
-    }
+    isVertical, isInverted, isTooltipsVisible, isMarkupVisible, min, max, stepPart,
+  }: SliderData & PositioningParams): void {
+    this.isVertical = isVertical;
+    this.isRangesInverted = isInverted;
+    this.isMarkupVisible = isMarkupVisible;
+    this.minIndex = min;
+    this.maxIndex = max;
+    this.stepPart = stepPart;
+    this.setTooltipsVisibility(isTooltipsVisible);
   }
 
   private setHandlerSize(): void {
@@ -330,11 +317,12 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     wrap.classList.add(DEFAULT_SLIDER_CLASS);
     parentElement.append(wrap);
 
-    Object.keys(this.elements).forEach((elementName) => {
-      if (elementName === 'wrap') return;
+    Object.entries(this.elements).forEach((entry) => {
+      const key = entry[0];
+      const element = entry[1];
+      if (key === 'wrap') return;
 
-      const element = this.elements[elementName];
-      element.classList.add(`${DEFAULT_SLIDER_CLASS}__${elementName}`);
+      element.classList.add(`${DEFAULT_SLIDER_CLASS}__${key}`);
     });
 
     this.elements.body.addEventListener('mousedown', preventDefault);
@@ -346,6 +334,10 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     this.elements.body.append(this.elements.handlers);
 
     this.setOrientation(this.isVertical);
+  }
+
+  private initScale(): void {
+    this.scale = new ScaleView(this, this.elements.scale);
   }
 
   private setMouseEvents(): void {
@@ -393,7 +385,7 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
   }
 
   private handleMouseDown = (event: MouseEvent): void => {
-    const closestHandler = this.getClosestToMouseHandler(event.clientX, event.clientY);
+    const closestHandler = this.getHandlerClosestToMouse(event.clientX, event.clientY);
 
     if (!closestHandler) { return; }
 
@@ -407,18 +399,17 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
   }
 
   private handleMouseMove = (event: MouseEvent): HandlerPositionData => {
-    let result: HandlerPositionData = { handlerIndex: null, position: null };
-    const closestHandler = this.getClosestToMouseHandler(event.clientX, event.clientY);
-    if (closestHandler !== this.activeHandler) { return result; }
+    const closestHandler = this.getHandlerClosestToMouse(event.clientX, event.clientY);
+    if (closestHandler !== this.activeHandler) { return null; }
 
     this.activateHandler(closestHandler);
 
-    const mousePosition = this.calculateMouseRelativePos(event);
+    const mousePosition = this.calculateMouseRelativePosition(event);
     let standardMousePosition: number;
-
     const stepsRemainder = 1 % this.stepPart;
     const penultimatePosition = 1 - stepsRemainder;
-    if (mousePosition > penultimatePosition && stepsRemainder !== 0) {
+    const withRemainder = stepsRemainder !== 0;
+    if (mousePosition > penultimatePosition && withRemainder) {
       standardMousePosition = standardize(mousePosition, {
         min: penultimatePosition,
         max: 1,
@@ -433,10 +424,10 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     }
 
     if (standardMousePosition === roundToDecimal(closestHandler.getPositionPart(), 4)) {
-      return result;
+      return null;
     }
 
-    result = { handlerIndex: closestHandler.getIndex(), position: standardMousePosition };
+    const result = { handlerIndex: closestHandler.getIndex(), position: standardMousePosition };
     if (this.observers.handleMouseMove) {
       this.observers.handleMouseMove.callListeners(result);
     }
@@ -459,16 +450,18 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     }
   }
 
-  private getClosestToMouseHandler(mouseX: number, mouseY: number): HandlerView {
-    return this.isVertical ? this.findClosestHandler(mouseY) : this.findClosestHandler(mouseX);
+  private getHandlerClosestToMouse(mouseX: number, mouseY: number): HandlerView {
+    return this.isVertical
+      ? this.findHandlerClosestToMouse(mouseY)
+      : this.findHandlerClosestToMouse(mouseX);
   }
 
-  private findClosestHandler(mouseCoordinate: number): HandlerView {
+  private findHandlerClosestToMouse(mouseCoordinate: number): HandlerView {
     let minDistance = Number.MAX_VALUE;
     let closestHandler: HandlerView = null;
 
     this.handlers.forEach((handler) => {
-      const distance = Math.abs(handler.getPositionCoordinate() - mouseCoordinate);
+      const distance = handler.calculateDistanceToMouse(mouseCoordinate);
 
       if (minDistance > distance) {
         closestHandler = handler;
@@ -479,19 +472,19 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     return closestHandler;
   }
 
-  private findSuitableHandler(firstHandler: HandlerView): HandlerView {
+  private findPairedHandler(firstHandler: HandlerView): HandlerView {
     return this.handlers.find(
-      (handler) => handler.getIndex() === firstHandler.getRangePair(),
+      (handler) => handler.getIndex() === firstHandler.getPair(),
     );
   }
 
   private createRange(handler: HandlerView): RangeView {
-    if (handler.getRangePair() === null) { return null; }
+    if (handler.getPair() === null) { return null; }
 
-    const pairedHandler = this.findSuitableHandler(handler);
+    const pairedHandler = this.findPairedHandler(handler);
 
-    const isPairedWithStart = handler.getRangePair() === RANGE_PAIR_START_KEY;
-    const isPairedWithEnd = (handler.getRangePair() === RANGE_PAIR_END_KEY);
+    const isPairedWithStart = handler.getPair() === RANGE_PAIR_START_KEY;
+    const isPairedWithEnd = handler.getPair() === RANGE_PAIR_END_KEY;
     const isPairedWithHandler = !isPairedWithStart && !isPairedWithEnd;
     if (isPairedWithHandler && !pairedHandler) { return null; }
 
@@ -534,8 +527,8 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
       range.refreshPosition();
     });
 
-    this.elements.min.innerText = this.min?.toFixed(2);
-    this.elements.max.innerText = this.max?.toFixed(2);
+    this.elements.min.innerText = this.minIndex?.toFixed(2);
+    this.elements.max.innerText = this.maxIndex?.toFixed(2);
   }
 }
 

@@ -41,14 +41,14 @@ interface ScaleOwner {
   getScaleEnd(): number;
   getScaleBorderWidth(): number;
   calculateShrinkRatio(): number;
-
   getScaleLength(): number;
+  getWorkZoneLength(): number;
 }
 
 interface HandlersOwner {
   getStepPart(): number;
+  getHandlerSize(): number;
   calculateRelativeHandlerSize(): number;
-  calculateHandlerOffset(relativePosition: number): number;
 }
 
 interface SliderElement {

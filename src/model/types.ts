@@ -28,6 +28,7 @@ type SliderVisualData = {
   isVertical: boolean;
   isTooltipsVisible: boolean;
   isMarkupVisible: boolean;
+  isInverted: boolean;
 }
 
 type HandlerModelData = HandlerData & { itemIndex: number };

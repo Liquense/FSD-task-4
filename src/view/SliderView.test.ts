@@ -84,8 +84,8 @@ describe('Инициализация', () => {
         ],
       },
     );
-    expect(testSlider['handlers'][0].getRangePair()).toBe(1);
-    expect(testSlider['handlers'][1].getRangePair()).toBe(0);
+    expect(testSlider['handlers'][0].getPair()).toBe(1);
+    expect(testSlider['handlers'][1].getPair()).toBe(0);
 
     testSlider.setRangesInversion(true);
     testSlider.initHandlers(
@@ -98,7 +98,7 @@ describe('Инициализация', () => {
         ],
       },
     );
-    expect(testSlider['handlers'][0].getRangePair()).toBe('end');
+    expect(testSlider['handlers'][0].getPair()).toBe('end');
 
     testSlider.setRangesInversion(false);
     testSlider.initHandlers(
@@ -111,7 +111,7 @@ describe('Инициализация', () => {
         ],
       },
     );
-    expect(testSlider['handlers'][0].getRangePair()).toBe('start');
+    expect(testSlider['handlers'][0].getPair()).toBe('start');
 
     testSlider.initHandlers(
       {
@@ -129,9 +129,9 @@ describe('Инициализация', () => {
         ],
       },
     );
-    expect(testSlider['handlers'][0].getRangePair()).toBe('start');
-    expect(testSlider['handlers'][1].getRangePair()).toBe(null);
-    expect(testSlider['handlers'][2].getRangePair()).toBe('end');
+    expect(testSlider['handlers'][0].getPair()).toBe('start');
+    expect(testSlider['handlers'][1].getPair()).toBe(null);
+    expect(testSlider['handlers'][2].getPair()).toBe('end');
   });
 
   describe('Связывание хэндлеров в диапазоны', () => {
@@ -273,8 +273,8 @@ describe('Инициализация', () => {
 
             expect(testSlider['activeHandler'].getBody()).toBe(document.activeElement);
 
-            if ((testSlider.calculateMouseRelativePos(testMouseDownEvent) !== 0.4)
-                && (testSlider.calculateMouseRelativePos(testMouseDownEvent) !== 0.9)) {
+            if ((testSlider.calculateMouseRelativePosition(testMouseDownEvent) !== 0.4)
+                && (testSlider.calculateMouseRelativePosition(testMouseDownEvent) !== 0.9)) {
               expect(mockView.handleHandlerPositionChanged).toBeCalledWith(
                 { handlerIndex: testSlider['activeHandler'].getIndex(), position: i / 100 },
               );
@@ -567,7 +567,7 @@ describe('Функции', () => {
     expect(newStartHandler.getPositionPart()).toBe(testParams.positionPart);
     expect(newStartHandler.getItem()).toBe(testParams.item);
     expect(newStartHandler.getIndex()).toBe(testParams.handlerIndex);
-    expect(newStartHandler.getRangePair()).toBe(testParams.rangePair);
+    expect(newStartHandler.getPair()).toBe(testParams.rangePair);
     expect(testSlider['ranges']).toStrictEqual(prevRanges);
 
     testParams.handlerIndex = 22;
