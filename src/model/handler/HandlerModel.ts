@@ -6,10 +6,10 @@ class HandlerModel implements Handler {
   private position: number;
 
   constructor(
-        private item: Presentable,
-        private itemIndex: number,
-        private readonly parentModel: SliderDataContainer & ModelItemManager,
-        public handlerIndex: number,
+    private item: Presentable,
+    private itemIndex: number,
+    private readonly parentModel: SliderDataContainer & ModelItemManager,
+    public handlerIndex: number,
   ) {
     this.setItemIndex(itemIndex);
   }

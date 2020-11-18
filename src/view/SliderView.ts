@@ -42,12 +42,12 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
   private isVertical: boolean;
 
   private elements: {
-      wrap: HTMLElement;
-      body: HTMLElement;
-      scale: HTMLElement;
-      handlers: HTMLElement;
-      min: HTMLElement;
-      max: HTMLElement;
+    wrap: HTMLElement;
+    body: HTMLElement;
+    scale: HTMLElement;
+    handlers: HTMLElement;
+    min: HTMLElement;
+    max: HTMLElement;
   };
 
   private activeHandler: HandlerView;
