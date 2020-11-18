@@ -217,11 +217,12 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
   private initHandlers(isRange: boolean, values: number[], handlers: HandlerPluginParams[]): void {
     if (handlers?.length) {
       this.isHandlersCustom = true;
-      this.createHandlers(handlers);
+      const handlersItemIndexes = handlers.map((handler) => handler.itemIndex);
+      this.createHandlers(handlersItemIndexes);
     } else {
-      const handlersNumber = isRange ? 2 : 1;
+      const handlersCount = isRange ? 2 : 1;
       this.isHandlersCustom = false;
-      this.initDefaultHandlers(handlersNumber, values);
+      this.initDefaultHandlersData(handlersCount, values);
     }
   }
 
@@ -240,22 +241,20 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
     });
   }
 
-  private initDefaultHandlers(handlersCount: number, itemIndexes?: number[]): void {
+  private initDefaultHandlersData(handlersCount: number, itemIndexes?: number[]): void {
     this.handlers = [];
     const part = this.getRange() / (handlersCount + 1);
-
-    const handlersItemIndexes = [];
-    for (let i = 0; i < handlersCount; i += 1) {
-      if (Number.isFinite(itemIndexes?.[i])) {
-        handlersItemIndexes.push({
-          itemIndex: standardize(itemIndexes[i], this.getStandardizeParams()),
-        });
+    const handlersItemIndexes = new Array(handlersCount).fill(null);
+    handlersItemIndexes.forEach((value, index) => {
+      if (Number.isFinite(itemIndexes?.[index])) {
+        handlersItemIndexes[index] = standardize(itemIndexes[index], this.getStandardizeParams());
       } else {
-        handlersItemIndexes.push({
-          itemIndex: standardize(this.min + (i + 1) * part, this.getStandardizeParams()),
-        });
+        handlersItemIndexes[index] = standardize(
+          this.min + ((index + 1) * part), this.getStandardizeParams(),
+        );
       }
-    }
+    });
+
     this.createHandlers(handlersItemIndexes);
   }
 
@@ -306,15 +305,15 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
     this.max = itemsCount - 1;
   }
 
-  private createHandlers(handlersItemIndexes: { itemIndex: number }[]): void {
+  private createHandlers(handlersItemIndexes: number[]): void {
     if (!handlersItemIndexes?.length) { return; }
 
     this.occupiedItems = [];
     this.handlers = [];
     const reducer = (
-      newHandlers: HandlerModel[], handler: { itemIndex?: number },
+      newHandlers: HandlerModel[], handler: number,
     ): HandlerModel[] => {
-      const itemIndex = standardize(handler.itemIndex, this.getStandardizeParams());
+      const itemIndex = standardize(handler, this.getStandardizeParams());
       const newHandler = this.createHandler(itemIndex, newHandlers.length);
       if (newHandler !== null) {
         newHandlers.push(newHandler);
