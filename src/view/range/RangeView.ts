@@ -1,9 +1,7 @@
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_OPTIONS } from '../../constants';
 
-import { Orientable, ScaleOwner } from '../interfaces';
-
 import HandlerView from '../handler/HandlerView';
-import { Observer } from '../../utils/Observer/Observer';
+import { RangeViewUpdateParams } from './types';
 
 class RangeView {
   private startHandler: HandlerView;
@@ -15,15 +13,14 @@ class RangeView {
   private element: HTMLElement;
 
   constructor(
-    private parentSlider: Orientable & ScaleOwner,
     public parentElement: HTMLElement,
+    refreshParams: RangeViewUpdateParams,
     firstHandler: HandlerView,
     secondHandler?: HandlerView,
   ) {
     this.initHandlers(firstHandler, secondHandler);
     this.createElement();
-    this.addHandlersRefreshListener();
-    requestAnimationFrame(this.refreshPosition);
+    this.updatePosition(refreshParams);
   }
 
   public getStartHandler(): HandlerView {
@@ -34,16 +31,18 @@ class RangeView {
     return this.endHandler;
   }
 
-  public refreshPosition = (): void => {
-    const { parentSlider } = this;
-
+  public updatePosition = (
+    {
+      isVertical, scaleStart, scaleEnd, scaleBorderWidth, offsetDirection, expandDimension,
+    }: RangeViewUpdateParams,
+  ): void => {
     const firstCoordinate = this.startHandler
-      ? this.startHandler.getPositionCoordinate() - parentSlider.getScaleStart()
-      : parentSlider.getScaleBorderWidth();
-    const scaleLength = Math.abs(parentSlider.getScaleStart() - parentSlider.getScaleEnd());
+      ? this.startHandler.getPositionCoordinate(isVertical) - scaleStart
+      : scaleBorderWidth;
+    const scaleLength = Math.abs(scaleStart - scaleEnd);
     const secondCoordinate = this.endHandler
-      ? this.endHandler.getPositionCoordinate() - parentSlider.getScaleStart()
-      : scaleLength - parentSlider.getScaleBorderWidth();
+      ? this.endHandler.getPositionCoordinate(isVertical) - scaleStart
+      : scaleLength - scaleBorderWidth;
 
     const startCoordinate = Math.min(firstCoordinate, secondCoordinate);
     const endCoordinate = Math.max(firstCoordinate, secondCoordinate);
@@ -52,8 +51,8 @@ class RangeView {
 
     this.clearPositionStyles();
 
-    this.element.style[parentSlider.getOffsetDirection()] = `${offset}px`;
-    this.element.style[parentSlider.getExpandDimension()] = `${length}px`;
+    this.element.style[offsetDirection] = `${offset}px`;
+    this.element.style[expandDimension] = `${length}px`;
   }
 
   public hasHandler(handler: HandlerView): boolean {
@@ -61,18 +60,7 @@ class RangeView {
   }
 
   public remove(): void {
-    Observer.removeListener('refreshPosition', this.startHandler, this.refreshPosition);
-    Observer.removeListener('refreshPosition', this.endHandler, this.refreshPosition);
     this.element.remove();
-  }
-
-  private addHandlersRefreshListener(): void {
-    if (this.startHandler) {
-      Observer.addListener('refreshPosition', this.startHandler, this.refreshPosition);
-    }
-    if (this.endHandler) {
-      Observer.addListener('refreshPosition', this.endHandler, this.refreshPosition);
-    }
   }
 
   private initHandlers(firstHandler: HandlerView, secondHandler: HandlerView): void {

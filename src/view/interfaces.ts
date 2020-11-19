@@ -1,18 +1,12 @@
-import { HandlerModelData, PositioningData, SliderModelParams } from '../model/types';
-import { HandlerPositionData } from './types';
+import { HandlerModelData } from '../model/types';
+import { HandlerPositionData, SliderViewUpdateParams } from './types';
 
 interface View {
-  getBody(): HTMLElement;
+  update(parameters?: SliderViewUpdateParams): void;
 
-  updateVisuals(parameters?: SliderModelParams): void;
+  handleHandlerPositionChanged(handlerPositionData: HandlerPositionData): void;
 
-  updatePositioning(positioningData: PositioningData): void;
-
-  handleHandlerPositionChanged({ handlerIndex, position }: HandlerPositionData): {
-    handlerIndex: number; positionPart: number;
-  };
-
-  handlerValueChangedListener(data: HandlerModelData): void;
+  setHandlersData(handlers: HandlerModelData[]): void;
 
   initHandlers(
     handlersData: { isCustomHandlers: boolean; handlersArray: HandlerModelData[] }
@@ -51,12 +45,8 @@ interface HandlersOwner {
   calculateRelativeHandlerSize(): number;
 }
 
-interface SliderElement {
-  getOwnerSlider(): Slider;
-}
-
 type Slider = Orientable & SliderContainer & ScaleOwner & HandlersOwner;
 
 export {
-  SliderContainer, ScaleOwner, HandlersOwner, SliderElement, Orientable, View, Slider,
+  SliderContainer, ScaleOwner, HandlersOwner, Orientable, View, Slider,
 };

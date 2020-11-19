@@ -1,7 +1,9 @@
 import { DEFAULT_SLIDER_CLASS } from '../../constants';
 
-import { Slider } from '../interfaces';
 import { roundToDecimal, standardize } from '../../utils/functions';
+import { ExpandDimension } from '../types';
+
+import { MarkParams, MarkupParams } from './types';
 
 class MarkupView {
   private wrap: HTMLElement;
@@ -10,21 +12,27 @@ class MarkupView {
 
   private static DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__markup`;
 
-  constructor(private ownerSlider: Slider) {
-    this.createWrap();
+  constructor(sliderBody: HTMLElement, handlersContainer: HTMLElement) {
+    this.createWrap(sliderBody, handlersContainer);
   }
 
   public getWrap(): HTMLElement {
     return this.wrap;
   }
 
-  public createMarks(): void {
-    const stepPart = this.ownerSlider.getStepPart();
-    for (let i = 0; i <= 1; i = roundToDecimal(i + stepPart, 5)) {
-      const standardPosition = standardize(i, { min: 0, max: 1, step: stepPart });
-      const shrinkPosition = standardPosition * this.ownerSlider.calculateShrinkRatio();
-      this.addMark(shrinkPosition, this.ownerSlider.calculateRelativeHandlerSize());
+  public createMarks(markupParams: MarkupParams): void {
+    for (let i = 0; i <= 1; i = roundToDecimal(i + markupParams.stepPart, 5)) {
+      const standardPosition = standardize(i, { min: 0, max: 1, step: markupParams.stepPart });
+      const shrinkPosition = standardPosition * markupParams.shrinkRatio;
+      this.addMark({ ...markupParams, ...{ relativePosition: shrinkPosition } });
     }
+  }
+
+  private createWrap(sliderBody: HTMLElement, handlersContainer: HTMLElement): void {
+    this.wrap = document.createElement('div');
+    this.wrap.classList.add(`${MarkupView.DEFAULT_CLASS}-wrap`);
+
+    sliderBody.insertBefore(this.wrap, handlersContainer);
   }
 
   public clearAllMarks(): void {
@@ -32,35 +40,16 @@ class MarkupView {
     this.wrap.innerHTML = '';
   }
 
-  public addMark(relativePosition: number, relativeHandlerSize: number): void {
+  private addMark(markParams: MarkParams): void {
     const newMark = this.createMarkHTML();
     this.marks.push(newMark);
 
-    const markOffset = this.calculateMarkOffset(relativePosition, relativeHandlerSize);
-    const offsetDirection = this.ownerSlider.getOffsetDirection();
-    newMark.style[offsetDirection] = `${markOffset}%`;
+    const markOffset = this.calculateMarkOffset(markParams);
+    newMark.style[markParams.offsetDirection] = `${markOffset}%`;
   }
 
-  private getMarkThickness(): number {
-    const dimension = this.ownerSlider.getExpandDimension();
+  private getMarkThickness(dimension: ExpandDimension): number {
     return this.marks[0].getBoundingClientRect()[dimension];
-  }
-
-  private getRelativeMarkThickness(): number {
-    const relativeMarkThickness = this.ownerSlider.calculateShrinkRatio()
-      * (this.getMarkThickness() / this.ownerSlider.getScaleLength());
-
-    return this.ownerSlider.getScaleLength() ? relativeMarkThickness : 0;
-  }
-
-  private createWrap(): void {
-    this.wrap = document.createElement('div');
-
-    this.wrap.classList.add(`${MarkupView.DEFAULT_CLASS}-wrap`);
-
-    this.ownerSlider
-      .getBodyElement()
-      .insertBefore(this.wrap, this.ownerSlider.getHandlersContainer());
   }
 
   private createMarkHTML(): HTMLElement {
@@ -71,14 +60,22 @@ class MarkupView {
     return newMark;
   }
 
-  private calculateMarkOffset(relativePosition: number, relativeHandlerSize: number): number {
-    const relativeMarkThicknessHalf = this.getRelativeMarkThickness() / 2;
-    const relativeHandlerSizeHalf = relativeHandlerSize / 2;
+  private calculateMarkOffset(markParams: MarkParams): number {
+    const relativeMarkThicknessHalf = this.getRelativeMarkThickness(markParams) / 2;
+    const relativeHandlerSizeHalf = markParams.relativeHandlerSize / 2;
 
     return Number(
-      (100 * (relativePosition + relativeHandlerSizeHalf - relativeMarkThicknessHalf))
+      (100 * (markParams.relativePosition + relativeHandlerSizeHalf - relativeMarkThicknessHalf))
         .toFixed(4),
     );
+  }
+
+  private getRelativeMarkThickness(
+    { shrinkRatio, expandDimension, scaleLength }: MarkParams,
+  ): number {
+    const relativeMarkThickness = shrinkRatio
+      * (this.getMarkThickness(expandDimension) / scaleLength);
+    return scaleLength ? relativeMarkThickness : 0;
   }
 }
 

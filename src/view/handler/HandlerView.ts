@@ -3,13 +3,13 @@ import { Presentable } from '../../utils/types';
 
 import { calculateElementCenter } from '../../utils/functions';
 
-import { Slider, SliderElement } from '../interfaces';
-import { HandlerPair, HandlerViewParams } from '../types';
+import { ExpandDimension, HandlerPair, HandlerViewParams } from '../types';
 
 import TooltipView from './tooltip/TooltipView';
 import { Observable, Observer } from '../../utils/Observer/Observer';
+import { HandlerViewSetPositionParams, HandlerViewUpdatePositionParams } from './types';
 
-class HandlerView implements Observable, SliderElement {
+class HandlerView implements Observable {
   public observers: { [key: string]: Observer } = {};
 
   private readonly tooltip: TooltipView;
@@ -29,26 +29,26 @@ class HandlerView implements Observable, SliderElement {
 
   private additionalClasses: string[] = [];
 
-  constructor(private ownerSlider: Slider, params: HandlerViewParams) {
-    this.initProperties(params);
-    this.createElement(ownerSlider.getHandlersContainer());
+  constructor(
+    handlersContainer: HTMLElement,
+    initParams: HandlerViewParams,
+    updatePositionParams: HandlerViewUpdatePositionParams,
+  ) {
+    this.initProperties(initParams);
+    this.createElement(handlersContainer);
 
-    this.index = params.handlerIndex;
+    this.index = initParams.handlerIndex;
     this.tooltip = new TooltipView(
       this.element.wrap,
-      this,
-      { isVisible: params.isTooltipVisible ?? true, item: params.item },
+      { isVisible: initParams.isTooltipVisible ?? true, item: initParams.item },
     );
-    this.setItem(params.item);
+    this.setItem(initParams.item);
+    this.updatePosition(updatePositionParams);
   }
 
-  public getOwnerSlider(): Slider {
-    return this.ownerSlider;
-  }
-
-  public getPositionCoordinate(): number {
+  public getPositionCoordinate(sliderIsVertical: boolean): number {
     const elementCenter = calculateElementCenter(this.element.body);
-    return this.ownerSlider.getIsVertical() ? elementCenter.y : elementCenter.x;
+    return sliderIsVertical ? elementCenter.y : elementCenter.x;
   }
 
   public getElement(): {wrap: HTMLElement; body: HTMLElement} {
@@ -75,9 +75,8 @@ class HandlerView implements Observable, SliderElement {
     return this.element.body;
   }
 
-  public getSize(dimension?: 'width' | 'height'): number {
-    const expandDimension = dimension ?? this.ownerSlider.getExpandDimension();
-    return this.element.body.getBoundingClientRect()[expandDimension];
+  public getSize(dimension: ExpandDimension): number {
+    return this.element.body.getBoundingClientRect()[dimension];
   }
 
   public getItem(): Presentable {
@@ -92,9 +91,15 @@ class HandlerView implements Observable, SliderElement {
     return this.tooltip.getElement();
   }
 
-  public updatePosition = (): void => {
-    const offset = this.calculateOffset();
-    const offsetDirection = this.ownerSlider.getOffsetDirection();
+  public setPosition(setPositionParams: HandlerViewSetPositionParams): void {
+    this.positionPart = setPositionParams.positionPart;
+    this.updatePosition(setPositionParams);
+  }
+
+  public updatePosition = (
+    { expandDimension, offsetDirection, workZoneLength }: HandlerViewUpdatePositionParams,
+  ): void => {
+    const offset = this.calculateOffset(workZoneLength, expandDimension);
 
     this.element.wrap.style.removeProperty('left');
     this.element.wrap.style.removeProperty('top');
@@ -107,17 +112,12 @@ class HandlerView implements Observable, SliderElement {
     }
   }
 
-  public setPosition(newPositionPart: number): void {
-    this.positionPart = newPositionPart;
-    this.updatePosition();
-  }
-
   public setTooltipVisibility(stateToSet: boolean): void {
     this.tooltip.setVisibility(stateToSet);
   }
 
-  public calculateDistanceToMouse(mouseCoordinate: number): number {
-    return Math.abs(this.getPositionCoordinate() - mouseCoordinate);
+  public calculateDistanceToMouse(mouseCoordinate: number, sliderIsVertical: boolean): number {
+    return Math.abs(this.getPositionCoordinate(sliderIsVertical) - mouseCoordinate);
   }
 
   public remove(): void {
@@ -144,11 +144,11 @@ class HandlerView implements Observable, SliderElement {
     wrap.appendChild(body);
   }
 
-  private calculateOffset(): number {
-    const shift = this.ownerSlider.getWorkZoneLength() * this.positionPart;
+  private calculateOffset(workZoneLength: number, expandDimension: ExpandDimension): number {
+    const shift = workZoneLength * this.positionPart;
 
-    const handlerSize = this.getSize();
-    const tooltipSize = this.tooltip.getSize();
+    const handlerSize = this.getSize(expandDimension);
+    const tooltipSize = this.tooltip.getSize(expandDimension);
     const tooltipExcess = Math.max(0, tooltipSize - handlerSize);
 
     return shift - 0.5 * tooltipExcess;

@@ -9,11 +9,12 @@ import { Presentable } from '../utils/types';
 import { Observable, Observer } from '../utils/Observer/Observer';
 import SliderView from '../view/SliderView';
 import { HandlerPair, HandlerPositionData } from '../view/types';
+import { View } from '../view/interfaces';
 
 class Controller {
   public readonly originalHTML: string;
 
-  private readonly view: SliderView & Observable;
+  private readonly view: View & Observable;
 
   private readonly model: SliderModel;
 
@@ -75,7 +76,9 @@ class Controller {
   }
 
   public addHandler(itemIndex: number, pair?: HandlerPair): HandlerModelData {
-    const handlerData = this.model.addHandler(itemIndex);
+    const handlerData = this.model.addHandler(itemIndex) ?? {
+      item: null, itemIndex: null, handlerIndex: null, positionPart: null,
+    };
     if (!handlerData) { return null; }
 
     this.addHandlerView({ ...handlerData, rangePair: pair });
@@ -86,7 +89,7 @@ class Controller {
   private addDefaultListeners(): void {
     Observer.addListener('handleHandlerValueChanged', this.model, this.passHandlerValueChange);
     Observer.addListener('removeHandler', this.model, this.removeHandlerInView);
-    Observer.addListener('handleMouseMove', this.view, this.passHandlerPositionChange);
+    Observer.addListener('handleHandlerPositionChanged', this.view, this.passHandlerPositionChange);
   }
 
   private removeHandlerInView = (handlerIndex: number): void => {
@@ -107,7 +110,7 @@ class Controller {
     this.view.setHandlersData([data]);
   }
 
-  private passHandlersData(targetView: SliderView, initHandlersData?: object[]): void {
+  private passHandlersData(targetView: View, initHandlersData?: object[]): void {
     const handlersData = this.getHandlersData(initHandlersData);
 
     targetView.initHandlers(handlersData);

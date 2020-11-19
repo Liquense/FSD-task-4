@@ -56,7 +56,12 @@ class SliderPanel {
     this.updateSliderData(viewData);
   }
 
-  private addHandler({ handlerIndex, positionPart, item }: HandlerModelData): void {
+  private addHandler(
+    handlerModelData: HandlerModelData,
+  ): void {
+    if (!handlerModelData) { return; }
+    const { handlerIndex, positionPart, item } = handlerModelData;
+
     const newHandlerSection = initHandlerSection(
       this.elements.handlersSection, handlerIndex, positionPart, item.toString(),
     );

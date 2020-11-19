@@ -1,57 +1,56 @@
-import { Slider } from '../interfaces';
 import { clamp } from '../../utils/functions';
+import { ExpandDimension, OffsetDirection, SliderViewData } from '../types';
 
 class ScaleView {
-  private readonly parentSlider: Slider;
-
   private readonly bodyElement: HTMLElement;
 
-  constructor(parentSlider: Slider, bodyElement: HTMLElement) {
-    this.parentSlider = parentSlider;
+  constructor(bodyElement: HTMLElement) {
     this.bodyElement = bodyElement;
   }
 
-  public getStart(): number {
-    return this.parentSlider.getIsVertical()
+  public getStart(isVertical: boolean): number {
+    return isVertical
       ? this.bodyElement.getBoundingClientRect().top
       : this.bodyElement.getBoundingClientRect().left;
   }
 
-  public getEnd(): number {
-    return this.parentSlider.getIsVertical()
+  public getEnd(isVertical: boolean): number {
+    return isVertical
       ? this.bodyElement.getBoundingClientRect().bottom
       : this.bodyElement.getBoundingClientRect().right;
   }
 
-  public getBorderWidth(): number {
+  public getBorderWidth(offsetDirection: OffsetDirection): number {
     return Number.parseFloat(
-      getComputedStyle(this.bodyElement)
-        .getPropertyValue(`border-${this.parentSlider.getOffsetDirection()}-width`),
+      getComputedStyle(this.bodyElement).getPropertyValue(`border-${offsetDirection}-width`),
     );
   }
 
-  public getLength(): number {
-    return this.bodyElement.getBoundingClientRect()[this.parentSlider.getExpandDimension()];
+  public getLength(expandDimension: ExpandDimension): number {
+    return this.bodyElement.getBoundingClientRect()[expandDimension];
   }
 
-  public calculateMouseRelativePosition(mouseEvent: MouseEvent): number {
-    const mouseCoordinate = this.parentSlider.getIsVertical()
-      ? mouseEvent.clientY : mouseEvent.clientX;
-    const initialOffset = this.parentSlider.getHandlerSize() / 2;
-    const scaledCoordinate = (mouseCoordinate - this.getStart() - initialOffset)
-      / this.calculateShrinkRatio();
+  public calculateMouseRelativePosition(
+    mouseEvent: MouseEvent, { isVertical, relativeHandlerSize, expandDimension }: SliderViewData,
+  ): number {
+    const mouseCoordinate = isVertical ? mouseEvent.clientY : mouseEvent.clientX;
+    const initialOffset = relativeHandlerSize / 2;
+    const scaledCoordinate = (mouseCoordinate - this.getStart(isVertical) - initialOffset)
+      / this.calculateShrinkRatio(expandDimension, relativeHandlerSize);
 
-    return clamp((scaledCoordinate) / this.getLength(), 0, 1);
+    return clamp((scaledCoordinate) / this.getLength(expandDimension), 0, 1);
   }
 
-  public getWorkZoneLength(): number {
-    const handlerSize = this.parentSlider.getHandlerSize();
-    const scaleSize = this.getLength();
+  public getWorkZoneLength(expandDimension: ExpandDimension, handlerSize: number): number {
+    const scaleSize = this.getLength(expandDimension);
     return scaleSize - handlerSize;
   }
 
-  public calculateShrinkRatio(): number {
-    return this.getWorkZoneLength() / this.getLength();
+  public calculateShrinkRatio(
+    expandDimension: ExpandDimension, handlerSize: number,
+  ): number {
+    return this.getWorkZoneLength(expandDimension, handlerSize)
+      / this.getLength(expandDimension);
   }
 }
 

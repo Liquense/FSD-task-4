@@ -1,13 +1,9 @@
 import { DEFAULT_SLIDER_CLASS } from '../../../constants';
 import { Presentable } from '../../../utils/types';
 
-import { SliderElement } from '../../interfaces';
+import { ExpandDimension } from '../../types';
 
-type TooltipViewParams = {
-  bodyHTML?: string;
-  item: Presentable;
-  isVisible?: boolean;
-};
+import { TooltipViewParams } from './types';
 
 class TooltipView {
   public static readonly DEFAULT_CLASS = `${DEFAULT_SLIDER_CLASS}__handler-tooltip`;
@@ -30,17 +26,14 @@ class TooltipView {
 
   constructor(
     parentElement: HTMLElement,
-    private ownerHandler: SliderElement,
     params?: TooltipViewParams,
   ) {
     this.createElement(parentElement);
     this.initProperties(params);
   }
 
-  public getSize(dimension?: 'height' | 'width'): number {
-    const expandDimension = dimension ?? this.ownerHandler.getOwnerSlider().getExpandDimension();
-
-    return this.element.getBoundingClientRect()[expandDimension];
+  public getSize(dimension: ExpandDimension): number {
+    return this.element.getBoundingClientRect()[dimension];
   }
 
   public getItem(): Presentable {
