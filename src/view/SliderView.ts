@@ -71,9 +71,9 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
   constructor(private bodyElement: HTMLElement, params: SliderData & PositioningData) {
     this.initProperties(params);
     this.createElements();
-    this.setMouseEvents();
-    this.setResizeObserver();
     this.initScale();
+    this.initMouseEvents();
+    this.initResizeObserver();
   }
 
   public setRangesInversion(isInverted: boolean): void {
@@ -210,6 +210,7 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     this.setHandlerSize();
     this.initMarkup();
     this.createRanges();
+    this.addHandlersObservers();
   }
 
   public addHandler(handlerParams: HandlerViewParams): void {
@@ -217,8 +218,9 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
       this,
       { ...handlerParams, isTooltipVisible: this.isTooltipsAlwaysVisible },
     );
-
     this.handlers.push(newHandler);
+    this.addHandlerObserver(newHandler);
+
     const newRange = this.createRange(newHandler);
     if (newRange) {
       this.ranges.push(newRange);
@@ -239,6 +241,7 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     });
 
     handlerToRemove.remove();
+    this.removeHandlerObserver(handlerToRemove);
     this.handlers.splice(handlerToRemoveIndex, 1);
   }
 
@@ -282,7 +285,7 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     this.setTooltipsVisibility(isTooltipsVisible);
     this.setOrientation(isVertical);
 
-    this.refreshElements();
+    this.updateElements();
   }
 
   private initProperties({
@@ -342,7 +345,7 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     this.scale = new ScaleView(this, this.elements.scale);
   }
 
-  private setMouseEvents(): void {
+  private initMouseEvents(): void {
     document.body.addEventListener(
       'mousedown',
       this.handleDocumentMouseDown,
@@ -357,8 +360,22 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     );
   }
 
-  private setResizeObserver(): void {
-    this.resizeObserver = new ResizeObserver(this.refreshElements);
+  private addHandlerObserver(handler: HandlerView): void {
+    Observer.addListener('updatePosition', handler, this.updateRanges);
+  }
+
+  private removeHandlerObserver(handler: HandlerView): void {
+    Observer.removeListener('updatePosition', handler, this.updateRanges);
+  }
+
+  private addHandlersObservers(): void {
+    this.handlers.forEach((handler) => {
+      this.addHandlerObserver(handler);
+    });
+  }
+
+  private initResizeObserver(): void {
+    this.resizeObserver = new ResizeObserver(this.updateElements);
     this.resizeObserver.observe(this.elements.body);
   }
 
@@ -518,16 +535,29 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     this.handlers = [];
   }
 
-  private refreshElements = (): void => {
+  private updateElements = (): void => {
     this.updateMarkup();
+    this.updateHandlers();
+    this.updateRanges();
+    this.updateMinMax();
+  }
 
+  private updateMinMax(): void {
+    this.elements.min.innerText = this.minIndex?.toFixed(2);
+    this.elements.max.innerText = this.maxIndex?.toFixed(2);
+  }
+
+  private updateHandlers(): void {
     this.handlers.forEach((handler) => {
-      handler.refreshPosition();
+      handler.updatePosition();
     });
+  }
 
+  private updateRanges = (): void => {
     this.ranges.forEach((range) => {
       range.refreshPosition();
     });
+  }
 
     this.elements.min.innerText = this.minIndex?.toFixed(2);
     this.elements.max.innerText = this.maxIndex?.toFixed(2);

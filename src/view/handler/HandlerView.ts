@@ -40,8 +40,6 @@ class HandlerView implements Observable, SliderElement {
       { isVisible: params.isTooltipVisible ?? true, item: params.item },
     );
     this.setItem(params.item);
-
-    requestAnimationFrame(this.refreshPosition);
   }
 
   public getOwnerSlider(): Slider {
@@ -94,7 +92,7 @@ class HandlerView implements Observable, SliderElement {
     return this.tooltip.getElement();
   }
 
-  public refreshPosition = (): void => {
+  public updatePosition = (): void => {
     const offset = this.calculateOffset();
     const offsetDirection = this.ownerSlider.getOffsetDirection();
 
@@ -104,14 +102,14 @@ class HandlerView implements Observable, SliderElement {
     this.element.wrap.style[offsetDirection] = `${offset}px`;
     this.tooltip.updateHTML();
 
-    if (this.observers.refreshPosition) {
-      this.observers.refreshPosition.callListeners();
+    if (this.observers.updatePosition) {
+      this.observers.updatePosition.callListeners();
     }
   }
 
   public setPosition(newPositionPart: number): void {
     this.positionPart = newPositionPart;
-    this.refreshPosition();
+    this.updatePosition();
   }
 
   public setTooltipVisibility(stateToSet: boolean): void {
