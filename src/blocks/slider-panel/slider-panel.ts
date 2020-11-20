@@ -1,4 +1,6 @@
 import './slider-panel.scss';
+import bind from 'bind-decorator';
+
 import { PanelElements, PanelProperties } from './types';
 
 import { SliderPluginParams } from '../../plugin/types';
@@ -163,7 +165,8 @@ class SliderPanel {
     };
   }
 
-  private handleCreateHandlerButtonClick = (): void => {
+  @bind
+  private handleCreateHandlerButtonClick(): void {
     const itemIndex = this.handlerCreationSection.getItemIndex();
     if (Number.isNaN(itemIndex)) return;
 
@@ -190,7 +193,8 @@ class SliderPanel {
     };
   }
 
-  private handleHandlerValueChange = (handlerData: HandlerModelData): void => {
+  @bind
+  private handleHandlerValueChange(handlerData: HandlerModelData): void {
     const changedHandler = this.handlers.find(
       (handler) => handler.getIndex() === handlerData?.handlerIndex,
     );
@@ -201,7 +205,8 @@ class SliderPanel {
     changedHandler.updateElements();
   }
 
-  private handleHandlerInputPositionChange = (handlerIndex: number, event: Event): void => {
+  @bind
+  private handleHandlerInputPositionChange(handlerIndex: number, event: Event): void {
     let inputElement: HTMLInputElement;
     if (event.target instanceof HTMLInputElement) {
       inputElement = event.target;
@@ -212,7 +217,8 @@ class SliderPanel {
     this.slider.callPluginFunction('moveHandler', handlerIndex, newPosition);
   }
 
-  private handleHandlerInputItemChange = (handlerIndex: number, event: Event): void => {
+  @bind
+  private handleHandlerInputItemChange(handlerIndex: number, event: Event): void {
     let inputElement: HTMLInputElement;
     if (event.target instanceof HTMLInputElement) {
       inputElement = event.target;
@@ -222,7 +228,8 @@ class SliderPanel {
     this.slider.callPluginFunction('setHandlerItem', handlerIndex, newItem);
   }
 
-  private handleRemoveHandler = (removedHandlerIndex: number): void => {
+  @bind
+  private handleRemoveHandler(removedHandlerIndex: number): void {
     this.removeHandlerFromPanel(removedHandlerIndex);
   }
 

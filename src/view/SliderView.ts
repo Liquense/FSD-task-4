@@ -1,4 +1,5 @@
 import { ResizeObserver } from 'resize-observer';
+import bind from 'bind-decorator';
 
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../constants';
 
@@ -368,7 +369,8 @@ class SliderView implements Observable, View {
     this.resizeObserver.observe(this.elements.body);
   }
 
-  private handleWindowMouseOut = (event: MouseEvent): void => {
+  @bind
+  private handleWindowMouseOut(event: MouseEvent): void {
     const { target } = event;
     const nodeNameKey = 'nodeName';
 
@@ -378,7 +380,8 @@ class SliderView implements Observable, View {
     }
   }
 
-  private handleDocumentMouseDown = (event: MouseEvent): void => {
+  @bind
+  private handleDocumentMouseDown(event: MouseEvent): void {
     if (!(event.target instanceof HTMLElement)) return;
 
     const { target } = event;
@@ -387,12 +390,14 @@ class SliderView implements Observable, View {
     }
   }
 
-  private handleMouseUp = (): void => {
+  @bind
+  private handleMouseUp(): void {
     document.body.removeEventListener('mousemove', this.handleMouseMove);
     document.body.removeEventListener('mouseout', this.handleWindowMouseOut);
   }
 
-  private handleMouseDown = (event: MouseEvent): void => {
+  @bind
+  private handleMouseDown(event: MouseEvent): void {
     const closestHandler = this.getHandlerClosestToMouse(event.clientX, event.clientY);
 
     if (!closestHandler) { return; }
@@ -406,7 +411,8 @@ class SliderView implements Observable, View {
     window.addEventListener('mouseout', this.handleWindowMouseOut);
   }
 
-  private handleMouseMove = (event: MouseEvent): HandlerPositionData => {
+  @bind
+  private handleMouseMove(event: MouseEvent): HandlerPositionData {
     const closestHandler = this.getHandlerClosestToMouse(event.clientX, event.clientY);
     if (closestHandler !== this.activeHandler) { return null; }
 
@@ -503,7 +509,8 @@ class SliderView implements Observable, View {
     );
   }
 
-  private initMarkup = (): void => {
+  @bind
+  private initMarkup(): void {
     this.markup = new MarkupView(this.elements.body, this.elements.handlers);
     this.updateMarkup();
   }
@@ -531,7 +538,8 @@ class SliderView implements Observable, View {
     this.handlers = [];
   }
 
-  private updateElements = (): void => {
+  @bind
+  private updateElements(): void {
     this.updateMarkup();
     this.updateHandlers();
     this.updateRanges();
@@ -549,7 +557,8 @@ class SliderView implements Observable, View {
     });
   }
 
-  private updateRanges = (): void => {
+  @bind
+  private updateRanges(): void {
     this.ranges.forEach((range) => {
       range.updatePosition(this.makeRangeViewUpdateParams());
     });

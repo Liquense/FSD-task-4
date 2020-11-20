@@ -1,3 +1,5 @@
+import bind from 'bind-decorator';
+
 import { DEFAULT_SLIDER_CLASS } from '../../constants';
 import { Presentable } from '../../utils/types';
 
@@ -97,9 +99,10 @@ class HandlerView implements Observable {
     this.updatePosition(setPositionParams);
   }
 
-  public updatePosition = (
+  @bind
+  public updatePosition(
     { expandDimension, offsetDirection, workZoneLength }: HandlerViewUpdatePositionParams,
-  ): void => {
+  ): void {
     const offset = this.calculateOffset(workZoneLength, expandDimension);
 
     this.element.wrap.style.removeProperty('left');

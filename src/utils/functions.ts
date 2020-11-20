@@ -52,7 +52,9 @@ function calculateElementCenter(DOMElement: Element): { x: number; y: number } {
   };
 }
 
-const preventDefault = (event: Event): void => event.preventDefault();
+function preventDefault(event: Event): void {
+  event.preventDefault();
+}
 
 function initBlocks<T extends object>(
   rootElement: JQuery | HTMLElement,

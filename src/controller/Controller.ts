@@ -1,3 +1,4 @@
+import bind from 'bind-decorator';
 import SliderModel from '../model/SliderModel';
 import {
   HandlerModelData,
@@ -90,7 +91,8 @@ class Controller {
     Observer.addListener('handleHandlerPositionChanged', this.view, this.passHandlerPositionChange);
   }
 
-  private removeHandlerInView = (handlerIndex: number): void => {
+  @bind
+  private removeHandlerInView(handlerIndex: number): void {
     this.view.removeHandler(handlerIndex);
   }
 
@@ -98,13 +100,13 @@ class Controller {
     this.view.update(this.model.getPositioningData());
   }
 
-  private passHandlerPositionChange = (
-    data: HandlerPositionData,
-  ): void => {
+  @bind
+  private passHandlerPositionChange(data: HandlerPositionData): void {
     this.model.handleHandlerPositionChanged(data);
   }
 
-  private passHandlerValueChange = (data: HandlerModelData): void => {
+  @bind
+  private passHandlerValueChange(data: HandlerModelData): void {
     this.view.setHandlersData([data]);
   }
 

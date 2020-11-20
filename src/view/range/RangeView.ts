@@ -1,3 +1,5 @@
+import bind from 'bind-decorator';
+
 import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_OPTIONS } from '../../constants';
 
 import HandlerView from '../handler/HandlerView';
@@ -31,11 +33,12 @@ class RangeView {
     return this.endHandler;
   }
 
-  public updatePosition = (
+  @bind
+  public updatePosition(
     {
       isVertical, scaleStart, scaleEnd, scaleBorderWidth, offsetDirection, expandDimension,
     }: RangeViewUpdateParams,
-  ): void => {
+  ): void {
     const firstCoordinate = this.startHandler
       ? this.startHandler.getPositionCoordinate(isVertical) - scaleStart
       : scaleBorderWidth;
