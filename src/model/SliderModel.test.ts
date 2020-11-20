@@ -71,7 +71,7 @@ describe('Инициализация', () => {
 
     describe('Создание хэндлеров с пользовательскими значениями', () => {
       let prevHandlers: HandlerModel[];
-      let testHandlers = [{ itemIndex: 0 }, { itemIndex: 4 }];
+      let testHandlers = [0, 4];
 
       beforeAll(() => {
         testModel.setItems(null);
@@ -104,12 +104,12 @@ describe('Инициализация', () => {
         testModel['min'] = 0;
         testModel['max'] = 1;
         testModel['step'] = 1;
-        testModel['createHandlers']([{ itemIndex: 0 }, { itemIndex: 2 }, { itemIndex: 1 }]);
+        testModel['createHandlers']([0, 2, 1]);
         expect(testModel['handlers'].length).toBe(2);
       });
 
       test('Cоздание хэндлеров при наличии пользовательского набора значений', () => {
-        testHandlers = [{ itemIndex: 1 }, { itemIndex: 4 }];
+        testHandlers = [1, 4];
         testModel.setItems([1, 'test', 3]);
         testModel['createHandlers'](testHandlers);
         expect(testModel['handlers'][0].handlerIndex).toBe(0);

@@ -19,9 +19,7 @@ import {
   SliderViewUpdateParams,
 } from './types';
 
-import {
-  HandlersOwner, Orientable, ScaleOwner, SliderContainer,
-} from './interfaces';
+import { View } from './interfaces';
 import HandlerView from './handler/HandlerView';
 import RangeView from './range/RangeView';
 import MarkupView from './markup/MarkupView';
@@ -30,7 +28,7 @@ import { Observable, Observer } from '../utils/Observer/Observer';
 import { RangeViewUpdateParams } from './range/types';
 import { HandlerViewUpdatePositionParams } from './handler/types';
 
-class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwner, Observable {
+class SliderView implements Observable, View {
   public observers: { [key: string]: Observer } = {};
 
   private isRangesInverted = false;
@@ -78,121 +76,10 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     this.initResizeObserver();
   }
 
-  public setRangesInversion(isInverted: boolean): void {
-    this.isRangesInverted = isInverted;
-  }
-
   public handleHandlerPositionChanged(handlerPositionData: HandlerPositionData): void {
     if (this.observers.handleHandlerPositionChanged) {
       this.observers.handleHandlerPositionChanged.callListeners(handlerPositionData);
     }
-  }
-
-  public getBodyElement(): HTMLElement {
-    return this.elements.body;
-  }
-
-  public getHandlersContainer(): HTMLElement {
-    return this.elements.handlers;
-  }
-
-  public getScaleStart(): number {
-    return this.scale.getStart(this.isVertical);
-  }
-
-  public getScaleEnd(): number {
-    return this.scale.getEnd(this.isVertical);
-  }
-
-  public getStepPart(): number {
-    return this.stepPart;
-  }
-
-  public getScaleBorderWidth(): number {
-    return this.scale.getBorderWidth(this.getOffsetDirection());
-  }
-
-  public calculateShrinkRatio(): number {
-    return this.scale.calculateShrinkRatio(
-      this.getExpandDimension(), this.handlerSize,
-    );
-  }
-
-  public getIsVertical(): boolean {
-    return this.isVertical;
-  }
-
-  public getOffsetDirection(): 'top' | 'left' {
-    if (this.isVertical) {
-      return 'top';
-    }
-    return 'left';
-  }
-
-  public getExpandDimension(): 'height' | 'width' {
-    if (this.isVertical) {
-      return 'height';
-    }
-    return 'width';
-  }
-
-  public getScaleLength(): number {
-    return this.scale.getLength(this.getExpandDimension());
-  }
-
-  public getHandlerSize(): number {
-    return this.handlerSize;
-  }
-
-  public setOrientation(isVertical: boolean): void {
-    if (isVertical === undefined || isVertical === null) { return; }
-
-    const oldOrientationClass = this.getOrientationClass();
-    this.isVertical = isVertical;
-    const newOrientationClass = this.getOrientationClass();
-
-    this.elements.wrap.classList.remove(oldOrientationClass);
-    this.elements.wrap.classList.add(newOrientationClass);
-  }
-
-  public getIsTooltipsAlwaysVisible(): boolean {
-    return this.isTooltipsAlwaysVisible;
-  }
-
-  public setTooltipsVisibility(isVisible?: boolean): void {
-    if (isVisible === undefined || isVisible === null) { return; }
-
-    this.isTooltipsAlwaysVisible = isVisible;
-    this.handlers.forEach((handler) => {
-      handler.setTooltipVisibility(isVisible);
-    });
-  }
-
-  public getOrientationClass(): string {
-    return this.isVertical
-      ? `${DEFAULT_SLIDER_CLASS}_vertical` : `${DEFAULT_SLIDER_CLASS}_horizontal`;
-  }
-
-  public calculateMouseRelativePosition(mouseEvent: MouseEvent): number {
-    return this.scale.calculateMouseRelativePosition(mouseEvent, this.getSliderViewData());
-  }
-
-  public clearRanges(): void {
-    this.ranges.forEach((range) => {
-      range.remove();
-    });
-    this.ranges = [];
-  }
-
-  public createRanges(): void {
-    this.clearRanges();
-
-    this.handlers.forEach((handler) => {
-      const newRange = this.createRange(handler);
-      if (newRange) {
-        this.ranges.push(newRange);
-      }
-    });
   }
 
   public initHandlers(handlersData: HandlersViewData): void {
@@ -233,7 +120,7 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
       this.makeHandlerViewUpdatePositionParams(),
     );
     this.handlers.push(newHandler);
-    this.addHandlerObserver(newHandler);
+    this.addHandlerUpdatePositionObserver(newHandler);
 
     const newRange = this.createRange(newHandler);
     if (newRange) {
@@ -255,16 +142,8 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     });
 
     handlerToRemove.remove();
-    this.removeHandlerObserver(handlerToRemove);
+    this.removeHandlerUpdatePositionObserver(handlerToRemove);
     this.handlers.splice(handlerToRemoveIndex, 1);
-  }
-
-  public getWorkZoneLength(): number {
-    return this.scale.getWorkZoneLength(this.getExpandDimension(), this.handlerSize);
-  }
-
-  public calculateRelativeHandlerSize(): number {
-    return this.handlerSize / this.getWorkZoneLength();
   }
 
   public setHandlersData(handlers: HandlerModelData[]): void {
@@ -305,6 +184,97 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     this.setOrientation(isVertical);
 
     this.updateElements();
+  }
+
+  private getOffsetDirection(): 'top' | 'left' {
+    if (this.isVertical) {
+      return 'top';
+    }
+    return 'left';
+  }
+
+  private getExpandDimension(): 'height' | 'width' {
+    if (this.isVertical) {
+      return 'height';
+    }
+    return 'width';
+  }
+
+  private getScaleLength(): number {
+    return this.scale.getLength(this.getExpandDimension());
+  }
+
+  private getWorkZoneLength(): number {
+    return this.scale.getWorkZoneLength(this.getExpandDimension(), this.handlerSize);
+  }
+
+  private calculateRelativeHandlerSize(): number {
+    return this.handlerSize / this.getWorkZoneLength();
+  }
+
+  private setOrientation(isVertical: boolean): void {
+    if (isVertical === undefined || isVertical === null) { return; }
+
+    const oldOrientationClass = this.getOrientationClass();
+    this.isVertical = isVertical;
+    const newOrientationClass = this.getOrientationClass();
+
+    this.elements.wrap.classList.remove(oldOrientationClass);
+    this.elements.wrap.classList.add(newOrientationClass);
+  }
+
+  private setTooltipsVisibility(isVisible?: boolean): void {
+    if (isVisible === undefined || isVisible === null) { return; }
+
+    this.isTooltipsAlwaysVisible = isVisible;
+    this.handlers.forEach((handler) => {
+      handler.setTooltipVisibility(isVisible);
+    });
+  }
+
+  private getOrientationClass(): string {
+    return this.isVertical
+      ? `${DEFAULT_SLIDER_CLASS}_vertical` : `${DEFAULT_SLIDER_CLASS}_horizontal`;
+  }
+
+  private calculateMouseRelativePosition(mouseEvent: MouseEvent): number {
+    return this.scale.calculateMouseRelativePosition(mouseEvent, this.getSliderViewData());
+  }
+
+  private clearRanges(): void {
+    this.ranges.forEach((range) => {
+      range.remove();
+    });
+    this.ranges = [];
+  }
+
+  private createRanges(): void {
+    this.clearRanges();
+
+    this.handlers.forEach((handler) => {
+      const newRange = this.createRange(handler);
+      if (newRange) {
+        this.ranges.push(newRange);
+      }
+    });
+  }
+
+  private getScaleStart(): number {
+    return this.scale.getStart(this.isVertical);
+  }
+
+  private getScaleEnd(): number {
+    return this.scale.getEnd(this.isVertical);
+  }
+
+  private getScaleBorderWidth(): number {
+    return this.scale.getBorderWidth(this.getOffsetDirection());
+  }
+
+  private calculateShrinkRatio(): number {
+    return this.scale.calculateShrinkRatio(
+      this.getExpandDimension(), this.handlerSize,
+    );
   }
 
   private initProperties({
@@ -379,17 +349,17 @@ class SliderView implements Orientable, SliderContainer, ScaleOwner, HandlersOwn
     );
   }
 
-  private addHandlerObserver(handler: HandlerView): void {
+  private addHandlerUpdatePositionObserver(handler: HandlerView): void {
     Observer.addListener('updatePosition', handler, this.updateRanges);
   }
 
-  private removeHandlerObserver(handler: HandlerView): void {
+  private removeHandlerUpdatePositionObserver(handler: HandlerView): void {
     Observer.removeListener('updatePosition', handler, this.updateRanges);
   }
 
   private addHandlersObservers(): void {
     this.handlers.forEach((handler) => {
-      this.addHandlerObserver(handler);
+      this.addHandlerUpdatePositionObserver(handler);
     });
   }
 

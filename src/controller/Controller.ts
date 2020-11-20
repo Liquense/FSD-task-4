@@ -76,12 +76,10 @@ class Controller {
   }
 
   public addHandler(itemIndex: number, pair?: HandlerPair): HandlerModelData {
-    const handlerData = this.model.addHandler(itemIndex) ?? {
-      item: null, itemIndex: null, handlerIndex: null, positionPart: null,
-    };
+    const handlerData = this.model.addHandler(itemIndex);
     if (!handlerData) { return null; }
 
-    this.addHandlerView({ ...handlerData, rangePair: pair });
+    this.view.addHandler({ ...handlerData, ...{ rangePair: pair } });
 
     return handlerData;
   }
@@ -114,10 +112,6 @@ class Controller {
     const handlersData = this.getHandlersData(initHandlersData);
 
     targetView.initHandlers(handlersData);
-  }
-
-  private addHandlerView(handlerParams: HandlerModelData & { rangePair: HandlerPair }): void {
-    this.view.addHandler(handlerParams);
   }
 }
 

@@ -1,5 +1,5 @@
 import { HandlerModelData } from '../model/types';
-import { HandlerPositionData, SliderViewUpdateParams } from './types';
+import { HandlerPositionData, HandlerViewParams, SliderViewUpdateParams } from './types';
 
 interface View {
   update(parameters?: SliderViewUpdateParams): void;
@@ -12,7 +12,7 @@ interface View {
     handlersData: { isCustomHandlers: boolean; handlersArray: HandlerModelData[] }
   ): void;
 
-  addHandler(handlerData: HandlerModelData): void;
+  addHandler(handlerData: HandlerViewParams): void;
 
   removeHandler(handlerIndex: number): void;
 }
@@ -45,8 +45,6 @@ interface HandlersOwner {
   calculateRelativeHandlerSize(): number;
 }
 
-type Slider = Orientable & SliderContainer & ScaleOwner & HandlersOwner;
-
 export {
-  SliderContainer, ScaleOwner, HandlersOwner, Orientable, View, Slider,
+  SliderContainer, ScaleOwner, HandlersOwner, Orientable, View,
 };

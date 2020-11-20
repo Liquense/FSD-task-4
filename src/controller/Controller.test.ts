@@ -44,7 +44,7 @@ describe('Инициализация контроллера', () => {
       testController['passHandlerValueChange'],
     );
     expect(mockAddListener).toBeCalledWith(
-      'handleMouseMove',
+      'handleHandlerPositionChanged',
       testController['view'],
       testController['passHandlerPositionChange'],
     );

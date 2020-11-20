@@ -44,8 +44,8 @@ class MarkupView {
     const newMark = this.createMarkHTML();
     this.marks.push(newMark);
 
-    const markOffset = this.calculateMarkOffset(markParams);
-    newMark.style[markParams.offsetDirection] = `${markOffset}%`;
+    const relativeMarkOffset = this.calculateMarkOffset(markParams);
+    newMark.style[markParams.offsetDirection] = `${relativeMarkOffset}%`;
   }
 
   private getMarkThickness(dimension: ExpandDimension): number {
@@ -71,7 +71,7 @@ class MarkupView {
   }
 
   private getRelativeMarkThickness(
-    { shrinkRatio, expandDimension, scaleLength }: MarkParams,
+    { shrinkRatio, expandDimension, scaleLength }: MarkupParams,
   ): number {
     const relativeMarkThickness = shrinkRatio
       * (this.getMarkThickness(expandDimension) / scaleLength);

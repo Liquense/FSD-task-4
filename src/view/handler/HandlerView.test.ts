@@ -1,7 +1,5 @@
 import { KeyStringObj, Presentable } from '../../utils/types';
 
-import SliderView from '../SliderView';
-
 import HandlerView from './HandlerView';
 
 import TooltipView from './tooltip/TooltipView';
@@ -10,20 +8,25 @@ import { HandlerPair } from '../types';
 jest.mock('../SliderView');
 jest.mock('./tooltip/TooltipView');
 
-const mockSlider = new SliderView(null, null);
-mockSlider.getOrientationClass = jest.fn(
-  function () {
-    return this.isVertical ? 'vertical' : 'horizontal';
-  },
-);
-
-mockSlider.getHandlersContainer = jest.fn(() => document.body);
+const defaultHandlerUpdatePositionParams = {
+  workZoneLength: 100,
+  offsetDirection: 'left' as const,
+  expandDimension: 'width' as const,
+};
 
 let testHandler: HandlerView;
 function createTestHandler(
-  index = 0, positionPart = 0.5, item: Presentable = 'test',
+  index = 0, positionPart = 0.5, item: Presentable = 'test', isVertical = false,
 ): HandlerView {
-  return new HandlerView(mockSlider, { handlerIndex: index, positionPart, item });
+  return new HandlerView(
+    document.body,
+    { handlerIndex: index, positionPart, item },
+    {
+      workZoneLength: 100,
+      offsetDirection: isVertical ? 'top' : 'left',
+      expandDimension: isVertical ? 'height' : 'width',
+    },
+  );
 }
 
 const mockTooltip = (TooltipView as unknown as jest.Mock);
@@ -39,14 +42,14 @@ describe('Инициализация', () => {
     });
 
     test('с только обязательными параметрами', () => {
-      testHandler = createTestHandler(index, positionPart, item);
+      testHandler = createTestHandler();
 
       expect(testHandler.getIndex()).toBe(index);
       expect(testHandler.getPositionPart()).toBe(positionPart);
       expect(testHandler.getPair()).toBe(null);
       expect(mockTooltip).toBeCalledWith(
         testHandler.getElement().wrap,
-        testHandler, { isVisible: true, item },
+        { isVisible: true, item },
       );
     });
 
@@ -54,14 +57,18 @@ describe('Инициализация', () => {
       mockTooltip.mockClear();
       const isTooltipVisible = false;
       const rangePair: HandlerPair = null;
-      testHandler = new HandlerView(mockSlider, {
-        handlerIndex: index, positionPart, item, isTooltipVisible, rangePair,
-      });
+      testHandler = new HandlerView(
+        document.body,
+        {
+          handlerIndex: index, positionPart, item, isTooltipVisible, rangePair,
+        },
+        defaultHandlerUpdatePositionParams,
+      );
 
       expect(testHandler.getPair()).toBe(rangePair);
       expect(mockTooltip).toBeCalledWith(
         testHandler.getElement().wrap,
-        testHandler, { isVisible: isTooltipVisible, item },
+        { isVisible: isTooltipVisible, item },
       );
     });
   });
@@ -84,14 +91,17 @@ test('Установка позиции', () => {
 
   mockTooltip.prototype.getSize.mockImplementation(() => 10);
 
-  function checkSettingPosition(isVertical: boolean, value: number): void {
-    mockSlider.getOffsetDirection = jest.fn(() => (isVertical ? 'top' : 'left'));
-    mockSlider.getExpandDimension = jest.fn(() => (isVertical ? 'height' : 'width'));
-    mockSlider.getWorkZoneLength = jest.fn(() => 100);
-
-    testHandler.setPosition(value);
-    expect((testHandler.getElement().wrap.style as KeyStringObj)[mockSlider.getOffsetDirection()])
-      .toBe(`${value * 100}px`);
+  function checkSettingPosition(isVertical: boolean, positionPart: number): void {
+    testHandler.setPosition({
+      ...{ positionPart },
+      ...{
+        workZoneLength: 100,
+        offsetDirection: isVertical ? 'top' : 'left',
+        expandDimension: isVertical ? 'height' : 'width',
+      },
+    });
+    expect((testHandler.getElement().wrap.style as KeyStringObj)[isVertical ? 'top' : 'left'])
+      .toBe(`${positionPart * 100}px`);
     expect(mockTooltip.prototype.updateHTML).toBeCalled();
   }
 
@@ -113,11 +123,8 @@ test('Получение центра хэндлера', () => {
     toJSON: undefined,
   }));
 
-  mockSlider.getIsVertical = jest.fn(() => false);
-  expect(testHandler.getPositionCoordinate()).toBe(5);
-
-  mockSlider.getIsVertical = jest.fn(() => true);
-  expect(testHandler.getPositionCoordinate()).toBe(15);
+  expect(testHandler.getPositionCoordinate(false)).toBe(5);
+  expect(testHandler.getPositionCoordinate(true)).toBe(15);
 });
 
 describe('Вспомогательные функции', () => {

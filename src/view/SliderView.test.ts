@@ -3,7 +3,6 @@ import { DEFAULT_SLIDER_PARAMS } from '../constants';
 
 import { HandlerViewParams } from './types';
 import SliderView from './SliderView';
-import { KeyStringObj } from '../utils/types';
 import Controller from '../controller/Controller';
 
 import HandlerView from './handler/HandlerView';
@@ -48,8 +47,6 @@ describe('Инициализация', () => {
         },
       },
     );
-
-    expect(testSlider.getIsVertical()).toBe(true);
     expect(testSlider['isRangesInverted']).toBe(false);
     expect(testSlider['isTooltipsAlwaysVisible']).toBe(false);
     expect(testSlider['isMarkupVisible']).toBe(true);
@@ -60,18 +57,13 @@ describe('Инициализация', () => {
     testSlider = new SliderView(sliderWrap, defaultParams);
 
     const wrap = document.body.querySelector('.liquid-slider');
-    const body = document.body.querySelector('.liquid-slider__body');
     const scale = document.body.querySelector('.liquid-slider__scale');
-    const handlers = document.body.querySelector('.liquid-slider__handlers');
-
-    expect(testSlider.getBodyElement() === testSlider['elements'].body && testSlider['elements'].body === body).toBeTruthy();
-    expect(testSlider.getHandlersContainer() === testSlider['elements']['handlers'] && testSlider['elements']['handlers'] === handlers).toBeTruthy();
     expect(testSlider['elements'].wrap).toBe(wrap);
     expect(testSlider['elements'].scale).toBe(scale);
   });
 
   test('Создание хэндлеров', () => {
-    testSlider.setRangesInversion(false);
+    testSlider['isRangesInverted'] = false;
     testSlider.initHandlers(
       {
         isCustomHandlers: false,
@@ -88,7 +80,7 @@ describe('Инициализация', () => {
     expect(testSlider['handlers'][0].getPair()).toBe(1);
     expect(testSlider['handlers'][1].getPair()).toBe(0);
 
-    testSlider.setRangesInversion(true);
+    testSlider['isRangesInverted'] = true;
     testSlider.initHandlers(
       {
         isCustomHandlers: false,
@@ -101,7 +93,7 @@ describe('Инициализация', () => {
     );
     expect(testSlider['handlers'][0].getPair()).toBe('end');
 
-    testSlider.setRangesInversion(false);
+    testSlider['isRangesInverted'] = false;
     testSlider.initHandlers(
       {
         isCustomHandlers: false,
@@ -138,7 +130,7 @@ describe('Инициализация', () => {
   describe('Связывание хэндлеров в диапазоны', () => {
     describe('Стандартные', () => {
       test('Без инверсии диапазонов', () => {
-        testSlider.setRangesInversion(false);
+        testSlider['isRangesInverted'] = false;
         testSlider.initHandlers({
           isCustomHandlers: false,
           handlersArray: [
@@ -146,13 +138,13 @@ describe('Инициализация', () => {
             { handlerIndex: 1, item: 'test2', positionPart: 0.9 },
           ],
         });
-        testSlider.createRanges();
+        testSlider['createRanges']();
         expect(testSlider['ranges'][0].getStartHandler()).toBe(testSlider['handlers'][0]);
         expect(testSlider['ranges'][0].getEndHandler()).toBe(testSlider['handlers'][1]);
       });
 
       test('С инверсией диапазонов', () => {
-        testSlider.setRangesInversion(true);
+        testSlider['isRangesInverted'] = true;
         testSlider.initHandlers({
           isCustomHandlers: false,
           handlersArray: [
@@ -160,8 +152,8 @@ describe('Инициализация', () => {
             { handlerIndex: 1, item: 'test2', positionPart: 0.9 },
           ],
         });
-        testSlider.clearRanges();
-        testSlider.createRanges();
+        testSlider['clearRanges']();
+        testSlider['createRanges']();
         expect(testSlider['ranges'][0].getStartHandler()).toBe(null);
         expect(testSlider['ranges'][0].getEndHandler()).toBe(testSlider['handlers'][0]);
         expect(testSlider['ranges'][1].getStartHandler()).toBe(testSlider['handlers'][1]);
@@ -175,8 +167,8 @@ describe('Инициализация', () => {
             { handlerIndex: 0, item: 'test', positionPart: 0.4 },
           ],
         });
-        testSlider.clearRanges();
-        testSlider.createRanges();
+        testSlider['clearRanges']();
+        testSlider['createRanges']();
         expect(testSlider['ranges'][0].getStartHandler()).toBe(testSlider['handlers'][0]);
         expect(testSlider['ranges'][0].getEndHandler()).toBe(null);
       });
@@ -197,8 +189,8 @@ describe('Инициализация', () => {
           },
         ],
       });
-      testSlider.clearRanges();
-      testSlider.createRanges();
+      testSlider['clearRanges']();
+      testSlider['createRanges']();
       expect(testSlider['ranges'][0].getStartHandler()).toBe(null);
       expect(testSlider['ranges'][0].getEndHandler()).toBe(testSlider['handlers'][0]);
       expect(testSlider['ranges'][1].getStartHandler()).toBe(testSlider['handlers'][2]);
@@ -212,9 +204,9 @@ describe('Инициализация', () => {
       resetHTML();
       testSlider = new SliderView(sliderWrap, defaultParams);
 
-      testSlider.getBodyElement().style.width = '100px';
-      testSlider.getScaleLength = jest.fn(() => 100);
-      testSlider.getScaleStart = jest.fn(() => 0);
+      testSlider['elements'].body.style.width = '100px';
+      testSlider['getScaleLength'] = jest.fn(() => 100);
+      testSlider['getScaleStart'] = jest.fn(() => 0);
 
       testSlider.initHandlers(
         {
@@ -240,7 +232,7 @@ describe('Инициализация', () => {
         spyOnPreventDefault = jest.spyOn(testMouseDownEvent, 'preventDefault');
 
         simulateMouseDown = (coordinate: number): void => {
-          if (testSlider.getIsVertical()) {
+          if (testSlider['isVertical']) {
             Object.defineProperty(testMouseDownEvent, 'clientY', {
               get(): number { return coordinate; },
               configurable: true,
@@ -252,7 +244,7 @@ describe('Инициализация', () => {
             });
           }
 
-          testSlider.getBodyElement().dispatchEvent(testMouseDownEvent);
+          testSlider['elements'].body.dispatchEvent(testMouseDownEvent);
         };
 
         testClicks = (): void => {
@@ -275,8 +267,8 @@ describe('Инициализация', () => {
 
             expect(testSlider['activeHandler'].getBody()).toBe(document.activeElement);
 
-            if ((testSlider.calculateMouseRelativePosition(testMouseDownEvent) !== 0.4)
-                && (testSlider.calculateMouseRelativePosition(testMouseDownEvent) !== 0.9)) {
+            if ((testSlider['calculateMouseRelativePosition'](testMouseDownEvent) !== 0.4)
+                && (testSlider['calculateMouseRelativePosition'](testMouseDownEvent) !== 0.9)) {
               expect(mockController['passHandlerPositionChange']).toBeCalledWith(
                 { handlerIndex: testSlider['activeHandler'].getIndex(), position: i / 100 },
               );
@@ -301,10 +293,10 @@ describe('Инициализация', () => {
         testSlider.update({ isVertical: false, stepPart: 0.01 });
         testClicks();
 
-        testSlider.setOrientation(true);
+        testSlider['setOrientation'](true);
         testClicks();
 
-        testSlider.getBodyElement().dispatchEvent(new Event('click'));
+        testSlider['elements'].body.dispatchEvent(new Event('click'));
 
         expect(spyOnPreventDefault).toBeCalled();
         expect(testSlider['activeHandler'].getBody()).toBe(document.activeElement);
@@ -357,7 +349,7 @@ describe('Инициализация', () => {
         });
 
         test('Во время зажатия обработчик срабатывает', () => {
-          testSlider.getBodyElement().dispatchEvent(testMouseDownEvent);
+          testSlider['elements'].body.dispatchEvent(testMouseDownEvent);
           document.body.dispatchEvent(testMouseMoveEvent);
           expect(spyMouseMoveHandler).toBeCalled();
         });
@@ -370,7 +362,7 @@ describe('Инициализация', () => {
       });
 
       test('Выход за пределы окна браузера', () => {
-        testSlider.getBodyElement().dispatchEvent(testMouseDownEvent);
+        testSlider['elements'].body.dispatchEvent(testMouseDownEvent);
         document.body.dispatchEvent(testMouseMoveEvent);
         expect(spyMouseMoveHandler).toBeCalled();
 
@@ -408,7 +400,7 @@ describe('Функции', () => {
     const spyHandlersSetVisibility = testSlider['handlers'].map((handler) => jest.spyOn(handler, 'setTooltipVisibility'));
 
     function testTooltipsVisibilityVarSetting(stateToSet: boolean): void {
-      testSlider.setTooltipsVisibility(stateToSet);
+      testSlider['setTooltipsVisibility'](stateToSet);
       const stateToCheck = stateToSet ?? testSlider['isTooltipsAlwaysVisible'];
       expect(testSlider['isTooltipsAlwaysVisible']).toBe(stateToCheck);
 
@@ -449,8 +441,9 @@ describe('Функции', () => {
     const newValue1 = 'new test';
     const newValue2 = 'new test2';
     const newPosition1 = 0.1;
-    const
-      newPosition2 = 0.8;
+    const newPosition2 = 0.8;
+    (testSlider['scale'].getWorkZoneLength as jest.Mock).mockImplementationOnce(() => 90);
+
     testSlider.setHandlersData([
       {
         handlerIndex: 0, item: newValue1, positionPart: newPosition1, itemIndex: 0,
@@ -463,16 +456,21 @@ describe('Функции', () => {
     expect(spySetValue1).toBeCalledWith(newValue1);
     expect(spySetValue2).not.toBeCalled();
 
-    expect(spySetPosition1).toBeCalledWith(newPosition1);
+    expect(spySetPosition1).toBeCalledWith({
+      expandDimension: 'width',
+      offsetDirection: 'left',
+      workZoneLength: 90,
+      positionPart: newPosition1,
+    });
     expect(spySetPosition2).not.toBeCalled();
   });
 
   test('Обновление данных слайдера', () => {
-    testSlider.createRanges();
+    testSlider['createRanges']();
 
     const spies: jest.SpyInstance[] = [];
     testSlider['ranges'].forEach((range) => {
-      spies.push(jest.spyOn(range, 'refreshPosition'));
+      spies.push(jest.spyOn(range, 'updatePosition'));
     });
 
     function mockClearSpies(spyInstances: jest.SpyInstance[]): void {
@@ -490,7 +488,6 @@ describe('Функции', () => {
     let prevStep = testSlider['stepPart'];
     let prevMin = testSlider['minIndex'];
     let prevMax = testSlider['maxIndex'];
-    let prevIsVertical = testSlider.getIsVertical();
     let prevTooltipVisibility = testSlider['isTooltipsAlwaysVisible'];
     let prevMarkupVisibility = testSlider['isMarkupVisible'];
 
@@ -498,7 +495,6 @@ describe('Функции', () => {
       expect(testSlider['stepPart']).toBe(prevStep);
       expect(testSlider['minIndex']).toBe(prevMin);
       expect(testSlider['maxIndex']).toBe(prevMax);
-      expect(testSlider.getIsVertical()).toBe(prevIsVertical);
       expect(testSlider['isTooltipsAlwaysVisible']).toBe(prevTooltipVisibility);
       expect(testSlider['isMarkupVisible']).toBe(prevMarkupVisibility);
     }
@@ -521,14 +517,12 @@ describe('Функции', () => {
     expect(testSlider['stepPart']).toBe(2);
     expect(testSlider['minIndex']).toBe(-2);
     expect(testSlider['maxIndex']).toBe(22);
-    expect(testSlider.getIsVertical()).toBe(false);
     expect(testSlider['isTooltipsAlwaysVisible']).toBe(false);
     expect(testSlider['isMarkupVisible']).toBe(true);
 
     prevStep = testSlider['stepPart'];
     prevMin = testSlider['minIndex'];
     prevMax = testSlider['maxIndex'];
-    prevIsVertical = testSlider.getIsVertical();
     prevTooltipVisibility = testSlider['isTooltipsAlwaysVisible'];
     prevMarkupVisibility = testSlider['isMarkupVisible'];
 
@@ -598,37 +592,13 @@ describe('Функции', () => {
 
   test('Получение начала шкалы', () => {
     (testSlider['scale'].getStart as jest.Mock).mockImplementationOnce(() => 2);
-    testSlider.setOrientation(true);
-    expect(testSlider.getScaleStart()).toBe(2);
+    testSlider['setOrientation'](true);
+    expect(testSlider['getScaleStart']()).toBe(2);
   });
 
   test('Получение Конца шкалы', () => {
     (testSlider['scale'].getEnd as jest.Mock).mockImplementationOnce(() => 3);
-    testSlider.setOrientation(true);
-    expect(testSlider.getScaleEnd()).toBe(3);
-  });
-
-  function testGetter(getterName: string, getterProp: string): void {
-    let slider: SliderView & KeyStringObj;
-
-    slider = new SliderView(sliderWrap, {
-      ...DEFAULT_SLIDER_PARAMS,
-      ...{
-        [getterProp]: true, stepPart: 0.1, range: 10, isInverted: false,
-      },
-    });
-    expect(slider[getterName]()).toBeTruthy();
-
-    slider = new SliderView(sliderWrap, {
-      ...DEFAULT_SLIDER_PARAMS,
-      ...{
-        [getterProp]: false, stepPart: 0.1, range: 10, isInverted: false,
-      },
-    });
-    expect(slider[getterName]()).toBeFalsy();
-  }
-
-  test('Получение видимости тултипов', () => {
-    testGetter('getIsTooltipsAlwaysVisible', 'isTooltipsVisible');
+    testSlider['setOrientation'](true);
+    expect(testSlider['getScaleEnd']()).toBe(3);
   });
 });

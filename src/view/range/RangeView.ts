@@ -14,13 +14,13 @@ class RangeView {
 
   constructor(
     public parentElement: HTMLElement,
-    refreshParams: RangeViewUpdateParams,
+    updateParams: RangeViewUpdateParams,
     firstHandler: HandlerView,
     secondHandler?: HandlerView,
   ) {
     this.initHandlers(firstHandler, secondHandler);
     this.createElement();
-    this.updatePosition(refreshParams);
+    this.updatePosition(updateParams);
   }
 
   public getStartHandler(): HandlerView {

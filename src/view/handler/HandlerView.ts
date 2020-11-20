@@ -42,6 +42,7 @@ class HandlerView implements Observable {
       this.element.wrap,
       { isVisible: initParams.isTooltipVisible ?? true, item: initParams.item },
     );
+
     this.setItem(initParams.item);
     this.updatePosition(updatePositionParams);
   }
