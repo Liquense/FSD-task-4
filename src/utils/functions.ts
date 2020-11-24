@@ -13,12 +13,11 @@ function clamp(num: number, min: number, max: number): number {
   return Math.min(Math.max(num, min), max);
 }
 
-function roundToDecimal(numToRound: number, decimalsCount: number): number {
+function roundToDecimal(numToRound: number, decimalsCount = 5): number {
   let multiplier = 1;
-
-  for (let i = 0; i < decimalsCount; i += 1) {
+  new Array(decimalsCount).fill(null).forEach(() => {
     multiplier *= 10;
-  }
+  });
 
   return Math.round((numToRound + Number.EPSILON) * multiplier) / multiplier;
 }

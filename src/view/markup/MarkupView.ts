@@ -1,6 +1,6 @@
 import { DEFAULT_SLIDER_CLASS } from '../../constants';
 
-import { roundToDecimal, standardize } from '../../utils/functions';
+import { standardize } from '../../utils/functions';
 import { ExpandDimension } from '../types';
 
 import { MarkParams, MarkupParams } from './types';
@@ -21,11 +21,13 @@ class MarkupView {
   }
 
   public createMarks(markupParams: MarkupParams): void {
-    for (let i = 0; i <= 1; i = roundToDecimal(i + markupParams.stepPart, 5)) {
-      const standardPosition = standardize(i, { min: 0, max: 1, step: markupParams.stepPart });
-      const shrinkPosition = standardPosition * markupParams.shrinkRatio;
+    const { stepPart, shrinkRatio } = markupParams;
+    const marksAmount = Math.floor((1 / stepPart) + 1);
+    new Array(marksAmount).fill(null).forEach((value, index) => {
+      const standardPosition = standardize(index * stepPart, { min: 0, max: 1, step: stepPart });
+      const shrinkPosition = standardPosition * shrinkRatio;
       this.addMark({ ...markupParams, ...{ relativePosition: shrinkPosition } });
-    }
+    });
   }
 
   private createWrap(sliderBody: HTMLElement, handlersContainer: HTMLElement): void {

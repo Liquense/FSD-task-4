@@ -378,18 +378,19 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
   }
 
   private findFirstFreeItemIndex(start: number, end: number): number {
-    let result: number = null;
+    const standardStart = standardize(start, this.getStandardizeParams());
+    const standardEnd = standardize(end, this.getStandardizeParams());
 
-    for (
-      let i = standardize(start, this.getStandardizeParams());
-      i <= standardize(end, this.getStandardizeParams());
-      i += this.step
-    ) {
-      if (!this.isItemOccupied(i)) {
-        result = i;
-        break;
+    let result: number = null;
+    const indexesAmount = Math.floor((standardEnd - standardStart) / this.step) + 1;
+    new Array(indexesAmount).fill(null).some((value, index) => {
+      const actualStep = standardStart + (index * this.step);
+      const isItemFree = !this.isItemOccupied(actualStep);
+      if (isItemFree) {
+        result = actualStep;
       }
-    }
+      return isItemFree;
+    });
 
     return result;
   }
