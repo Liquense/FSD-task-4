@@ -126,7 +126,7 @@ describe('Инициализация', () => {
 
     describe('Занятие и освобождение значений', () => {
       beforeEach(() => {
-        testModel = new SliderModel();
+        testModel = new SliderModel(DEFAULT_SLIDER_PARAMS);
       });
 
       test('Занятие значения', () => {
