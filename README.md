@@ -16,7 +16,7 @@ npm install
 ```
 #### Команды
 Сборка: `npm run build` \
-Сборка с дев-сервером: `npm run dev-server` \
+Сборка с дев-сервером: `npm run dev-server` (страница на http://localhost:8080/demo-page.html) \
 Приложение покрыто тестами: `npm run test` \
 Проверка линтером: `npm run eslint`
 
