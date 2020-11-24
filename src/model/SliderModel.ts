@@ -111,7 +111,9 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
     const newHandlerIndex = Math.max(-1, ...indexes) + 1;
 
     const newHandler = this.createHandler(itemIndex, newHandlerIndex);
-    if (!newHandler) { return null; }
+    if (!newHandler) {
+      return null;
+    }
 
     this.handlers.push(newHandler);
     newHandler.handlerIndex = newHandlerIndex;
@@ -129,7 +131,9 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
     const handlerToRemoveIndex = this.handlers.findIndex(
       (handler) => handler.handlerIndex === handlerIndex,
     );
-    if (handlerToRemoveIndex < 0) { return null; }
+    if (handlerToRemoveIndex < 0) {
+      return null;
+    }
 
     this.releaseItem(this.handlers[handlerToRemoveIndex].getItemIndex());
     this.handlers.splice(handlerToRemoveIndex, 1);
@@ -166,7 +170,9 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
       (handler) => handler.handlerIndex === changedHandler.handlerIndex,
     );
 
-    if (changedHandlerIndex === -1) { return null; }
+    if (changedHandlerIndex === -1) {
+      return null;
+    }
 
     const result = {
       handlerIndex: changedHandler.handlerIndex,
@@ -197,7 +203,9 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
     if (!this.isItemOccupied(foundIndex)) {
       validIndex = standardize(foundIndex, this.getStandardizeParams());
     }
-    if (Number.isNaN(validIndex)) { return; }
+    if (Number.isNaN(validIndex)) {
+      return;
+    }
 
     this.handlers[handlerIndex].setItemIndex(validIndex);
   }
@@ -259,23 +267,33 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
   }
 
   private setStep(step: number): void {
-    if (!step) { return; }
+    if (!step) {
+      return;
+    }
 
     this.step = this.isItemsCustom ? Math.round(step) : step;
     this.updateHandlersPosition();
   }
 
   private setMin(min: number): void {
-    if (min === null || min === undefined) { return; }
-    if (min > this.max) { return; }
+    if (min === null || min === undefined) {
+      return;
+    }
+    if (min > this.max) {
+      return;
+    }
 
     this.min = min;
     this.updateHandlersPosition();
   }
 
   private setMax(max: number): void {
-    if (max === null || max === undefined) { return; }
-    if (max < this.min) { return; }
+    if (max === null || max === undefined) {
+      return;
+    }
+    if (max < this.min) {
+      return;
+    }
 
     this.max = max;
     this.updateHandlersPosition();
@@ -283,7 +301,9 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
 
   private setMinMax(min: number, max: number): void {
     if (Number.isFinite(min) && Number.isFinite(max)) {
-      if (min > max) { return; }
+      if (min > max) {
+        return;
+      }
       this.min = min;
       this.max = max;
     } else {
@@ -306,7 +326,9 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
   }
 
   private createHandlers(handlersItemIndexes: number[]): void {
-    if (!handlersItemIndexes?.length) { return; }
+    if (!handlersItemIndexes?.length) {
+      return;
+    }
 
     this.occupiedItems = [];
     this.handlers = [];
@@ -327,7 +349,9 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
 
   private createHandler(itemIndex: number, handlerIndex: number): HandlerModel {
     const freeItemIndex = this.getFirstFreeItemIndex(itemIndex);
-    if (freeItemIndex === null) { return null; }
+    if (freeItemIndex === null) {
+      return null;
+    }
 
     const handlerValue = this.getItem(freeItemIndex);
 
@@ -376,7 +400,9 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
     }
 
     const parsedItem = Number.parseFloat(itemToFind.toString());
-    if (Number.isNaN(parsedItem)) { return null; }
+    if (Number.isNaN(parsedItem)) {
+      return null;
+    }
 
     return parsedItem;
   }

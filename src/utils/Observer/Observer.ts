@@ -13,7 +13,9 @@ class Observer {
 
   public static addListener(executor: string, context: Observable, listener?: Function): void {
     let observer: Observer;
-    if (!context) { return; }
+    if (!context) {
+      return;
+    }
 
     if (!context.observers) {
       context.observers = {};
@@ -34,7 +36,9 @@ class Observer {
   }
 
   public static removeListener(executor: string, context: Observable, listener: Function): void {
-    if (!context?.observers?.[executor]) { return; }
+    if (!context?.observers?.[executor]) {
+      return;
+    }
 
     context.observers[executor].removeListener(listener);
   }
@@ -43,7 +47,9 @@ class Observer {
     const removeIndex = this.listeners.findIndex(
       (currentListener) => listener === currentListener,
     );
-    if (removeIndex < 0) { return; }
+    if (removeIndex < 0) {
+      return;
+    }
     this.listeners.splice(removeIndex, 1);
   }
 

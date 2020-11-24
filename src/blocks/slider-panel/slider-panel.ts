@@ -61,7 +61,9 @@ class SliderPanel {
   private addHandler(
     handlerModelData: HandlerModelData,
   ): void {
-    if (!handlerModelData) { return; }
+    if (!handlerModelData) {
+      return;
+    }
     const { handlerIndex, positionPart, item } = handlerModelData;
 
     const newHandlerSection = initHandlerSection(

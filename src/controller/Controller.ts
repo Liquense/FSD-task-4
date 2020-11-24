@@ -78,7 +78,9 @@ class Controller {
 
   public addHandler(itemIndex: number, pair?: HandlerPair): HandlerModelData {
     const handlerData = this.model.addHandler(itemIndex);
-    if (!handlerData) { return null; }
+    if (!handlerData) {
+      return null;
+    }
 
     this.view.addHandler({ ...handlerData, ...{ rangePair: pair } });
 

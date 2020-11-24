@@ -92,7 +92,9 @@ class SliderView implements Observable, View {
         this.makeHandlerViewUpdatePositionParams(),
       );
 
-      if (handlersData.isCustomHandlers) { return newHandler; }
+      if (handlersData.isCustomHandlers) {
+        return newHandler;
+      }
 
       if (handlers.length === 2) {
         if (index === 0) {
@@ -154,7 +156,9 @@ class SliderView implements Observable, View {
       const realIndex = this.handlers.findIndex(
         (handler) => handler.getIndex() === handlerIndex,
       );
-      if (realIndex === -1) { return; }
+      if (realIndex === -1) {
+        return;
+      }
 
       this.handlers[realIndex].setItem(item);
       this.handlers[realIndex].setPosition({
@@ -214,7 +218,9 @@ class SliderView implements Observable, View {
   }
 
   private setOrientation(isVertical: boolean): void {
-    if (isVertical === undefined || isVertical === null) { return; }
+    if (isVertical === undefined || isVertical === null) {
+      return;
+    }
 
     const oldOrientationClass = this.getOrientationClass();
     this.isVertical = isVertical;
@@ -225,7 +231,9 @@ class SliderView implements Observable, View {
   }
 
   private setTooltipsVisibility(isVisible?: boolean): void {
-    if (isVisible === undefined || isVisible === null) { return; }
+    if (isVisible === undefined || isVisible === null) {
+      return;
+    }
 
     this.isTooltipsAlwaysVisible = isVisible;
     this.handlers.forEach((handler) => {
@@ -291,7 +299,9 @@ class SliderView implements Observable, View {
   }
 
   private setHandlerSize(): void {
-    if (this.handlers.length === 0) { return; }
+    if (this.handlers.length === 0) {
+      return;
+    }
 
     const exemplarHandler = this.handlers[0];
     this.handlerSize = exemplarHandler.getSize(this.getExpandDimension());
@@ -400,7 +410,9 @@ class SliderView implements Observable, View {
   private handleMouseDown(event: MouseEvent): void {
     const closestHandler = this.getHandlerClosestToMouse(event.clientX, event.clientY);
 
-    if (!closestHandler) { return; }
+    if (!closestHandler) {
+      return;
+    }
 
     this.activateHandler(closestHandler);
     this.activeHandler.getBody().focus();
@@ -414,7 +426,9 @@ class SliderView implements Observable, View {
   @bind
   private handleMouseMove(event: MouseEvent): HandlerPositionData {
     const closestHandler = this.getHandlerClosestToMouse(event.clientX, event.clientY);
-    if (closestHandler !== this.activeHandler) { return null; }
+    if (closestHandler !== this.activeHandler) {
+      return null;
+    }
 
     this.activateHandler(closestHandler);
 
@@ -495,14 +509,18 @@ class SliderView implements Observable, View {
   }
 
   private createRange(handler: HandlerView): RangeView {
-    if (handler.getPair() === null) { return null; }
+    if (handler.getPair() === null) {
+      return null;
+    }
 
     const pairedHandler = this.findPairedHandler(handler);
 
     const isPairedWithStart = handler.getPair() === RANGE_PAIR_START_KEY;
     const isPairedWithEnd = handler.getPair() === RANGE_PAIR_END_KEY;
     const isPairedWithHandler = !isPairedWithStart && !isPairedWithEnd;
-    if (isPairedWithHandler && !pairedHandler) { return null; }
+    if (isPairedWithHandler && !pairedHandler) {
+      return null;
+    }
 
     return new RangeView(
       this.elements.scale, this.makeRangeViewUpdateParams(), handler, pairedHandler,
@@ -524,7 +542,9 @@ class SliderView implements Observable, View {
   private updateMarkup(): void {
     this.clearMarkup();
 
-    if (!this.isMarkupVisible || !this.markup) { return; }
+    if (!this.isMarkupVisible || !this.markup) {
+      return;
+    }
 
     this.markup.createMarks({
       ...this.getSliderViewData(),
