@@ -39,7 +39,7 @@ function standardize(
   }
 
   resultValue = clamp(resultValue, realMin, realMax);
-  return roundToDecimal(resultValue, 4);
+  return roundToDecimal(resultValue);
 }
 
 function calculateElementCenter(DOMElement: Element): { x: number; y: number } {

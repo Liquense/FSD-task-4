@@ -451,7 +451,7 @@ class SliderView implements Observable, View {
       });
     }
 
-    if (standardMousePosition === roundToDecimal(closestHandler.getPositionPart(), 4)) {
+    if (standardMousePosition === roundToDecimal(closestHandler.getPositionPart())) {
       return null;
     }
 
