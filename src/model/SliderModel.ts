@@ -1,3 +1,4 @@
+import bind from 'bind-decorator';
 import { Presentable } from '../utils/types';
 import { standardize } from '../utils/functions';
 import { HandlerPluginParams, SliderPluginParams } from '../plugin/types';
@@ -9,12 +10,11 @@ import {
   SliderModelParams, SliderParams,
 } from './types';
 
-import { ModelItemManager, SliderDataContainer } from './interfaces';
 import HandlerModel from './handler/HandlerModel';
 import { Observable, Observer } from '../utils/Observer/Observer';
 import { HandlerPositionData } from '../view/types';
 
-class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
+class SliderModel implements Observable {
   public observers: { [key: string]: Observer } = {};
 
   private items: Array<Presentable>;
@@ -90,7 +90,7 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
       handlersArray: this.handlers.map(
         (handler) => ({
           handlerIndex: handler.handlerIndex,
-          item: handler.getItem(),
+          item: this.getItem(handler.getItemIndex()),
           positionPart: handler.getPosition(),
           itemIndex: handler.getItemIndex(),
         }),
@@ -121,7 +121,7 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
 
     return {
       positionPart: newHandler.getPosition(),
-      item: newHandler.getItem(),
+      item: this.getItem(newHandler.getItemIndex()),
       handlerIndex: newHandler.handlerIndex,
       itemIndex: newHandler.getItemIndex(),
     };
@@ -163,6 +163,7 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
     }
   }
 
+  @bind
   public handleHandlerValueChanged(
     changedHandler: HandlerModel,
   ): HandlerModelData {
@@ -177,7 +178,7 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
     const result = {
       handlerIndex: changedHandler.handlerIndex,
       positionPart: changedHandler.getPosition(),
-      item: changedHandler.getItem(),
+      item: this.getItem(changedHandler.getItemIndex()),
       itemIndex: changedHandler.getItemIndex(),
     };
 
@@ -188,26 +189,25 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
   }
 
   public handleHandlerPositionChanged(data: HandlerPositionData): void {
-    const newStandardPosition = this.getItemIndexFromPosition(data.position);
-
+    const newPositionIndex = this.getItemIndexFromPosition(data.position);
     const movingHandlerIndex = this.handlers.findIndex(
       (handler) => handler.handlerIndex === data.handlerIndex,
     );
-    this.handlers[movingHandlerIndex].setItemIndex(newStandardPosition);
+    this.setHandlerItemIndex(movingHandlerIndex, newPositionIndex);
   }
 
   public setHandlerItem(handlerIndex: number, item: Presentable): void {
-    const foundIndex = this.getItemIndex(item);
+    const foundItemIndex = this.getItemIndex(item);
 
-    let validIndex: number;
-    if (!this.isItemOccupied(foundIndex)) {
-      validIndex = standardize(foundIndex, this.getStandardizeParams());
+    let validItemIndex: number;
+    if (!this.isItemOccupied(foundItemIndex)) {
+      validItemIndex = standardize(foundItemIndex, this.getStandardizeParams());
     }
-    if (Number.isNaN(validIndex)) {
+    if (Number.isNaN(validItemIndex)) {
       return;
     }
 
-    this.handlers[handlerIndex].setItemIndex(validIndex);
+    this.setHandlerItemIndex(handlerIndex, validItemIndex);
   }
 
   public isItemOccupied(itemIndex: number): boolean {
@@ -220,6 +220,20 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
 
   public releaseItem(itemIndex: number): void {
     delete this.occupiedItems[itemIndex];
+  }
+
+  private setHandlerItemIndex(handlerIndex: number, itemIndex: number): void {
+    const handler = this.handlers[handlerIndex];
+    const oldItemIndex = handler.getItemIndex();
+
+    if (this.isItemOccupied(itemIndex)) {
+      handler.updatePosition(this.getSliderData());
+      return;
+    }
+
+    handler.setItemIndex(itemIndex, this.getSliderData());
+    this.releaseItem(oldItemIndex);
+    this.occupyItem(itemIndex, handlerIndex);
   }
 
   private initHandlers(isRange: boolean, values: number[], handlers: HandlerPluginParams[]): void {
@@ -238,14 +252,17 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
     this.handlers.forEach((handler) => {
       const standardItemIndex = standardize(handler.getItemIndex(), this.getStandardizeParams());
       if (standardItemIndex === handler.getItemIndex()) {
-        handler.setItemIndex(standardize(standardItemIndex, this.getStandardizeParams()));
+        handler.updatePosition(this.getSliderData());
         return;
       }
 
       const newItemIndex = this.getFirstFreeItemIndex(handler.getItemIndex());
       if (newItemIndex === null) { this.removeHandler(handler.handlerIndex); }
 
-      handler.setItemIndex(standardize(newItemIndex, this.getStandardizeParams()));
+      this.setHandlerItemIndex(
+        handler.handlerIndex,
+        standardize(newItemIndex, this.getStandardizeParams()),
+      );
     });
   }
 
@@ -336,7 +353,8 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
       newHandlers: HandlerModel[], handler: number,
     ): HandlerModel[] => {
       const itemIndex = standardize(handler, this.getStandardizeParams());
-      const newHandler = this.createHandler(itemIndex, newHandlers.length);
+      const newHandlerIndex = newHandlers.length;
+      const newHandler = this.createHandler(itemIndex, newHandlerIndex);
       if (newHandler !== null) {
         newHandlers.push(newHandler);
       }
@@ -353,9 +371,11 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
       return null;
     }
 
-    const handlerValue = this.getItem(freeItemIndex);
+    const newHandler = new HandlerModel(handlerIndex, freeItemIndex, this.getSliderData());
+    Observer.addListener('updatePosition', newHandler, this.handleHandlerValueChanged);
 
-    return new HandlerModel(handlerValue, freeItemIndex, this, handlerIndex);
+    this.occupyItem(freeItemIndex, handlerIndex);
+    return newHandler;
   }
 
   private getItemIndexFromPosition(position: number): number {

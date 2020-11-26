@@ -1,21 +1,18 @@
 import { clamp } from '../../utils/functions';
-import { Handler, SliderDataContainer, ModelItemManager } from '../interfaces';
-import { Presentable } from '../../utils/types';
+import { Observable, Observer } from '../../utils/Observer/Observer';
+import { SliderModelData } from '../types';
 
-class HandlerModel implements Handler {
+class HandlerModel implements Observable {
+  public observers: { [key: string]: Observer } = {};
+
   private position: number;
 
   constructor(
-    private item: Presentable,
-    private itemIndex: number,
-    private readonly parentModel: SliderDataContainer & ModelItemManager,
     public handlerIndex: number,
+    private itemIndex: number,
+    sliderData: SliderModelData,
   ) {
-    this.setItemIndex(itemIndex);
-  }
-
-  public getItem(): Presentable {
-    return this.item;
+    this.setItemIndex(itemIndex, sliderData);
   }
 
   public getItemIndex(): number {
@@ -26,31 +23,22 @@ class HandlerModel implements Handler {
     return this.position;
   }
 
-  public setItemIndex(itemIndex: number): void {
-    const oldItemIndex = this.itemIndex;
-    if (this.parentModel.isItemOccupied(itemIndex)) {
-      this.updatePosition();
-      return;
-    }
-
+  public setItemIndex(itemIndex: number, sliderData: SliderModelData): void {
     this.itemIndex = itemIndex;
-    this.item = this.parentModel.getItem(this.itemIndex);
-    this.updatePosition();
-
-    this.parentModel.releaseItem(oldItemIndex);
-    this.parentModel.occupyItem(itemIndex, this.handlerIndex);
+    this.updatePosition(sliderData);
   }
 
-  private calculatePosition(): number {
-    const sliderData = this.parentModel.getSliderData();
+  public updatePosition(sliderData: SliderModelData): void {
+    this.position = this.calculatePosition(sliderData);
+    if (this.observers.updatePosition) {
+      this.observers.updatePosition.callListeners(this);
+    }
+  }
+
+  private calculatePosition(sliderData: SliderModelData): number {
     const positionPart = ((this.itemIndex - sliderData.min) / sliderData.range);
 
     return clamp(positionPart, 0, 1);
-  }
-
-  private updatePosition(): void {
-    this.position = this.calculatePosition();
-    this.parentModel.handleHandlerValueChanged(this);
   }
 }
 

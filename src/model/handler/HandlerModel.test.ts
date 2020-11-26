@@ -3,42 +3,41 @@ import { DEFAULT_SLIDER_PARAMS } from '../../constants';
 import SliderModel from '../SliderModel';
 
 import HandlerModel from './HandlerModel';
+import { Observer } from '../../utils/Observer/Observer';
 
-const testModel = new SliderModel(DEFAULT_SLIDER_PARAMS);
+jest.mock('../SliderModel');
+
+const testSliderModel = new SliderModel(DEFAULT_SLIDER_PARAMS);
+testSliderModel.handleHandlerValueChanged = jest.fn(() => ({
+  handlerIndex: 0,
+  positionPart: 0,
+  item: 'mock',
+  itemIndex: 0,
+}));
+const testSliderModelData = {
+  step: 1, max: 10, min: 0, range: 10,
+};
 let testHandlerModel: HandlerModel;
 
 beforeEach(() => {
-  testHandlerModel = new HandlerModel('testVal', 5, testModel, 0);
+  testHandlerModel = new HandlerModel(0, 5, testSliderModelData);
 });
 
 test('Инициализация', () => {
-  const origSetItemIndex = HandlerModel.prototype.setItemIndex;
-  HandlerModel.prototype.setItemIndex = jest.fn();
-
-  testHandlerModel = new HandlerModel('testVal', 5, testModel, 0);
-  expect(testHandlerModel.getItem()).toBe('testVal');
+  testHandlerModel = new HandlerModel(0, 5, testSliderModelData);
   expect(testHandlerModel.getItemIndex()).toBe(5);
   expect(testHandlerModel.handlerIndex).toBe(0);
-  expect(testHandlerModel.setItemIndex).toBeCalledWith(5);
-
-  HandlerModel.prototype.setItemIndex = origSetItemIndex;
+  expect(testHandlerModel.getPosition()).toBe(0.5);
 });
 
 test('Установка нового значения', () => {
-  const spyCheckItemOccupancy = jest.spyOn(testModel, 'isItemOccupied');
-  const spyCalculateValue = jest.spyOn(testModel, 'getItem');
-  const spyReleaseItem = jest.spyOn(testModel, 'releaseItem');
-  const spyOccupyItem = jest.spyOn(testModel, 'occupyItem');
-  const spyHandlerValueChanged = jest.spyOn(testModel, 'handleHandlerValueChanged');
+  const newItemIndex = 9;
+  Observer.addListener(
+    'updatePosition', testHandlerModel, testSliderModel.handleHandlerValueChanged,
+  );
 
-  const newItemIndex = 9; const
-    oldItemIndex = testHandlerModel.getItemIndex();
-  testHandlerModel.setItemIndex(newItemIndex);
-  expect(spyCheckItemOccupancy).toBeCalledWith(newItemIndex);
+  testHandlerModel.setItemIndex(newItemIndex, testSliderModelData);
   expect(testHandlerModel.getItemIndex()).toBe(newItemIndex);
-  expect(spyCalculateValue).toBeCalledWith(testHandlerModel.getItemIndex());
-  expect(spyReleaseItem).toBeCalledWith(oldItemIndex);
-  expect(spyOccupyItem).toBeCalledWith(newItemIndex, testHandlerModel.handlerIndex);
   expect(testHandlerModel.getPosition()).toBe(0.9);
-  expect(spyHandlerValueChanged).toBeCalledWith(testHandlerModel);
+  expect(testSliderModel.handleHandlerValueChanged).toBeCalledWith(testHandlerModel);
 });

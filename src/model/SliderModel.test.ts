@@ -91,12 +91,10 @@ describe('Инициализация', () => {
         testModel['createHandlers'](testHandlers);
         expect(testModel['handlers'][0].handlerIndex).toBe(0);
         expect(testModel['handlers'][0].getItemIndex()).toBe(0);
-        expect(testModel['handlers'][0].getItem()).toBe(0);
         expect(testModel['handlers'][0].getPosition()).toBe(0);
 
         expect(testModel['handlers'][1].handlerIndex).toBe(1);
         expect(testModel['handlers'][1].getItemIndex()).toBe(4);
-        expect(testModel['handlers'][1].getItem()).toBe(4);
         expect(testModel['handlers'][1].getPosition()).toBe(0.4);
       });
 
@@ -114,12 +112,10 @@ describe('Инициализация', () => {
         testModel['createHandlers'](testHandlers);
         expect(testModel['handlers'][0].handlerIndex).toBe(0);
         expect(testModel['handlers'][0].getItemIndex()).toBe(1);
-        expect(testModel['handlers'][0].getItem()).toBe('test');
         expect(testModel['handlers'][0].getPosition()).toBe(0.5);
 
         expect(testModel['handlers'][1].handlerIndex).toBe(1);
         expect(testModel['handlers'][1].getItemIndex()).toBe(2);
-        expect(testModel['handlers'][1].getItem()).toBe(3);
         expect(testModel['handlers'][1].getPosition()).toBe(1);
       });
     });
@@ -221,7 +217,9 @@ describe('Инициализация', () => {
       test('Обычная ситуация', () => {
         testModel.handleHandlerPositionChanged(testData);
         expect(spyGetItemIndexFromPosition).toBeCalledWith(testData.position);
-        expect(spySetItemIndex).toBeCalledWith(spyGetItemIndexFromPosition.mock.results[0].value);
+        expect(spySetItemIndex).toBeCalledWith(
+          spyGetItemIndexFromPosition.mock.results[0].value, testModel.getSliderData(),
+        );
       });
 
       test('Если последнее значение не делится ровно на шаг', () => {
@@ -229,7 +227,7 @@ describe('Инициализация', () => {
         testData.position = 1;
 
         testModel.handleHandlerPositionChanged(testData);
-        expect(spySetItemIndex).toBeCalledWith(10);
+        expect(spySetItemIndex).toBeCalledWith(10, testModel.getSliderData());
       });
     });
 
