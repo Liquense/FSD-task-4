@@ -198,12 +198,13 @@ class SliderModel implements Observable {
 
   public setHandlerItem(handlerIndex: number, item: Presentable): void {
     const foundItemIndex = this.getItemIndex(item);
+    const isItemFree = !this.isItemOccupied(foundItemIndex);
+    const validItemIndex = isItemFree
+      ? standardize(foundItemIndex, this.getStandardizeParams())
+      : null;
 
-    let validItemIndex: number;
-    if (!this.isItemOccupied(foundItemIndex)) {
-      validItemIndex = standardize(foundItemIndex, this.getStandardizeParams());
-    }
-    if (Number.isNaN(validItemIndex)) {
+    if (validItemIndex === null) {
+      this.handlers[handlerIndex].updatePosition(this.getSliderData());
       return;
     }
 
