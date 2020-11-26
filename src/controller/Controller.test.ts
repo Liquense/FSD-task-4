@@ -10,7 +10,7 @@ import SliderView from '../view/SliderView';
 
 jest.mock('../utils/functions');
 jest.mock('../view/SliderView');
-jest.mock('../model/sliderModel');
+jest.mock('../model/SliderModel');
 jest.mock('../utils/Observer/Observer');
 
 let testController: Controller & KeyStringObj;

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore,no-undef,dot-notation */
+import { HandlerPair } from '../types';
+
 import HandlerView from '../handler/HandlerView';
 
 import RangeView from './RangeView';
-import { HandlerPair } from '../types';
 
-jest.mock('../handler/handlerView');
-jest.mock('../sliderView');
+jest.mock('../handler/HandlerView');
 let testRange: RangeView;
 const sliderViewParams = {
   isVertical: false,

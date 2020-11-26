@@ -1,14 +1,9 @@
 /* eslint-disable dot-notation */
 import { KeyStringObj, Presentable } from '../../../utils/types';
 
-import HandlerView from '../HandlerView';
-
 import TooltipView from './TooltipView';
 
-jest.mock('../handlerView');
-
-const handler = new HandlerView(null, null, null);
-handler.getBody = jest.fn(() => document.body);
+const testTooltipWrap = document.body;
 
 beforeEach(() => {
   document.body.innerHTML = '';
@@ -33,18 +28,18 @@ describe('Создание экземпляра', () => {
   });
 
   test('Запуск функций для инициализации', () => {
-    const testTooltip = new TooltipView(handler.getBody());
+    const testTooltip = new TooltipView(testTooltipWrap);
 
     expect(mockCreateElement).toBeCalled();
     expect(mockSetVisibility).toBeCalled();
   });
 
   test('Корректное заполнение свойств', () => {
-    const tooltip: TooltipView & KeyStringObj = new TooltipView(handler.getBody());
+    const tooltip: TooltipView & KeyStringObj = new TooltipView(testTooltipWrap);
     expect(tooltip.getItem()).toBe(undefined);
 
     mockSetVisibility.mock.calls = [];
-    const testTooltip = new TooltipView(handler.getBody(),
+    const testTooltip = new TooltipView(testTooltipWrap,
       {
         isVisible: false,
         item: 'testValue',
@@ -55,7 +50,7 @@ describe('Создание экземпляра', () => {
 
   test('Создание элемента в DOM', () => {
     document.body.innerHTML = '';
-    const testTooltip = new TooltipView(handler.getBody());
+    const testTooltip = new TooltipView(testTooltipWrap);
 
     expect(document.body.innerHTML)
       .toBe('<div class="liquid-slider__handler-tooltip">undefined</div>');
@@ -75,7 +70,7 @@ describe('Функционал', () => {
     let tooltip: TooltipView;
 
     beforeAll(() => {
-      tooltip = new TooltipView(handler.getBody());
+      tooltip = new TooltipView(testTooltipWrap);
     });
 
     test('Показать', () => {
@@ -92,13 +87,13 @@ describe('Функционал', () => {
   });
 
   describe('Получение размера', () => {
-    const tooltip = new TooltipView(handler.getBody());
+    const tooltip = new TooltipView(testTooltipWrap);
     expect(tooltip.getSize('width')).toBe(tooltip.getElement().getBoundingClientRect().width);
     expect(tooltip.getSize('height')).toBe(tooltip.getElement().getBoundingClientRect().height);
   });
 
   test('Установка значения', () => {
-    const tooltip = new TooltipView(handler.getBody());
+    const tooltip = new TooltipView(testTooltipWrap);
 
     function testValueChange(testValue: Presentable): void {
       tooltip.setItem(testValue);

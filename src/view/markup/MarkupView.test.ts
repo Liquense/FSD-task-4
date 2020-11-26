@@ -1,11 +1,10 @@
 /* eslint-disable dot-notation,no-undef */
 import { KeyStringObj } from '../../utils/types';
 
-import MarkupView from './MarkupView';
-import { MarkupParams } from './types';
 import { OffsetDirection } from '../types';
 
-jest.mock('../SliderView');
+import MarkupView from './MarkupView';
+import { MarkupParams } from './types';
 
 document.body.innerHTML = '<div class="liquidSlider liquidSlider_horizontal"></div>';
 const testSliderContainer = document.querySelector('.liquidSlider') as HTMLElement;

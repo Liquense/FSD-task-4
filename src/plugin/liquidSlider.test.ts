@@ -5,7 +5,7 @@ import './liquidSlider';
 import Controller from '../controller/Controller';
 import { SliderPluginParams } from './types';
 
-jest.mock('../controller/controller');
+jest.mock('../controller/Controller');
 
 const mockController = Controller as jest.Mock;
 mockController.prototype.thing = 'test';
