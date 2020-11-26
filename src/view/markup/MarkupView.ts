@@ -23,7 +23,7 @@ class MarkupView {
   public createMarks(markupParams: MarkupParams): void {
     const { stepPart, shrinkRatio } = markupParams;
     const marksAmount = Math.floor((1 / stepPart) + 1);
-    new Array(marksAmount).fill(null).forEach((value, index) => {
+    new Array(marksAmount).fill(null).forEach((_, index) => {
       const standardPosition = standardize(index * stepPart, { min: 0, max: 1, step: stepPart });
       const shrinkPosition = standardPosition * shrinkRatio;
       this.addMark({ ...markupParams, ...{ relativePosition: shrinkPosition } });

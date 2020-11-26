@@ -253,7 +253,7 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
     this.handlers = [];
     const part = this.getRange() / (handlersCount + 1);
     const handlersItemIndexes = new Array(handlersCount).fill(null);
-    handlersItemIndexes.forEach((value, index) => {
+    handlersItemIndexes.forEach((_, index) => {
       if (Number.isFinite(itemIndexes?.[index])) {
         handlersItemIndexes[index] = standardize(itemIndexes[index], this.getStandardizeParams());
       } else {
@@ -380,19 +380,13 @@ class SliderModel implements Observable, SliderDataContainer, ModelItemManager {
   private findFirstFreeItemIndex(start: number, end: number): number {
     const standardStart = standardize(start, this.getStandardizeParams());
     const standardEnd = standardize(end, this.getStandardizeParams());
-
-    let result: number = null;
     const indexesAmount = Math.floor((standardEnd - standardStart) / this.step) + 1;
-    new Array(indexesAmount).fill(null).some((value, index) => {
-      const actualStep = standardStart + (index * this.step);
-      const isItemFree = !this.isItemOccupied(actualStep);
-      if (isItemFree) {
-        result = actualStep;
-      }
-      return isItemFree;
-    });
 
-    return result;
+    const indexesArray = new Array(indexesAmount)
+      .fill(null)
+      .map((_, index) => standardStart + (index * this.step));
+    const result = indexesArray.find((index) => !this.isItemOccupied(index));
+    return result ?? null;
   }
 
   private getItemIndex(itemToFind: Presentable): number {

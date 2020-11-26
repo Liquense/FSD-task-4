@@ -14,12 +14,10 @@ function clamp(num: number, min: number, max: number): number {
 }
 
 function roundToDecimal(numToRound: number, decimalsCount = 5): number {
-  let multiplier = 1;
-  new Array(decimalsCount).fill(null).forEach(() => {
-    multiplier *= 10;
-  });
+  const multiplier = 10 ** decimalsCount;
+  const integerNumber = Math.round((numToRound + Number.EPSILON) * multiplier);
 
-  return Math.round((numToRound + Number.EPSILON) * multiplier) / multiplier;
+  return integerNumber / multiplier;
 }
 
 function standardize(
