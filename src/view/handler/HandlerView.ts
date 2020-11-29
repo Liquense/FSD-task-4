@@ -134,18 +134,18 @@ class HandlerView implements Observable {
   }
 
   private createElement(parentElement: HTMLElement): void {
-    const wrap = document.createElement('div');
-    const body = document.createElement('div');
+    const handlerWrap = document.createElement('div');
+    const handlerElement = document.createElement('div');
 
-    this.element = { wrap, body };
+    this.element = { wrap: handlerWrap, body: handlerElement };
     this.element.body.setAttribute('tabindex', '-1');
 
-    wrap.classList.add(`${HandlerView.DEFAULT_CLASS}-container`);
-    wrap.classList.add(...this.additionalClasses);
-    parentElement.appendChild(wrap);
+    handlerWrap.classList.add(`${HandlerView.DEFAULT_CLASS}-container`);
+    handlerWrap.classList.add(...this.additionalClasses);
+    parentElement.appendChild(handlerWrap);
 
-    body.classList.add(`${HandlerView.DEFAULT_CLASS}-body`);
-    wrap.appendChild(body);
+    handlerElement.classList.add(`${HandlerView.DEFAULT_CLASS}-body`);
+    handlerWrap.appendChild(handlerElement);
   }
 
   private calculateOffset(workZoneLength: number, expandDimension: ExpandDimension): number {

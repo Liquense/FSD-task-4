@@ -85,12 +85,12 @@ class RangeView {
   }
 
   private createElement(): void {
-    const body = document.createElement('div');
+    const rangeElement = document.createElement('div');
 
-    this.element = body;
-    body.classList.add(`${RangeView.DEFAULT_CLASS}`);
+    this.element = rangeElement;
+    rangeElement.classList.add(`${RangeView.DEFAULT_CLASS}`);
 
-    this.parentElement.appendChild(body);
+    this.parentElement.appendChild(rangeElement);
   }
 
   private arrangeHandlers(firstHandler: HandlerView, secondHandler: HandlerView): void {

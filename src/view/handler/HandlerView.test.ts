@@ -135,9 +135,9 @@ describe('Вспомогательные функции', () => {
   });
 
   test('Получение HTML-тела', () => {
-    const body = document.body.querySelector('.liquid-slider__handler-body');
+    const handlerElement = document.body.querySelector('.liquid-slider__handler-body');
 
-    expect(testHandler.getBody()).toBe(body);
+    expect(testHandler.getBody()).toBe(handlerElement);
   });
 
   test('Установка видимости тултипа', () => {
