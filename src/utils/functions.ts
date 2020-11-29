@@ -83,7 +83,9 @@ function hasOwnProperty<T>(object: T, key: PropertyKey): key is keyof T {
   return key in object;
 }
 
+function importContext(r: __WebpackModuleApi.RequireContext): void { r.keys().forEach(r); }
+
 export {
   parseClassesString, standardize, calculateElementCenter, clamp,
-  roundToDecimal, preventDefault, initBlocks, hasOwnProperty,
+  roundToDecimal, preventDefault, initBlocks, hasOwnProperty, importContext,
 };

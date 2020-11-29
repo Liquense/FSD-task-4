@@ -1,10 +1,11 @@
+import { importContext } from '../utils/functions';
+import '../favicons/favicons';
 import '../plugin/liquidSlider';
+import '../view/SliderView.scss';
 import './demo-page.scss';
 
-import '../view/SliderView.scss';
 import initSliderPanels from '../blocks/slider-panel/init';
 
-function importContext(r: __WebpackModuleApi.RequireContext): void { r.keys().forEach(r); }
 importContext(require.context('../blocks', true, /\.(scss)$/));
 
 const panels = initSliderPanels();
