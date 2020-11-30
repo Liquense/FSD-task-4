@@ -14,9 +14,10 @@ import {
   standardize,
 } from '../utils/functions';
 import {
+  ExpandDimension,
   HandlerPositionData,
   HandlersViewData,
-  HandlerViewParams, SliderViewData,
+  HandlerViewParams, OffsetDirection, SliderViewData,
   SliderViewUpdateParams,
 } from './types';
 
@@ -191,14 +192,14 @@ class SliderView implements Observable, View {
     this.updateElements();
   }
 
-  private getOffsetDirection(): 'top' | 'left' {
+  private getOffsetDirection(): OffsetDirection {
     if (this.isVertical) {
       return 'top';
     }
     return 'left';
   }
 
-  private getExpandDimension(): 'height' | 'width' {
+  private getExpandDimension(): ExpandDimension {
     if (this.isVertical) {
       return 'height';
     }

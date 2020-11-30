@@ -49,14 +49,14 @@ class TooltipView {
     this.updateHTML();
   }
 
-  public updateHTML(): void {
-    this.innerHTML = `${this.item}`;
-    this.element.innerHTML = this.innerHTML;
-  }
-
   public setVisibility(visibilityState: boolean): void {
     if (visibilityState) this.show();
     else this.hide();
+  }
+
+  private updateHTML(): void {
+    this.innerHTML = `${this.item}`;
+    this.element.innerHTML = this.innerHTML;
   }
 
   private initProperties(parameters: TooltipViewParams): void {

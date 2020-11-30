@@ -30,16 +30,16 @@ class MarkupView {
     });
   }
 
+  public clearAllMarks(): void {
+    this.marks = [];
+    this.wrap.innerHTML = '';
+  }
+
   private createWrap(sliderBody: HTMLElement, handlersContainer: HTMLElement): void {
     this.wrap = document.createElement('div');
     this.wrap.classList.add(`${MarkupView.DEFAULT_CLASS}-wrap`);
 
     sliderBody.insertBefore(this.wrap, handlersContainer);
-  }
-
-  public clearAllMarks(): void {
-    this.marks = [];
-    this.wrap.innerHTML = '';
   }
 
   private addMark(markParams: MarkParams): void {

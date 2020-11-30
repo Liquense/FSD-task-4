@@ -46,7 +46,9 @@ $.fn.liquidSlider = function liquidSlider(
     }
 
     const controller = this.data('controller');
-    if (!controller) { throw new Error('Need to init slider before call functions.'); }
+    if (!controller) {
+      throw new Error('Need to init slider before call functions.');
+    }
     switch (option) {
       case 'remove':
         this.liquidSlider = liquidSlider;

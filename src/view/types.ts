@@ -1,8 +1,9 @@
 import { HandlerData } from '../types';
 import { SliderVisualParams } from '../model/types';
 
-type SliderViewUpdateParams = { min?: number; max?: number; stepPart?: number }
-& SliderVisualParams;
+type SliderViewUpdateParams = SliderVisualParams & {
+  min?: number; max?: number; stepPart?: number;
+};
 
 type HandlerViewParams = HandlerData & {
   isTooltipVisible?: boolean; rangePair?: HandlerPair;
