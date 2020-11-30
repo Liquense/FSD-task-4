@@ -102,7 +102,6 @@ test('Установка позиции', () => {
     });
     expect((testHandler.getElement().wrap.style as KeyStringObj)[isVertical ? 'top' : 'left'])
       .toBe(`${positionPart * 100}px`);
-    expect(mockTooltip.prototype.updateHTML).toBeCalled();
   }
 
   checkSettingPosition(true, 0.5);
