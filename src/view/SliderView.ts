@@ -415,7 +415,7 @@ class SliderView implements Observable, View {
     }
 
     this.activateHandler(closestHandler);
-    this.activeHandler.getBody().focus();
+    this.activeHandler.getHandlerBody().focus();
 
     this.handleMouseMove(event);
     document.body.addEventListener('mousemove', this.handleMouseMove);

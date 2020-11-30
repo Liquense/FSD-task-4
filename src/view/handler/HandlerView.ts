@@ -74,7 +74,7 @@ class HandlerView implements Observable {
     return this.positionPart;
   }
 
-  public getBody(): HTMLElement {
+  public getHandlerBody(): HTMLElement {
     return this.element.body;
   }
 
@@ -109,7 +109,6 @@ class HandlerView implements Observable {
     this.element.wrap.style.removeProperty('top');
 
     this.element.wrap.style[offsetDirection] = `${offset}px`;
-    this.tooltip.updateHTML();
 
     if (this.observers.updatePosition) {
       this.observers.updatePosition.callListeners();

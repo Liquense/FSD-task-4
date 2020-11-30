@@ -265,7 +265,7 @@ describe('Инициализация', () => {
             if (i <= 65) expect(testSlider['activeHandler']).toBe(testSlider['handlers'][0]);
             else expect(testSlider['activeHandler']).toBe(testSlider['handlers'][1]);
 
-            expect(testSlider['activeHandler'].getBody()).toBe(document.activeElement);
+            expect(testSlider['activeHandler'].getHandlerBody()).toBe(document.activeElement);
 
             if ((testSlider['calculateMouseRelativePosition'](testMouseDownEvent) !== 0.4)
                 && (testSlider['calculateMouseRelativePosition'](testMouseDownEvent) !== 0.9)) {
@@ -299,7 +299,7 @@ describe('Инициализация', () => {
         testSlider['elements'].body.dispatchEvent(new Event('click'));
 
         expect(spyOnPreventDefault).toBeCalled();
-        expect(testSlider['activeHandler'].getBody()).toBe(document.activeElement);
+        expect(testSlider['activeHandler'].getHandlerBody()).toBe(document.activeElement);
       });
 
       describe('Вне слайдера', () => {

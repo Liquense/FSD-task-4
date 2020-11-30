@@ -77,7 +77,7 @@ describe('Инициализация', () => {
 test('Установка позиции', () => {
   mockTooltip.mockClear();
   testHandler = createTestHandler();
-  testHandler.getBody().getBoundingClientRect = jest.fn(() => ({
+  testHandler.getHandlerBody().getBoundingClientRect = jest.fn(() => ({
     height: 10,
     width: 10,
     x: 0,
@@ -137,7 +137,7 @@ describe('Вспомогательные функции', () => {
   test('Получение HTML-тела', () => {
     const handlerElement = document.body.querySelector('.liquid-slider__handler-body');
 
-    expect(testHandler.getBody()).toBe(handlerElement);
+    expect(testHandler.getHandlerBody()).toBe(handlerElement);
   });
 
   test('Установка видимости тултипа', () => {
