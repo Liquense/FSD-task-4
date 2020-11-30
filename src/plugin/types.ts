@@ -1,19 +1,12 @@
-import { SliderModelParams } from '../model/types';
+import { SliderModelParams, SliderVisualParams } from '../model/types';
 import { Presentable } from '../utils/types';
 
 type HandlerPluginParams = { itemIndex: number; rangePair?: number | 'start' | 'end' }
 
-type SliderPluginParams = {
-  min?: number;
-  max?: number;
-  step?: number;
+type SliderPluginParams = SliderModelParams & SliderVisualParams & {
   items?: Presentable[];
   values?: number[];
   isRange?: boolean;
-  isVertical?: boolean;
-  isInverted?: boolean;
-  isTooltipsVisible?: boolean;
-  isMarkupVisible?: boolean;
   handlers?: HandlerPluginParams[];
 };
 

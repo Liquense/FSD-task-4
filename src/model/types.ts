@@ -1,20 +1,5 @@
 import { HandlerData } from '../types';
 
-type SliderParams = SliderModelParams & SliderVisualParams;
-
-type SliderModelParams = {
-  min?: number;
-  max?: number;
-  step?: number;
-};
-
-type SliderVisualParams = {
-  isVertical?: boolean;
-  isTooltipsVisible?: boolean;
-  isInverted?: boolean;
-  isMarkupVisible?: boolean;
-}
-
 type SliderData = SliderModelData & SliderVisualData;
 
 type SliderModelData = {
@@ -30,6 +15,12 @@ type SliderVisualData = {
   isMarkupVisible: boolean;
   isInverted: boolean;
 }
+
+type SliderParams = SliderModelParams & SliderVisualParams;
+
+type SliderModelParams = Partial<SliderModelData>;
+
+type SliderVisualParams = Partial<SliderVisualData>
 
 type HandlerModelData = HandlerData & { itemIndex: number };
 
