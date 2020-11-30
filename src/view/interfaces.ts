@@ -17,34 +17,4 @@ interface View {
   removeHandler(handlerIndex: number): void;
 }
 
-interface Orientable {
-  getIsVertical(): boolean;
-  getExpandDimension(): 'height' | 'width';
-  getOffsetDirection(): 'top' | 'left';
-
-  getOrientationClass(): string;
-}
-
-interface SliderContainer {
-  getHandlersContainer(): HTMLElement;
-  getBodyElement(): HTMLElement;
-}
-
-interface ScaleOwner {
-  getScaleStart(): number;
-  getScaleEnd(): number;
-  getScaleBorderWidth(): number;
-  calculateShrinkRatio(): number;
-  getScaleLength(): number;
-  getWorkZoneLength(): number;
-}
-
-interface HandlersOwner {
-  getStepPart(): number;
-  getHandlerSize(): number;
-  calculateRelativeHandlerSize(): number;
-}
-
-export {
-  SliderContainer, ScaleOwner, HandlersOwner, Orientable, View,
-};
+export { View };
