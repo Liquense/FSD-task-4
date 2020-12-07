@@ -1,8 +1,9 @@
-import { Observable, Observer } from './Observer';
+import { Observer } from './Observer';
+import { Observable } from './interfaces';
 
 describe('Слушатель', () => {
   class TestContext implements Observable {
-    public observers: { [key: string]: Observer } = {};
+    public observers: { [key: string]: Observer } = { testExecutor: new Observer() };
 
     testExecutor(): void {
       if (this.observers.testExecutor) {
@@ -51,17 +52,8 @@ describe('Слушатель', () => {
       expect(secondTestListener).not.toBeCalled();
     });
 
-    test('добавление без передачи контекста (ничего не должно добавиться)', () => {
-      Observer.addListener('testExecutor', null, testListener);
-      testContext.testExecutor();
-      spyExecutorCalls += 1;
-      expect(spyTestExecutor).toBeCalledTimes(spyExecutorCalls);
-      expect(testListener).not.toBeCalled();
-      expect(secondTestListener).not.toBeCalled();
-    });
-
     test('добавление первого слушателя', () => {
-      Observer.addListener('testExecutor', testContext, testListener);
+      testContext.observers.testExecutor.addListener(testListener);
       testContext.testExecutor();
       spyExecutorCalls += 1;
       expect(spyTestExecutor).toBeCalledTimes(spyExecutorCalls);
@@ -71,7 +63,7 @@ describe('Слушатель', () => {
     });
 
     test('добавление второго слушателя', () => {
-      Observer.addListener('testExecutor', testContext, secondTestListener);
+      testContext.observers.testExecutor.addListener(secondTestListener);
       testContext.testExecutor();
       spyExecutorCalls += 1;
       testListenerCalls += 1;
@@ -83,17 +75,8 @@ describe('Слушатель', () => {
   });
 
   describe('Удаление слушателя к функции', () => {
-    test('без передачи контекста (не должно ничего удалиться)', () => {
-      Observer.removeListener('testExecutor', null, testListener);
-      testContext.testExecutor();
-      spyExecutorCalls += 1;
-      testListenerCalls += 1;
-      secondTestListenerCalls += 1;
-      testCalls();
-    });
-
     test('передана функция, которой нет в списке (не должно ничего удалиться)', () => {
-      Observer.removeListener('testExecutor', testContext, (): void => undefined);
+      testContext.observers.testExecutor.removeListener((): void => undefined);
       testContext.testExecutor();
       spyExecutorCalls += 1;
       testListenerCalls += 1;
@@ -102,7 +85,7 @@ describe('Слушатель', () => {
     });
 
     test('удаление первого слушателя', () => {
-      Observer.removeListener('testExecutor', testContext, testListener);
+      testContext.observers.testExecutor.removeListener(testListener);
       testContext.testExecutor();
       spyExecutorCalls += 1;
       secondTestListenerCalls += 1;
@@ -110,7 +93,7 @@ describe('Слушатель', () => {
     });
 
     test('удаление второго', () => {
-      Observer.removeListener('testExecutor', testContext, secondTestListener);
+      testContext.observers.testExecutor.removeListener(secondTestListener);
       testContext.testExecutor();
       spyExecutorCalls += 1;
       expect(spyTestExecutor).toBeCalledTimes(spyExecutorCalls);

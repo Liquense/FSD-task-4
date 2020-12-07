@@ -26,7 +26,8 @@ import HandlerView from './handler/HandlerView';
 import RangeView from './range/RangeView';
 import MarkupView from './markup/MarkupView';
 import ScaleView from './scale/ScaleView';
-import { Observable, Observer } from '../utils/Observer/Observer';
+import { Observer } from '../utils/Observer/Observer';
+import { Observable } from '../utils/Observer/interfaces';
 import { RangeViewUpdateParams } from './range/types';
 import { HandlerViewUpdatePositionParams } from './handler/types';
 
@@ -190,6 +191,14 @@ class SliderView implements Observable, View {
     this.setOrientation(isVertical);
 
     this.updateElements();
+  }
+
+  public addHandlerPositionChangedListener(observer: Function): void {
+    if (!this.observers.handleHandlerPositionChanged) {
+      this.observers.handleHandlerPositionChanged = new Observer();
+    }
+
+    this.observers.handleHandlerPositionChanged.addListener(observer);
   }
 
   private getOffsetDirection(): OffsetDirection {
@@ -362,11 +371,11 @@ class SliderView implements Observable, View {
   }
 
   private addHandlerUpdatePositionObserver(handler: HandlerView): void {
-    Observer.addListener('updatePosition', handler, this.updateRanges);
+    handler.addUpdatePositionListener(this.updateRanges);
   }
 
   private removeHandlerUpdatePositionObserver(handler: HandlerView): void {
-    Observer.removeListener('updatePosition', handler, this.updateRanges);
+    handler.removeUpdatePositionListener(this.updateRanges);
   }
 
   private addHandlersObservers(): void {

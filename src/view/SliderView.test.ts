@@ -7,7 +7,6 @@ import Controller from '../controller/Controller';
 
 import HandlerView from './handler/HandlerView';
 import RangeView from './range/RangeView';
-import { Observer } from '../utils/Observer/Observer';
 
 import TooltipView from './handler/tooltip/TooltipView';
 
@@ -19,9 +18,7 @@ let testSlider: SliderView;
 let sliderWrap = document.body.appendChild(document.createElement('div'));
 const mockController = new Controller(sliderWrap);
 mockController['addDefaultListeners'] = jest.fn(
-  () => Observer.addListener(
-    'handleMouseMove', testSlider, mockController['passHandlerPositionChange'],
-  ),
+  () => testSlider.addHandlerPositionChangedListener(mockController['passHandlerPositionChange']),
 );
 
 mockController['passHandlerPositionChange'] = jest.fn(() => null);

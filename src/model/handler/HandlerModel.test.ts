@@ -3,7 +3,6 @@ import { DEFAULT_SLIDER_PARAMS } from '../../constants';
 import SliderModel from '../SliderModel';
 
 import HandlerModel from './HandlerModel';
-import { Observer } from '../../utils/Observer/Observer';
 
 jest.mock('../SliderModel');
 
@@ -32,9 +31,7 @@ test('Инициализация', () => {
 
 test('Установка нового значения', () => {
   const newItemIndex = 9;
-  Observer.addListener(
-    'updatePosition', testHandlerModel, testSliderModel.handleHandlerValueChanged,
-  );
+  testHandlerModel.addUpdatePositionListener(testSliderModel.handleHandlerValueChanged);
 
   testHandlerModel.setItemIndex(newItemIndex, testSliderModelData);
   expect(testHandlerModel.getItemIndex()).toBe(newItemIndex);

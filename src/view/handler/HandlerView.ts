@@ -8,7 +8,8 @@ import { calculateElementCenter } from '../../utils/functions';
 import { ExpandDimension, HandlerPair, HandlerViewParams } from '../types';
 
 import TooltipView from './tooltip/TooltipView';
-import { Observable, Observer } from '../../utils/Observer/Observer';
+import { Observer } from '../../utils/Observer/Observer';
+import { Observable } from '../../utils/Observer/interfaces';
 import { HandlerViewSetPositionParams, HandlerViewUpdatePositionParams } from './types';
 
 class HandlerView implements Observable {
@@ -97,6 +98,22 @@ class HandlerView implements Observable {
   public setPosition(setPositionParams: HandlerViewSetPositionParams): void {
     this.positionPart = setPositionParams.positionPart;
     this.updatePosition(setPositionParams);
+  }
+
+  public addUpdatePositionListener(observer: Function): void {
+    if (!this.observers.updatePosition) {
+      this.observers.updatePosition = new Observer();
+    }
+
+    this.observers.updatePosition.addListener(observer);
+  }
+
+  public removeUpdatePositionListener(observer: Function): void {
+    if (!this.observers.updatePosition) {
+      this.observers.updatePosition = new Observer();
+    }
+
+    this.observers.updatePosition.removeListener(observer);
   }
 
   @bind

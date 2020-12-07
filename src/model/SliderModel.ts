@@ -11,7 +11,8 @@ import {
 } from './types';
 
 import HandlerModel from './handler/HandlerModel';
-import { Observable, Observer } from '../utils/Observer/Observer';
+import { Observer } from '../utils/Observer/Observer';
+import { Observable } from '../utils/Observer/interfaces';
 import { HandlerPositionData } from '../view/types';
 
 class SliderModel implements Observable {
@@ -161,6 +162,22 @@ class SliderModel implements Observable {
       this.items = null;
       this.isItemsCustom = false;
     }
+  }
+
+  public addHandlerValueChangedListener(observer: Function): void {
+    if (!this.observers.handleHandlerValueChanged) {
+      this.observers.handleHandlerValueChanged = new Observer();
+    }
+
+    this.observers.handleHandlerValueChanged.addListener(observer);
+  }
+
+  public addRemoveHandlerListener(observer: Function): void {
+    if (!this.observers.removeHandler) {
+      this.observers.removeHandler = new Observer();
+    }
+
+    this.observers.removeHandler.addListener(observer);
   }
 
   @bind
@@ -373,7 +390,7 @@ class SliderModel implements Observable {
     }
 
     const newHandler = new HandlerModel(handlerIndex, freeItemIndex, this.getSliderData());
-    Observer.addListener('updatePosition', newHandler, this.handleHandlerValueChanged);
+    newHandler.addUpdatePositionListener(this.handleHandlerValueChanged);
 
     this.occupyItem(freeItemIndex, handlerIndex);
     return newHandler;

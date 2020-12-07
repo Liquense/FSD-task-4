@@ -47,8 +47,8 @@ class SliderPanel {
     const [slider] = initSliders($element, sliderParams);
 
     this.slider = slider;
-    this.slider.callPluginFunction('addAfterHandlerValueChangedListener', this.handleHandlerValueChange);
-    this.slider.callPluginFunction('addAfterRemoveHandlerListener', this.handleRemoveHandler);
+    this.slider.callPluginFunction('addHandlerValueChangedListener', this.handleHandlerValueChange);
+    this.slider.callPluginFunction('addRemoveHandlerListener', this.handleRemoveHandler);
 
     const handlersData = this.slider.callPluginFunction('getHandlersData');
     this.initHandlers(handlersData);

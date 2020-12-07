@@ -1,7 +1,3 @@
-interface Observable {
-  observers: { [key: string]: Observer };
-}
-
 class Observer {
   private listeners: Function[] = [];
 
@@ -11,36 +7,8 @@ class Observer {
     }
   }
 
-  public static addListener(executor: string, context: Observable, listener?: Function): void {
-    let observer: Observer;
-    if (!context) {
-      return;
-    }
-
-    if (!context.observers) {
-      context.observers = {};
-    }
-
-    if (!context.observers[executor]) {
-      observer = new Observer();
-      context.observers[executor] = observer;
-    } else {
-      observer = context.observers[executor];
-    }
-
-    observer.addListener(listener);
-  }
-
   public addListener(listener: Function): void {
     this.listeners.push(listener);
-  }
-
-  public static removeListener(executor: string, context: Observable, listener: Function): void {
-    if (!context?.observers?.[executor]) {
-      return;
-    }
-
-    context.observers[executor].removeListener(listener);
   }
 
   public removeListener(listener: Function): void {
@@ -60,4 +28,4 @@ class Observer {
   }
 }
 
-export { Observable, Observer };
+export { Observer };

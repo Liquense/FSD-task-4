@@ -15,6 +15,8 @@ interface View {
   addHandler(handlerData: HandlerViewParams): void;
 
   removeHandler(handlerIndex: number): void;
+
+  addHandlerPositionChangedListener(observer: Function): void;
 }
 
 export { View };

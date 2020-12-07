@@ -1,5 +1,6 @@
 import { clamp } from '../../utils/functions';
-import { Observable, Observer } from '../../utils/Observer/Observer';
+import { Observer } from '../../utils/Observer/Observer';
+import { Observable } from '../../utils/Observer/interfaces';
 import { SliderModelData } from '../types';
 
 class HandlerModel implements Observable {
@@ -13,6 +14,14 @@ class HandlerModel implements Observable {
     sliderData: SliderModelData,
   ) {
     this.setItemIndex(itemIndex, sliderData);
+  }
+
+  public addUpdatePositionListener(observer: Function): void {
+    if (!this.observers.updatePosition) {
+      this.observers.updatePosition = new Observer();
+    }
+
+    this.observers.updatePosition.addListener(observer);
   }
 
   public getItemIndex(): number {
