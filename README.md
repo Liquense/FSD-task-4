@@ -1,7 +1,8 @@
 # SliderView
+## Описание
 Проект является имплементацией слайдера по программе обучения 
-[FSD](https://www.fullstack-development.com/). \
-Использованы: \
+[MetaLamp](https://www.metalamp.io).
+### Стек:
 [TypeScript](https://www.typescriptlang.org/), [JQuery](https://jquery.com/) \
 [SCSS](https://sass-lang.com/) - препроцессор CSS, \
 [Jest](https://jestjs.io/) - для тестов, \
@@ -14,7 +15,7 @@
 git clone https://github.com/Liquense/FSD-task-4
 npm install
 ```
-#### Команды
+## Команды
 Сборка: `npm run build` \
 Сборка с дев-сервером: `npm run dev-server` (страница на http://localhost:8080/demo-page.html) \
 Приложение покрыто тестами: `npm run test` \
