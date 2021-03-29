@@ -1,5 +1,5 @@
 import * as $ from 'jquery';
-import { DEFAULT_SLIDER_PARAMS } from '../constants';
+import { DEFAULT_SLIDER_PARAMS } from '../shared/constants';
 
 import Controller from '../controller/Controller';
 import { HandlersModelData, SliderData } from '../model/types';

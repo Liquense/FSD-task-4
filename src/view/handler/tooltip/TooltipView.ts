@@ -1,4 +1,4 @@
-import { DEFAULT_SLIDER_CLASS } from '../../../constants';
+import { DEFAULT_SLIDER_CLASS } from '../../../shared/constants';
 import { Presentable } from '../../../utils/types';
 
 import { ExpandDimension } from '../../types';

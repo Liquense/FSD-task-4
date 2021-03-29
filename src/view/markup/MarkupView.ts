@@ -1,4 +1,4 @@
-import { DEFAULT_SLIDER_CLASS } from '../../constants';
+import { DEFAULT_SLIDER_CLASS } from '../../shared/constants';
 
 import { standardize } from '../../utils/functions';
 import { ExpandDimension } from '../types';

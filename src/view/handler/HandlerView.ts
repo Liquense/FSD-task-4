@@ -1,6 +1,6 @@
 import bind from 'bind-decorator';
 
-import { DEFAULT_SLIDER_CLASS } from '../../constants';
+import { DEFAULT_SLIDER_CLASS } from '../../shared/constants';
 import { Presentable } from '../../utils/types';
 
 import { calculateElementCenter } from '../../utils/functions';

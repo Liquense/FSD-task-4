@@ -4,7 +4,7 @@ import { KeyStringObj } from '../utils/types';
 import SliderModel from './SliderModel';
 import HandlerModel from './handler/HandlerModel';
 import { HandlersModelData } from './types';
-import { DEFAULT_SLIDER_PARAMS } from '../constants';
+import { DEFAULT_SLIDER_PARAMS } from '../shared/constants';
 
 let testModel: SliderModel & KeyStringObj;
 

@@ -1,4 +1,4 @@
-import { DEFAULT_SLIDER_PARAMS } from '../../constants';
+import { DEFAULT_SLIDER_PARAMS } from '../../shared/constants';
 
 import SliderModel from '../SliderModel';
 

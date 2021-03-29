@@ -1,7 +1,7 @@
 import { ResizeObserver } from 'resize-observer';
 import bind from 'bind-decorator';
 
-import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../constants';
+import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_END_KEY, RANGE_PAIR_START_KEY } from '../shared/constants';
 
 import {
   HandlerModelData,

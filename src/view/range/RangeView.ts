@@ -1,6 +1,6 @@
 import bind from 'bind-decorator';
 
-import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_OPTIONS } from '../../constants';
+import { DEFAULT_SLIDER_CLASS, RANGE_PAIR_OPTIONS } from '../../shared/constants';
 
 import HandlerView from '../handler/HandlerView';
 import { RangeViewUpdateParams } from './types';

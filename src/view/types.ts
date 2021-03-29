@@ -1,4 +1,4 @@
-import { HandlerData } from '../types';
+import { HandlerData } from '../shared/types';
 import { SliderVisualParams } from '../model/types';
 
 type SliderViewUpdateParams = SliderVisualParams & {

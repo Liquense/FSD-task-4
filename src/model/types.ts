@@ -1,4 +1,4 @@
-import { HandlerData } from '../types';
+import { HandlerData } from '../shared/types';
 
 type SliderData = SliderModelData & SliderVisualData;
 

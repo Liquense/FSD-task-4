@@ -1,5 +1,5 @@
 /* eslint-disable dot-notation,@typescript-eslint/ban-ts-ignore */
-import { DEFAULT_SLIDER_PARAMS } from '../constants';
+import { DEFAULT_SLIDER_PARAMS } from '../shared/constants';
 
 import { HandlerViewParams } from './types';
 import SliderView from './SliderView';

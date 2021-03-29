@@ -1,4 +1,4 @@
-import { Presentable } from './utils/types';
+import { Presentable } from '../utils/types';
 
 type HandlerData = { handlerIndex: number; positionPart: number; item: Presentable }
 
